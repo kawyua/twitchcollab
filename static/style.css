@@ -12,19 +12,47 @@ body {
 }
 
 .container {
-	max-width: 650px;
+	display: flex;
+	position: relative;
+	max-width: 100%;
+	margin: 1rem auto;
+	overflow: auto;
+	padding: 0 2rem;
+	text-align: center;
+	align-items: center;
+}
+
+.container2 {
+	width: 80%;
+	max-width: 750px;
 	margin: 1rem auto;
 	overflow: auto;
 	padding: 0 2rem;
 }
 
-h1 {
-	color: #777;
+h1 {font-size: min(max(4px, 4vw), 22px);
+	display: flex;
+	color: #4e0348;
 	margin-top: 15px;
+	margin-left: 15px;
+	margin-right: 15px;
+	align-items: center;
 }
 
+.center{
+	text-align:center;
+	align-items: center;
+}
+
+
 h3 {
-	margin-bottom: 10px;
+	font-size: min(max(5px, 5vw), 22px);
+	margin-bottom: 5px;
+	color: #4e0348;
+	margin-top: 5px;
+	margin-left: 5px;
+	margin-right: 5px;
+	align-items: center;
 }
 
 img {
@@ -38,8 +66,19 @@ img {
 	margin-top: 2rem;
 }
 
+.avatar {
+	align-items: center;
+	display: flex;
+	border-radius: 50px;
+	height:auto;
+	max-width: 100px;
+	max-height: 100px;
+}
+
 .logo {
-	width: 300px;
+	width: 80%;
+	height: auto;
+	max-width: 350px;
 	display: block;
 	margin: auto;
 }
@@ -68,4 +107,77 @@ textarea {
 	cursor: pointer;
 	outline: none;
 	margin-top: 1rem;
+	align-items: center
+}
+
+.button {
+	background-color: #4CAF50;
+	border: none;
+	color: white;
+	padding: 15px 32px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 16px;
+	margin: 4px 2px;
+	cursor: pointer;
+}
+table { 
+    width: 80%; 
+    table-layout: fixed;
+    border-collapse: collapse; 
+    margin: 0 auto;
+}
+/* Zebra striping */
+tr:nth-of-type(odd) { 
+    background: #f2f2f2; 
+}
+th { 
+    background: #380234; 
+    color: #fff; 
+    font-weight: 600; 
+}
+td, th { 
+    padding: 12px; 
+    border: 1px solid #ccc; 
+    text-align: left; 
+    text-align: center
+}
+/*Mobile View*/
+@media 
+only screen and 
+    (max-width: 760px){
+    td, tr { 
+        display: block; 
+	}
+	
+	/* Hide table headers (but not display: none;, for accessibility) */
+	thead tr { 
+		position: absolute;
+		top: -9999px;
+		left: -9999px;
+	}
+	tr {
+        border: 1px solid #8d2088; 
+    }
+    tr + tr{
+        margin-top: 1.5em;
+    }
+	td { 
+		/* make like a "row" */
+		border: none;
+		border-bottom: 1px solid #eee; 
+		position: relative;
+		padding-left: 50%; 
+        background-color: #F8D9D5;
+        text-align: left; 
+	}
+	td:before { 
+        content: attr(data-label);
+        display: inline-block;
+        line-height: 1.5;
+	    margin-left: -100%;
+        width: 100%;
+		white-space: nowrap;
+	}
 }

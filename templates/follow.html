@@ -1,0 +1,29 @@
+{% extends "success.html" %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+
+{% block totalfollowshead %}
+<th>Total Follows</th>
+{% endblock %}
+{% block totalfollows %}
+<td>{{total}}</th>
+  {% endblock %}
+{% block content %}
+      <table>
+        <tr>
+          <th>Username</th>
+          <th>Followed at</th>
+        </tr>
+        {% for followdata in data %}
+        <tr>
+          <td>
+            <a href="https://twitch.tv/{{followdata.to_name}}">{{followdata.to_name}}</a>
+          </td>
+          <td>
+            {{followdata.followed_at}}
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+{% endblock %}

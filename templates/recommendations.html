@@ -1,0 +1,20 @@
+{% extends "success.html" %}
+{% block content %}
+      <table>
+        <tr>
+          <th>Username</th>
+          <th>Estimation</th>
+        </tr>
+        
+        {% for record in context %}
+        <tr>
+          <td>
+            <a href="https://twitch.tv/{{record[0]}}">{{record[0]}}</a>
+          </td>
+          <td>
+            {{record[1]}}
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+{% endblock %}

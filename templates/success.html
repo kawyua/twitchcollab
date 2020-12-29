@@ -5,13 +5,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <link rel="stylesheet" href="../static/style.css" />
-    <title>Thank You!</title>
+    <title>Twitch Recommendations!</title>
+    {% block head %}{% endblock %}
   </head>
   <body>
-    <div class="container">
-      <img src="../static/logo.png" alt="" class="logo" />
-      <h1>Thank You!</h1>
-      <h2>Thank you for rating your experience. We hope to see you soon!</h2>
+    <div class="container2">
+        {% if message %}
+        <p class="message">{{ message | safe }}</p>
+        {% endif %}
+        <form action="/submit" method="POST">
+          <div class="form-group">
+            <a href="/"><img src="../static/twitchcollab3.png" alt="Return to home page" class="logo"/></a>
+            <input
+              type="text"
+              name="twitchuser"
+              placeholder="Enter another twitch user"
+            />
+          </div>
+          <input type="submit" value="Get Recommendations" class="btn" />
+        </form>
     </div>
+    <div class="container">
+      <table>
+        <tr>
+          <th>Username</th>
+          <th>Avatar</th>
+          <th>Views</th>
+          <th>Created</th>
+          {% block totalfollowshead %}{% endblock %}
+          <th>Description</th>
+          <th>Button</th>
+        </tr>
+        <tr>
+          <td><a href="https://twitch.tv/{{login}}">{{login}}</a></th>
+          <td><a href="https://twitch.tv/{{login}}/profile"><img src={{profile_image_url}} alt="test" class="avatar"/></a></a></th>
+          <td>{{ view_count }}</th>
+          <td>{{created_at}}</th>
+           {% block totalfollows %}{% endblock %}
+          <td>{{description}}</th>
+          <td><form action="/follow" method="POST">
+            <input type="hidden" id="login" name="login" value={{login}}> 
+            <input type="hidden" id="profile_image_url" name="profile_image_url" value={{profile_image_url}}> 
+            <input type="hidden" id="view_count" name="view_count" value={{view_count}}> 
+            <input type="hidden" id="created_at" name="created_at" value={{created_at}}> 
+            <input type="hidden" id="description" name="description" value={{description}}>
+            <input type="hidden" id="id" name="id" value={{id}}> 
+            <input type="submit" class="button" value="List Follows">
+          </form></th>
+        </tr>
+      </table>
+    </div>
+    <div class="container">{% block content %}{% endblock %}</div>
+    <div class="container"></div>
   </body>
 </html>
