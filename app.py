@@ -4,9 +4,15 @@ import requests
 import json
 import datetime
 from datetime import timedelta 
-from secrets import CLIENT_ID, CILENT_SECRET, SQLALCHEMY_DATABASE_URI, POSTGRESQL_DATABASE_URI
 from requests.exceptions import HTTPError
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
+CLIENT_ID = os.getenv("CLIENT_ID")
+CILENT_SECRET = os.getenv("CILENT_SECRET")
+SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI")
+POSTGRESQL_DATABASE_URI = os.getenv("POSTGRESQL_DATABASE_URI")
 BASE_URL = 'https://api.twitch.tv/helix/'
 url ='https://id.twitch.tv/oauth2/token'
 access_token = ''
@@ -14,7 +20,7 @@ userdata = ''
 
 app = Flask(__name__)
 
-ENV = 'prod'
+ENV = 'dev'
 if ENV == 'dev':
     app.debug = True
     app.config['SQLALCHEMY_DATABASE_URI'] = POSTGRESQL_DATABASE_URI
