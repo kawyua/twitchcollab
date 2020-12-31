@@ -68,7 +68,6 @@ img {
 
 .avatar {
 	align-items: center;
-	display: flex;
 	border-radius: 50px;
 	height:auto;
 	max-width: 100px;
