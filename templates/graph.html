@@ -1,0 +1,53 @@
+{% extends "success.html" %}
+{% block head %}
+<meta id="my-data" data-name="graphdata" data-other="{{graphdata}}">
+<script src="{{url_for('static', filename='cytoscape.js')}}"></script>
+{% endblock %}}
+{% block grapher %}
+  <div id="cy"></div>
+  <script>
+    var followdata = JSON.parse('{{followdata|tojson|safe}}');
+    var userdata = JSON.parse('{{userdata|tojson|safe}}');
+    console.log(JSON.stringify(followdata));
+    console.log(JSON.stringify(userdata));
+    console.log(userdata[userdata.length-1]["login"]);
+    
+    var cy = cytoscape({
+        container: document.getElementById('cy'),
+        elements: [
+          { data: { id: 'a' } },
+          { data: { id: 'b' } },
+          {
+            data: {
+              id: 'ab',
+              source: 'a',
+              target: 'b'
+            }
+          }]
+      });
+
+    for (var i = 0; i < userdata.length; i++) {
+      user = userdata[i].id;
+      console.log(user)
+      cy.add({
+          data: { id: user}
+          }
+      );
+    };
+    for (var i = 0; i < followdata.length; i++) {
+        var source = followdata[i].from_id;
+        var target = followdata[i].to_id;
+        cy.add({
+            data: {
+                id: 'edge' + i,
+                source: source,
+                target: target
+            }
+        });
+    };
+
+    cy.layout({
+        name: 'cose'
+    });
+  </script>
+{% endblock %}

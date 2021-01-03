@@ -26,11 +26,6 @@ def test_submit__failure__redirect():
 
 def test_follows():
     response = app.test_client().post('/follow', data=dict(
-        login='test',
-        profile_image_url='testurl',
-        view_count = 9,
-        created_at = "2017-11-28T23:55:59.342380Z",
-        description = "testing string",
-        id = 1234
+        login='test'
     ))
     assert response.status_code == 200
