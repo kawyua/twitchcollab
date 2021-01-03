@@ -1,29 +1,84 @@
 {% extends "success.html" %}
-{% block head %}
-  {{ super() }}
-{% endblock %}
 
-{% block totalfollowshead %}
-<th>Total Follows</th>
-{% endblock %}
-{% block totalfollows %}
-<td>{{total}}</th>
-  {% endblock %}
-{% block content %}
-      <table>
-        <tr>
-          <th>Username</th>
-          <th>Followed at</th>
-        </tr>
-        {% for followdata in data %}
-        <tr>
-          <td>
-            <a href="https://twitch.tv/{{followdata.to_name}}">{{followdata.to_name}}</a>
-          </td>
-          <td>
-            {{followdata.followed_at}}
-          </td>
-        </tr>
-        {% endfor %}
-      </table>
+{% block grapher%}
+  <div class="card green">
+    <div class="additional">
+      <div class="user-card">
+        <div class="level center">
+          Views:{{ view_count }}
+        </div>
+        <div class="points center">
+          Follows: {{ followlen }}
+        </div>
+        <svg width="110" height="110" viewBox="0 0 250 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" class="center">
+          <title id="title">Teacher</title>
+          <desc id="desc">Cartoon of a Caucasian woman smiling, and wearing black glasses and a purple shirt with white collar drawn by Alvaro Montoro.</desc>
+          <circle cx="125" cy="125" r="120" fill="rgba(0,0,0,0.15)" />
+          <a href="https://twitch.tv/{{login}}/profile"><img src={{profile_image_url}} alt="test" class="avatar center"></a>
+        </svg>
+      </div>
+      <div class="more-info">
+        <h1>{{login}}</h1>
+        <div class="coords">
+          <h3>{{broadcaster_type}}</h3>
+          <h3>Joined {{ created_at }}</h3>
+          <img src={{offlineimg}} alt="Offline image" class="logo offcenter">
+        </div>
+        <div class="coords">
+          
+          <h3>{{ type }}</h3>
+          <h3>  <a href="https://twitch.tv/{{login}}">{{login}}🔗</a></h3>
+        </div>
+        <div class="stats">
+          
+        </div>
+      </div>
+    </div>
+    <div class="general">
+      <h1>{{login}}</h1>
+      <p>{{ description }}</p>
+      <span class="more">Mouse over the card for more info</span>
+    </div>
+  </div>
+
+    {% for userinfo in data %}
+    <div class="card green">
+      <div class="additional">
+        <div class="user-card">
+          <div class="level center">
+            Views:{{ userinfo["view_count"] }}
+          </div>
+          <div class="points center">
+            Followed: {% set list1 = followdata[loop.index-1]["followed_at"].split('T') %}{{list1[0]}}
+          </div>
+          <svg width="110" height="110" viewBox="0 0 250 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" class="center">
+            <title id="title">Teacher</title>
+            <desc id="desc">Cartoon of a Caucasian woman smiling, and wearing black glasses and a purple shirt with white collar drawn by Alvaro Montoro.</desc>
+            <circle cx="125" cy="125" r="120" fill="rgba(0,0,0,0.15)" />
+            <a href="https://twitch.tv/{{ userinfo['login'] }}/profile"><img src="{{ userinfo['profile_image_url'] }}" alt="test" class="avatar center"></a>
+          </svg>
+        </div>
+        <div class="more-info">
+          <h1>{{ userinfo['login'] }}</h1>
+          <div class="coords">
+            <h3>{{userinfo['broadcaster_type']}}</h3>
+            <h3>Joined: {% set list1 = userinfo['created_at'].split('T') %}{{list1[0]}}</h3>
+            <h3>  <a href="https://twitch.tv/{{ userinfo['login'] }}">{{ userinfo['login'] }}🔗</a></h3>
+            <img src="{{userinfo['offline_image_url']}}" alt="Offline image" class="logo offcenter">
+          </div>
+          <div class="coords">
+            <h3>{{ type }}</h3>
+          </div>
+          <div class="stats">
+            
+          </div>
+        </div>
+      </div>
+      <div class="general">
+        <h1> {{ userinfo['login'] }}</h1>
+        <p>{{ userinfo['description'] }}</p>
+        <span class="more">Mouse over the card for more info</span>
+      </div>
+    </div>
+      {% endfor %}
 {% endblock %}

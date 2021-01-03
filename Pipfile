@@ -20,6 +20,10 @@ utils = "*"
 pytest-cov = "*"
 pytest = "*"
 flask-testing = "*"
+coverage = "*"
+jsonify = "*"
+requests-toolbelt = "*"
+retry = "*"
 
 [requires]
 python_version = "3.7"

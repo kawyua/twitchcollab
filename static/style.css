@@ -1,15 +1,10 @@
+
 * {
 	box-sizing: border-box;
 	margin: 0;
 	padding: 0;
 }
 
-body {
-	background: #f4f4f4;
-	font-family: Arial, Helvetica, sans-serif;
-	color: #333;
-	line-height: 1.6;
-}
 
 .container {
 	display: flex;
@@ -18,35 +13,30 @@ body {
 	margin: 1rem auto;
 	overflow: auto;
 	padding: 0 2rem;
-	text-align: center;
-	align-items: center;
 }
 
 .container2 {
+	display: flex;
 	width: 80%;
 	max-width: 750px;
 	margin: 1rem auto;
 	overflow: auto;
-	padding: 0 2rem;
+	padding: 0 1rem;
+	align-items: right;
 }
-
-h1 {font-size: min(max(4px, 4vw), 22px);
+.container3 {
 	display: flex;
-	color: #4e0348;
-	margin-top: 15px;
-	margin-left: 15px;
-	margin-right: 15px;
-	align-items: center;
-}
-
-.center{
-	text-align:center;
-	align-items: center;
+	width: 750px;
+	max-width: 20%;
+	margin: 1rem auto;
+	overflow: auto;
+	padding: 0 1rem;
+	align-items: right;
 }
 
 
 h3 {
-	font-size: min(max(5px, 5vw), 22px);
+	font-size: min(max(4px, 4vw), 18px);
 	margin-bottom: 5px;
 	color: #4e0348;
 	margin-top: 5px;
@@ -55,9 +45,6 @@ h3 {
 	align-items: center;
 }
 
-img {
-	width: 100%;
-}
 
 .message {
 	text-align: center;
@@ -67,19 +54,15 @@ img {
 }
 
 .avatar {
-	align-items: center;
-	border-radius: 50px;
-	height:auto;
+	border-radius: 75px;
 	max-width: 100px;
 	max-height: 100px;
 }
 
 .logo {
-	width: 80%;
-	height: auto;
-	max-width: 350px;
-	display: block;
-	margin: auto;
+	border-radius: 150px;
+	max-width: 200px;
+	max-height: 200px;
 }
 
 .form-group {
@@ -96,87 +79,202 @@ textarea {
 	border: 1px solid #ccc;
 }
 
-.btn {
-	display: block;
-	width: 100%;
-	background: #333;
-	color: #fff;
-	padding: 10px 20px;
-	border: none;
-	cursor: pointer;
-	outline: none;
-	margin-top: 1rem;
-	align-items: center
-}
 
-.button {
-	background-color: #4CAF50;
-	border: none;
-	color: white;
-	padding: 15px 32px;
-	text-align: center;
-	text-decoration: none;
-	display: inline-block;
-	font-size: 16px;
-	margin: 4px 2px;
-	cursor: pointer;
-}
 table { 
     width: 80%; 
     table-layout: fixed;
     border-collapse: collapse; 
     margin: 0 auto;
 }
-/* Zebra striping */
-tr:nth-of-type(odd) { 
-    background: #f2f2f2; 
+
+
+
+@import url('https://fonts.googleapis.com/css?family=Abel');
+
+html, body {
+  background: #FCEEB5;
+  font-family: Abel, Arial, Verdana, sans-serif;
 }
-th { 
-    background: #380234; 
-    color: #fff; 
-    font-weight: 600; 
+
+.center {
+  position:absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
 }
-td, th { 
-    padding: 12px; 
-    border: 1px solid #ccc; 
-    text-align: left; 
-    text-align: center
+
+
+.offcenter {
+	position:absolute;
+	top: 75%;
+	left: 50%;
+	-webkit-transform: translate(-50%, -50%);
+  }
+  
+
+.card {
+  width: 450px;
+  display:flex;
+  height: 250px;
+  background-color: #fff;
+  background: linear-gradient(#f8f8f8, #fff);
+  box-shadow: 0 8px 16px -8px rgba(0,0,0,0.4);
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+  margin: 1.5rem;
 }
-/*Mobile View*/
-@media 
-only screen and 
-    (max-width: 760px){
-    td, tr { 
-        display: block; 
-	}
-	
-	/* Hide table headers (but not display: none;, for accessibility) */
-	thead tr { 
-		position: absolute;
-		top: -9999px;
-		left: -9999px;
-	}
-	tr {
-        border: 1px solid #8d2088; 
-    }
-    tr + tr{
-        margin-top: 1.5em;
-    }
-	td { 
-		/* make like a "row" */
-		border: none;
-		border-bottom: 1px solid #eee; 
-		position: relative;
-		padding-left: 50%; 
-        background-color: #F8D9D5;
-        text-align: left; 
-	}
-	td:before { 
-        content: attr(data-label);
-        display: inline-block;
-        line-height: 1.5;
-	    margin-left: -100%;
-        width: 100%;
-		white-space: nowrap;
-	}
+
+.card h1 {
+  text-align: center;
 }
+
+.card .additional {
+  position: absolute;
+  width: 150px;
+  height: 100%;
+  background: linear-gradient(#dE685E, #EE786E);
+  transition: width 0.4s;
+  overflow: hidden;
+  z-index: 2;
+}
+
+.card.green .additional {
+  background: linear-gradient(#92bCa6, #A2CCB6);
+}
+
+
+.card:hover .additional {
+  width: 100%;
+  border-radius: 0 5px 5px 0;
+}
+
+.card .additional .user-card {
+  width: 150px;
+  height: 100%;
+  position: relative;
+  float: left;
+}
+
+.card .additional .user-card::after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 10%;
+  right: -2px;
+  height: 80%;
+  border-left: 2px solid rgba(0,0,0,0.025);*/
+}
+
+.card .additional .user-card .level,
+.card .additional .user-card .points {
+  top: 15%;
+  color: #fff;
+  text-transform: uppercase;
+  font-size: 0.75em;
+  font-weight: bold;
+  background: rgba(0,0,0,0.15);
+  padding: 0.125rem 0.75rem;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+
+.card .additional .user-card .points {
+  top: 85%;
+}
+
+.card .additional .user-card svg {
+  top: 50%;
+}
+
+.card .additional .more-info {
+  width: 300px;
+  float: left;
+  position: absolute;
+  left: 150px;
+  height: 100%;
+}
+
+.card .additional .more-info h1 {
+  color: #fff;
+  margin-bottom: 0;
+}
+
+.card.green .additional .more-info h1 {
+  color: #224C36;
+}
+
+.card .additional .coords {
+  margin: 0 1rem;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.card.green .additional .coords {
+  color: #325C46;
+}
+
+.card .additional .coords span + span {
+  float: right;
+}
+
+.card .additional .stats {
+  font-size: 2rem;
+  display: flex;
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  right: 1rem;
+  top: auto;
+  color: #fff;
+}
+
+.card.green .additional .stats {
+  color: #325C46;
+}
+
+.card .additional .stats > div {
+  flex: 1;
+  text-align: center;
+}
+
+.card .additional .stats i {
+  display: block;
+}
+
+.card .additional .stats div.title {
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.card .additional .stats div.value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  line-height: 1.5rem;
+}
+
+.card .additional .stats div.value.infinity {
+  font-size: 2.5rem;
+}
+
+.card .general {
+  width: 300px;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  box-sizing: border-box;
+  padding: 1rem;
+  padding-top: 0;
+}
+
+.card .general .more {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  font-size: 0.9em;
+}
+
+
