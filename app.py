@@ -75,7 +75,7 @@ returns {"access_token":"string","expires_in":5290773,"token_type":"bearer"}
 '''
 try:
     print("getting access_token")
-    response = requests.post(url, 
+    response = http.post(url, 
     data={'client_id':CLIENT_ID,
     'client_secret':CILENT_SECRET,
     'grant_type':'client_credentials'
@@ -95,19 +95,19 @@ else:
 
 
 
-#class Feedback(db.Model):
-#    __tablename__ = 'feedback'
-#    id = db.Column(db.Integer, primary_key=True)
-#    customer = db.Column(db.String(200), unique=True)
-#    dealer = db.Column(db.String(200))
-#    rating = db.Column(db.Integer)
-#    comments = db.Column(db.Text())
-#
-#    def __init__(self, customer, dealer, rating, comments):
-#        self.customer = customer
-#        self.dealer = dealer
-#        self.rating = rating
-#        self.comments = comments
+class Feedback(db.Model):
+    __tablename__ = 'feedback'
+    id = db.Column(db.Integer, primary_key=True)
+    customer = db.Column(db.String(200), unique=True)
+    dealer = db.Column(db.String(200))
+    rating = db.Column(db.Integer)
+    comments = db.Column(db.Text())
+
+    def __init__(self, customer, dealer, rating, comments):
+        self.customer = customer
+        self.dealer = dealer
+        self.rating = rating
+        self.comments = comments
 
 @app.route('/')
 def index():
@@ -317,7 +317,7 @@ def getuser(username):
         ('login',username),
     )
     try:
-        response = requests.get('https://api.twitch.tv/helix/users?', headers=headers, params=params)
+        response = http.get('https://api.twitch.tv/helix/users?', headers=headers, params=params)
 
         # If the response was successful, no Exception will be raised
         response.raise_for_status()
@@ -374,7 +374,7 @@ def getMultiUserInfo(userIDlist):
             count += 100
             #print("Entering try for get response")
             #print(params)
-            response = requests.get('https://api.twitch.tv/helix/users?', headers=headers, params=params)
+            response = http.get('https://api.twitch.tv/helix/users?', headers=headers, params=params)
 
             # If the response was successful, no Exception will be raised
             response.raise_for_status()
@@ -430,7 +430,7 @@ def getfollowers(userID):
     i = 0
     while i < runningtotal:
         try:
-            response = requests.get('https://api.twitch.tv/helix/users/follows?', headers=headers, params=params)
+            response = http.get('https://api.twitch.tv/helix/users/follows?', headers=headers, params=params)
             # If the response was successful, no Exception will be raised
             response.raise_for_status()
         except HTTPError as http_err:
@@ -496,7 +496,7 @@ def getspecificfollows(fromuserID, touserID):
         'Authorization': 'Bearer {0}'.format(access_token),
     }
     try:
-        response = requests.get('https://api.twitch.tv/helix/users/follows?', headers=headers, params=params)
+        response = http.get('https://api.twitch.tv/helix/users/follows?', headers=headers, params=params)
         # If the response was successful, no Exception will be raised
         response.raise_for_status()
     except HTTPError as http_err:
@@ -553,7 +553,7 @@ def getfollows(userID):
     print("entering getfollowrequest" + userID)
     while i < runningtotal:
         try:
-            response = requests.get('https://api.twitch.tv/helix/users/follows?', headers=headers, params=params)
+            response = http.get('https://api.twitch.tv/helix/users/follows?', headers=headers, params=params)
             # If the response was successful, no Exception will be raised
             response.raise_for_status()
         except HTTPError as http_err:
@@ -592,7 +592,7 @@ def getfollows(userID):
     csv_columns = ['from_id', 'from_login', 'from_name', 'to_id', 'to_login','to_name','followed_at']
     csv_file = "Names.csv"
     try:
-        with open(csv_file, 'w', encoding='utf-8') as csvfile:
+        with open(csv_file, 'w', newline='', encoding='utf-8') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
             writer.writeheader()
             for data in totaldata:
@@ -607,10 +607,14 @@ def getfollows(userID):
         streamerfollowset.setdefault(streameruser["to_name"] , date_time_streameruser)
     csv_columns2 = ['from_id', 'from_login', 'from_name', 'to_id', 'to_login','to_name','followed_at','closure','follow_total','triad_set', 'k-connected','total-connected']
     csv_file2 = "Names2.csv"
-    openfile = open(csv_file2, 'w') 
-    writer = csv.DictWriter(openfile, fieldnames=csv_columns2)
-    writer.writeheader()
-    openfile.close()
+    
+    try:
+        openfile = open(csv_file2, 'w', newline='', encoding='utf-8') 
+        writer = csv.DictWriter(openfile, fieldnames=csv_columns2)
+        writer.writeheader()
+        openfile.close()
+    except IOError:
+        print("I/O error")
 
     print("entering getting follows for each follower")
     for index, twitchuser in enumerate(totaldata):
@@ -628,7 +632,7 @@ def getfollows(userID):
         eachfollowdata["total-connected"] = len(eachfollowdata["k-connected"])
         print(eachfollowdata)
         try:
-            with open(csv_file2, 'a', encoding='utf-8') as csvfile:
+            with open(csv_file2, 'a', newline='', encoding='utf-8') as csvfile:
                 writer = csv.DictWriter(csvfile, fieldnames=csv_columns2)
                 writer.writerow(eachfollowdata)
                 csvfile.close()
@@ -719,7 +723,7 @@ def getvideoID(userID, timestamp):
     #print((now - timestamp).days)
     #if (now - timestamp) < datetime.timedelta(days=60):
     try:
-        response = requests.get('https://api.twitch.tv/helix/videos?', headers=headers, params=params)
+        response = http.get('https://api.twitch.tv/helix/videos?', headers=headers, params=params)
         # If the response was successful, no Exception will be raised
         response.raise_for_status()
     except HTTPError as http_err:
