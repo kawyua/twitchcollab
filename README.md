@@ -1,6 +1,6 @@
 # Python Twitch Collab
 
-> Python Flask Feedback app that sends data to Postgres database and emails user
+> Python Flask app to show twitch follows and display the web of followers
 
 ## Quick Start
 
