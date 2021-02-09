@@ -36,7 +36,7 @@
 
 
 h3 {
-	font-size: min(max(4px, 4vw), 18px);
+	font-size: min(max(4px, 4vw), 14px);
 	margin-bottom: 5px;
 	color: #4e0348;
 	margin-top: 5px;
@@ -103,6 +103,10 @@ html, body {
   -webkit-transform: translate(-50%, -50%);
 }
 
+.textcenter {
+  
+  text-align: center;
+}
 
 .offcenter {
 	position:absolute;
