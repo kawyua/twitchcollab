@@ -25,7 +25,7 @@ SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI")
 POSTGRESQL_DATABASE_URI = os.getenv("POSTGRESQL_DATABASE_URI")
 ENV = os.getenv("ENV")
 BASE_URL = 'https://api.twitch.tv/helix/'
-url ='https://id.twitch.tv/oauth2/token' 
+url ='https://id.twitch.tv/oauth2/token'
 access_token = ''
 http = sessions.BaseUrlSession(base_url="https://api.twitch.tv/helix")
 http = requests.Session()
