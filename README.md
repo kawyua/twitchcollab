@@ -1,6 +1,8 @@
 # Python Twitch Collab
 
 > Python Flask app to show twitch follows and display the web of followers
+Production build: https://twitchcollab.herokuapp.com/
+Development build: https://twitchcollabdevelopment.herokuapp.com/
 
 ## Quick Start
 
