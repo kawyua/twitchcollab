@@ -605,8 +605,6 @@ def getfollows(userID):
     for streameruser in streamerfollowdata:
         date_time_streameruser = datetime.datetime.strptime(streameruser["followed_at"], '%Y-%m-%dT%H:%M:%SZ')
         streamerfollowset.setdefault(streameruser["to_name"] , date_time_streameruser)
-    with open('data.txt', 'w') as outfile:
-    json.dump(data, outfile)
     csv_columns2 = ['from_id', 'from_login', 'from_name', 'to_id', 'to_login','to_name','followed_at','closure','follow_total','triad_set', 'k-connected','total-connected']
     csv_file2 = "Names2.csv"
     openfile = open(csv_file2, 'w') 
