@@ -1,0 +1,284 @@
+from_id,from_login,from_name,to_id,to_login,to_name,followed_at,closure,follow_total,triad_set,k-connected,total-connected
+103262898,o_aliens,O_aliens,24687283,jorbs,jorbs,2021-02-09T10:44:46Z,1,9,['sips_'],['sips_'],1
+168089342,ggforce_,ggforce_,24687283,jorbs,jorbs,2021-02-09T09:45:10Z,0,10,[],[],0
+27100177,reptailus,Reptailus,24687283,jorbs,jorbs,2021-02-09T09:42:54Z,0,55,[],"['Becca', 'RaizQT', 'Scarra']",3
+90797482,incommunicad0,Incommunicad0,24687283,jorbs,jorbs,2021-02-09T06:22:11Z,0,20,[],['Chess'],1
+66320167,martiiiin124,Martiiiin124,24687283,jorbs,jorbs,2021-02-09T04:09:32Z,1,168,"['LazyFoxRoar', 'dakotaz', 'Slysssa', 'dogdog', 'AsmodaiTV', 'itsHafu', 'Savjz', 'nicholena', 'Naturesbf']","['Naturesbf', 'AsmodaiTV', 'chessbrah', 'Scarra', 'dogdog', 'LEC', 'nl_Kripp', 'Doublelift', 'imaqtpie', 'Pobelter', 'pokimane', 'LCS', 'PUBG', 'Slysssa', 'dakotaz', 'BuckArmy', 'Riot Games', 'itsHafu', 'Amaz', 'twlevewinsHS', 'nicholena']",21
+50257654,numbahwun,NumbahWun,24687283,jorbs,jorbs,2021-02-09T04:04:19Z,1,279,"['Alliestrasza', 'fuslie', 'AsmodaiTV', 'emilyywang', 'krazyghost257', 'Mikkilol', 'alkali_layke']","['AsmodaiTV', 'alkali_layke', 'CeeCee_Lia', 'Amaz', 'fuslie', 'Alliestrasza', 'pokimane', 'Riot Games', 'Scarra']",9
+168154779,introverb,introverb,24687283,jorbs,jorbs,2021-02-09T04:03:18Z,1,148,"['EnnuiPoet', 'Sharese']","['Trainwreckstv', 'AustinShow']",2
+190035427,jovialnugs,JovialNugs,24687283,jorbs,jorbs,2021-02-09T03:56:32Z,1,171,"['itsHafu', 'emilyywang', 'dogdog', 'bmkibler', 'Ramblinnn', 'Baalorlord', 'Mikkilol', 'TerrenceMHS', 'Arumba07', 'moneymoneyloot']","['itsHafu', 'dogdog', 'LEC', 'DeliciousMilkGG', 'Arumba07', 'keanelol', 'Amaz', 'LCS', 'bmkibler', 'Baalorlord', 'imaqtpie', 'pokimane', 'superjj102', 'Riot Games', 'Becca', 'Scarra']",16
+21559186,beatsworking,beatsworking,24687283,jorbs,jorbs,2021-02-09T03:40:02Z,1,287,"['beebomp', 'Sinvicta', 'TheTrute', 'MattiasNL', 'Arumba07', 'Lethalfrag', 'MattOblivium', 'DumbDog', 'AdmiralBahroo', 'SerBeardian', 'Baradul', 'RhapsodyPlays', 'itsHafu', 'moddiply', 'Retromation']","['itsHafu', 'LEC', 'Lethalfrag', 'RhapsodyPlays', 'Arumba07', 'AdmiralBahroo', 'Magic', 'AOC', 'DumbDog', 'Riot Games', 'LCS', 'RaizQT']",12
+467566100,secqen,secqen,24687283,jorbs,jorbs,2021-02-09T03:36:34Z,1,83,"['imperial_sympathizer', 'Baalorlord', 'itsHafu', 'dogdog', 'Arvius', 'happyf333tz', 'FilthyRobot']","['itsHafu', 'dogdog', 'chessbrah', 'Arvius', 'Baalorlord', 'GMHikaru', 'NASA', 'happyf333tz', 'FilthyRobot', 'Scarra']",10
+42505876,elias5891,Elias5891,24687283,jorbs,jorbs,2021-02-09T03:28:31Z,1,94,"['Yamp44', 'NivekViking', 'LewdDolphin', 'SillyPuppy0218', 'CFlare']",[],0
+118860986,kabybby,KabyBBY,24687283,jorbs,jorbs,2021-02-09T02:54:19Z,1,54,"['itsHafu', 'bmkibler', '1437', 'Bloody', 'nicholena', 'Alliestrasza', 'sunglitters', 'AsmodaiTV']","['itsHafu', 'LEC', 'sunglitters', 'nl_Kripp', 'AsmodaiTV', 'AOC', 'Dyrus', 'imaqtpie', 'Bloody', 'nicholena', 'Alliestrasza', 'pokimane', 'bmkibler', 'Scarra']",14
+87336613,amoracchius123,Amoracchius123,24687283,jorbs,jorbs,2021-02-09T02:49:42Z,1,54,"['dogdog', 'EladDifficult', 'Celerity', 'Slysssa', 'WobbleWeezy', 'Dekkster']","['WobbleWeezy', 'dogdog', 'nl_Kripp', 'Dekkster', 'Celerity', 'Slysssa']",6
+510100552,rpg_drithe,rpg_drithe,24687283,jorbs,jorbs,2021-02-09T02:34:40Z,1,22,['Quin69'],['Quin69'],1
+495927239,lordweiramon,lordweiramon,24687283,jorbs,jorbs,2021-02-09T02:34:37Z,1,6,"['dogdog', 'Savjz']","['nl_Kripp', 'dogdog']",2
+145096357,sniksy_l_lib,Sniksy_L_Lib,24687283,jorbs,jorbs,2021-02-09T02:33:47Z,1,35,['Panztastic'],[],0
+44837001,barezino,barezino,24687283,jorbs,jorbs,2021-02-09T02:31:07Z,0,21,[],[],0
+478935284,thiosum,thiosum,24687283,jorbs,jorbs,2021-02-09T02:27:52Z,1,52,"['Educated_Collins', 'Celerity', 'RhapsodyPlays', 'MattOblivium', 'Lethalfrag', 'BoarControlHS', 'SaphirexX', 'BabaYetu_', 'AdmiralBahroo']","['Lethalfrag', 'RhapsodyPlays', 'AdmiralBahroo', 'Celerity', 'BoarControlHS', 'Educated_Collins', 'BabaYetu_']",7
+545970243,highlandrain,highlandrain,24687283,jorbs,jorbs,2021-02-09T02:26:12Z,1,91,"['DarkSlash88', 'Lethalfrag', 'haelian', 'Vorime', 'babloization', 'Wriste13', 'courtenberry', 'DomPalombiMusic', 'Baalorlord', 'maxxmaxx1', 'itsHafu']","['itsHafu', 'Amaz', 'Baalorlord', 'Lethalfrag']",4
+57821103,morpheus7078,morpheus7078,24687283,jorbs,jorbs,2021-02-09T02:21:00Z,1,89,"['sips_', 'LSV', 'dogdog', 'itsHafu', 'bmkibler', 'Savjz', 'Educated_Collins', 'WobbleWeezy', 'fuslie', 'Baalorlord', 'Wolfabelle', 'Blaustoise']","['WobbleWeezy', 'keanelol', 'LCK', 'fuslie', 'LSV', 'superjj102', 'BeagsAndJam', 'Becca', 'Scarra', 'dogdog', 'nl_Kripp', 'Magic', 'Baalorlord', 'pokimane', 'LCS', 'Educated_Collins', 'Riot Games', 'bmkibler', 'sips_', 'itsHafu', 'twlevewinsHS', 'Wolfabelle']",22
+139056618,fbozz,fbozz,24687283,jorbs,jorbs,2021-02-09T02:19:18Z,0,46,[],[],0
+3232840,futilewave,futilewave,24687283,jorbs,jorbs,2021-02-09T02:17:39Z,1,232,"['Deansocool', 'Wolfabelle', 'itsHafu', 'imTinii', 'honk', '5uppp', 'Yetiapocalypse']","['Yetiapocalypse', 'itsHafu', 'imTinii', 'honk', 'Trainwreckstv', 'AOC', 'Wolfabelle', 'pokimane', '5uppp']",9
+86113595,cow294,Cow294,24687283,jorbs,jorbs,2021-02-09T02:04:23Z,1,99,"['iNcontroLTV', 'ster', 'Fareeha', 'kevinjordan', 'Naguura', 'Baalorlord']","['Baalorlord', 'pokimane', 'Fandom', 'iNcontroLTV']",4
+158867043,elvisprucelee,elvisprucelee,24687283,jorbs,jorbs,2021-02-09T02:01:21Z,1,13,"['Alliestrasza', 'Dekkster']","['Dekkster', 'Alliestrasza']",2
+139617510,wightfyre,wightfyre,24687283,jorbs,jorbs,2021-02-09T01:44:28Z,1,145,"['Twicetimes', 'haelian', 'courtenberry', 'SergeYager', 'Wriste13']","['AOC', 'desertbus']",2
+109653512,laaaaaaaaaag10,laaaaaaaaaag10,24687283,jorbs,jorbs,2021-02-09T01:39:51Z,1,27,['Fitzyhere'],['Fitzyhere'],1
+162453025,yakahoshi,yakahoshi,24687283,jorbs,jorbs,2021-02-09T01:28:27Z,0,16,[],['PUBG'],1
+55705286,ryzo15000,Ryzo15000,24687283,jorbs,jorbs,2021-02-09T01:27:20Z,1,45,['DansGaming'],"['Amaz', 'Badger', 'Doublelift']",3
+57255321,namenoneed00,namenoneed00 ,24687283,jorbs,jorbs,2021-02-09T01:23:26Z,1,68,"['ProblemsIRL', 'AdmiralBahroo', 'Shad3less', 'DonTheCrown', 'Celerity']","['Celerity', 'AdmiralBahroo', 'Riot Games']",3
+206099640,summonedbruh,summonedbruh,24687283,jorbs,jorbs,2021-02-09T01:19:31Z,1,36,['5uppp'],['5uppp'],1
+98080501,its_sikith,Its_sikith,24687283,jorbs,jorbs,2021-02-09T01:08:15Z,1,29,['Billy1Kirby'],"['nl_Kripp', 'imaqtpie']",2
+21103162,attackerbob,attackerbob,24687283,jorbs,jorbs,2021-02-09T01:07:58Z,1,324,"['SimCopter1', 'Savjz', 'itsHafu', 'moneymoneyloot']","['itsHafu', 'nl_Kripp', 'Amaz', 'Doublelift', 'Dyrus', 'imaqtpie', 'SimCopter1', 'Trainwreckstv', 'Riot Games', 'Scarra']",10
+85636116,cotterveli,cotterveli,24687283,jorbs,jorbs,2021-02-09T00:56:44Z,1,321,"['Ryan_Jarman', 'dakotaz', 'MajinBuu', 'ExtraCredits', 'TerrenceMHS', 'Baalorlord', 'jrm1ah', 'DespotThoughts', 'TheCrimsonBlur', 'Harrie', 'itsHafu', 'Yetiapocalypse', 'Deansocool', '5uppp', 'Wolfabelle']","['Yetiapocalypse', 'Svennoss', 'itsHafu', 'chessbrah', 'Trainwreckstv', 'dakotaz', 'Harrie', 'Baalorlord', 'Wolfabelle', 'pokimane', '5uppp', 'AustinShow']",12
+44620532,unremarkablefellow,unremarkablefellow,24687283,jorbs,jorbs,2021-02-09T00:43:02Z,1,21,"['Savjz', 'itsHafu', 'bmkibler']","['Dyrus', 'nl_Kripp', 'bmkibler', 'itsHafu']",4
+96476320,bidlacz,bidlacz,24687283,jorbs,jorbs,2021-02-09T00:40:35Z,1,144,"['dogdog', 'itsHafu', 'Savjz', 'plbrta', 'WobbleWeezy', 'Educated_Collins', 'BoarControlHS']","['WobbleWeezy', 'Aphromoo', 'keanelol', 'LCK', 'chessbrah', 'Scarra', 'chess24', 'dogdog', 'LEC', 'nl_Kripp', 'Doublelift', 'Dyrus', 'imaqtpie', 'Pobelter', 'pokimane', 'LexVeldhuis', 'LCS', 'FIDE_Chess', 'Educated_Collins', 'plbrta', 'Riot Games', 'itsHafu', 'Amaz', 'BoarControlHS', 'twlevewinsHS', 'Chess', 'GMHikaru']",27
+94398989,thetaitertot,thetaitertot,24687283,jorbs,jorbs,2021-02-09T00:35:10Z,1,131,"['dogdog', 'Savjz', 'bmkibler', 'Quin69', 'TidesofTime', 'AdmiralBahroo', 'DansGaming', 'dakotaz', 'JessicaMunchdown', 'jrm1ah', 'vegetablebread', 'TerrenceMHS']","['Aphromoo', 'keanelol', 'AdmiralBahroo', 'TaliaMar', 'superjj102', 'Becca', 'Scarra', 'Quin69', 'dogdog', 'DeliciousMilkGG', 'JessicaMunchdown', 'Doublelift', 'Dyrus', 'imaqtpie', 'Pobelter', 'Trainwreckstv', 'LCS', 'dakotaz', 'Riot Games', 'bmkibler', 'GMHikaru', 'TidesofTime']",22
+32472677,stefek132,stefek132,24687283,jorbs,jorbs,2021-02-09T00:32:12Z,1,52,"['itsHafu', 'DiaTech', 'bmkibler', 'Alliestrasza', 'dogdog']","['itsHafu', 'Becca', 'dogdog', 'Amaz', 'bmkibler', 'Alliestrasza', 'pokimane', 'Riot Games', 'LCS', 'Scarra']",10
+55777968,katudis,Katudis,24687283,jorbs,jorbs,2021-02-09T00:31:07Z,1,113,"['DansGaming', 'itsHafu', 'AdmiralBahroo', '5uppp', 'Nomakk']","['itsHafu', 'AdmiralBahroo', 'Trainwreckstv', 'imaqtpie', '5uppp']",5
+250601672,villainmaterial,VillainMaterial,24687283,jorbs,jorbs,2021-02-09T00:16:22Z,0,4,[],[],0
+102044245,toiryelhsa,Toiryelhsa,24687283,jorbs,jorbs,2021-02-08T21:51:38Z,1,5,['jrm1ah'],[],0
+57177505,shaunzors,Shaunzors,24687283,jorbs,jorbs,2021-02-08T21:50:51Z,1,65,"['RafLP', 'ster']","['Dyrus', 'Riot Games', 'imaqtpie']",3
+114409219,pieter_panda,Pieter_Panda,24687283,jorbs,jorbs,2021-02-08T21:45:33Z,1,73,"['FilthyRobot', 'aliensrock', 'AnnaMae']","['Florryworry', 'Chess', 'GMHikaru', 'pokimane', 'AustinShow', 'FilthyRobot']",6
+52684988,oji4life,oji4life,24687283,jorbs,jorbs,2021-02-08T21:14:55Z,0,10,[],"['Riot Games', 'imaqtpie']",2
+23997673,thetinychaos,TheTinychaos,24687283,jorbs,jorbs,2021-02-08T20:02:59Z,1,70,"['Quin69', 'AdmiralBahroo']","['Quin69', 'nl_Kripp', 'Amaz', 'AdmiralBahroo', 'pokimane', 'Becca', 'Scarra']",7
+26620907,yookishaz,yookishaz,24687283,jorbs,jorbs,2021-02-08T19:58:40Z,1,125,"['Lethalfrag', 'LSV', 'bmkibler', 'GabySpartz', 'Khaljiit', 'Savjz', 'dogdog', 'Naturesbf', 'itsHafu', 'hunterpence']","['itsHafu', 'sjokz', 'dogdog', 'Lethalfrag', 'Naturesbf', 'nl_Kripp', 'keanelol', 'Magic', 'AOC', 'GabySpartz', 'imaqtpie', 'GMHikaru', 'Trainwreckstv', 'LSV', 'bmkibler', 'AustinShow', 'Scarra']",17
+148826458,nofisjolo,nofisjolo,24687283,jorbs,jorbs,2021-02-08T19:33:21Z,1,17,['ster'],[],0
+28547062,majorhazed,majorhazed,24687283,jorbs,jorbs,2021-02-08T19:33:17Z,1,104,"['dogdog', 'Kronovi', 'DansGaming', 'Quin69', 'Savjz', 'AdmiralBahroo', 'fuslie', 'haelian']","['Quin69', 'dogdog', 'nl_Kripp', 'AdmiralBahroo', 'Chess', 'fuslie', 'GMHikaru', 'Riot Games', 'RaizQT']",9
+113609765,saiji75,saiji75,24687283,jorbs,jorbs,2021-02-08T19:12:14Z,0,18,[],[],0
+31020612,leflings,leflings,24687283,jorbs,jorbs,2021-02-08T18:42:51Z,1,26,"['FilthyRobot', 'Panztastic']",['FilthyRobot'],1
+226483779,voyty,Voyty,24687283,jorbs,jorbs,2021-02-08T16:44:16Z,1,6,"['Tijoe', 'WarlockTD']",[],0
+647659336,awawaaaawaaawawa,awawaaaawaaawawa,24687283,jorbs,jorbs,2021-02-08T15:35:26Z,0,3,[],[],0
+591745941,pswpsw123,pswpsw123,24687283,jorbs,jorbs,2021-02-08T14:45:14Z,0,14,[],[],0
+139407577,aswroth,aswroth,24687283,jorbs,jorbs,2021-02-08T14:19:13Z,0,17,[],[],0
+69701266,ponpondog,ponpondog,24687283,jorbs,jorbs,2021-02-08T14:05:18Z,1,21,['KenseiTV'],[],0
+49864498,frostbolter4,frostbolter4,24687283,jorbs,jorbs,2021-02-08T11:22:07Z,1,53,"['TidesofTime', 'dogdog', 'Savjz', 'BoarControlHS']","['dogdog', 'Amaz', 'BoarControlHS', 'Dyrus', 'imaqtpie', 'Pobelter', 'TidesofTime', 'LCS', 'Scarra']",9
+49791213,haro_keetay,Haro_keetay,24687283,jorbs,jorbs,2021-02-08T10:01:28Z,1,165,"['AdmiralBahroo', 'Arvius', 'Kayuun', 'DansGaming', 'SLEEPCYCLES', 'Educated_Collins', 'sunglitters', 'Raeyei', 'Lethalfrag', 'dogdog', 'Celerity', 'BrainTM']","['SLEEPCYCLES', 'dogdog', 'Lethalfrag', 'Arvius', 'sunglitters', 'nl_Kripp', 'CeeCee_Lia', 'Celerity', 'AdmiralBahroo', 'Raeyei', 'Educated_Collins', 'BrainTM', 'GMHikaru', 'pokimane']",14
+92348848,eastfarm,Eastfarm,24687283,jorbs,jorbs,2021-02-08T09:54:34Z,1,42,"['DavieTheWhaley', 'Quin69']","['Quin69', 'AOC']",2
+75507031,old_fat_furro,old_fat_furro,24687283,jorbs,jorbs,2021-02-08T09:52:20Z,1,123,"['Shaindralah', 'mcadryh', 'KarmaDoc']","['imaqtpie', 'Becca', 'LCK', 'LCS']",4
+128590813,hositala,hositala,24687283,jorbs,jorbs,2021-02-08T09:51:32Z,1,203,"['Savjz', 'Nerchio', 'iNcontroLTV', 'itsHafu', 'DansGaming']","['itsHafu', 'keanelol', 'iNcontroLTV', 'TastelessTV', 'Riot Games', 'LCS', 'Scarra']",7
+28838400,mitkin,Mitkin,24687283,jorbs,jorbs,2021-02-08T09:41:28Z,1,256,"['Doctor__No', 'dogdog']","['dogdog', 'LEC', 'LCK', 'superjj102', 'Riot Games', 'LCS']",6
+63227114,krichin_o3o,krichin_o3o,24687283,jorbs,jorbs,2021-02-08T09:19:15Z,1,48,"['itsHafu', 'Blaustoise', '5uppp', 'dogdog', 'Wolfabelle', 'DumbDog']","['itsHafu', 'Wolfabelle', 'dogdog', 'AOC', 'Dyrus', 'DumbDog', '5uppp', 'pokimane', 'Riot Games', 'Scarra']",10
+521088249,bloodlordraven,bloodlordraven,24687283,jorbs,jorbs,2021-02-08T09:09:52Z,1,14,['AdmiralBahroo'],['AdmiralBahroo'],1
+85785633,madisismadas,madisismadas,24687283,jorbs,jorbs,2021-02-08T09:02:50Z,0,33,[],['AustinShow'],1
+161803461,relaxedroman,RelaxedRoman,24687283,jorbs,jorbs,2021-02-08T08:52:12Z,1,96,"['itsHafu', '5uppp', 'Skadj', 'Deansocool', 'Yetiapocalypse', 'DumbDog', 'dakotaz']","['Yetiapocalypse', 'itsHafu', 'Trainwreckstv', 'dakotaz', 'DumbDog', '5uppp', 'pokimane', 'Riot Games', 'AustinShow', 'Scarra']",10
+42974375,raizontr,RaizonTR,24687283,jorbs,jorbs,2021-02-08T08:34:14Z,1,290,"['bmkibler', 'Savjz', 'itsHafu', 'AsmodaiTV', 'dogdog', 'BasarCos', 'Alliestrasza', 'FabulousN', 'BoarControlHS']","['itsHafu', 'dogdog', 'nl_Kripp', 'AsmodaiTV', 'Amaz', 'LCK', 'BoarControlHS', 'bmkibler', 'imaqtpie', 'GMHikaru', 'Pobelter', 'Alliestrasza', 'pokimane', 'Riot Games', 'LCS', 'chessbrah', 'LexVeldhuis']",17
+627669187,midior2020,midior2020,24687283,jorbs,jorbs,2021-02-08T08:30:00Z,0,2,[],[],0
+130477934,splenetic_hs,Splenetic_HS,24687283,jorbs,jorbs,2021-02-08T08:29:28Z,1,88,"['AsmodaiTV', 'dogdog', 'Savjz', 'bmkibler', 'Alliestrasza', 'Arvius', 'Educated_Collins', 'BoarControlHS', 'FilthyRobot', 'Shadybunny', 'Grimfan', 'LSV', 'Slysssa', 'TidesofTime', 'itsHafu']","['itsHafu', 'dogdog', 'Arvius', 'nl_Kripp', 'AsmodaiTV', 'Slysssa', 'Magic', 'BoarControlHS', 'Educated_Collins', 'twlevewinsHS', 'Shadybunny', 'Alliestrasza', 'TidesofTime', 'LSV', 'bmkibler', 'FilthyRobot']",16
+62096162,thatunderaverageplayer,ThatUnderAveragePlayer,24687283,jorbs,jorbs,2021-02-08T08:08:31Z,1,500,"['TsunamiEX', 'DiaTech', 'itsHafu', 'bmkibler', 'AdmiralBahroo', 'Esotel1', 'Savjz', 'dogdog', 'TidesofTime', 'DansGaming', 'Draskyl', 'sips_', 'Alyska', 'Quin69', 'kevinjordan']","['ESL_PUBG', 'Aphromoo', 'AdmiralBahroo', 'superjj102', 'Draskyl', 'Scarra', 'Quin69', 'dogdog', 'nl_Kripp', 'Dyrus', 'imaqtpie', 'pokimane', 'LCS', 'Riot Games', 'bmkibler', 'sips_', 'itsHafu', 'Amaz', 'GMHikaru', 'TidesofTime']",20
+86972205,chill_dj4k,Chill_DJ4K,24687283,jorbs,jorbs,2021-02-08T08:02:32Z,1,500,"['Kronovi', 'DrumPunk100', 'ster', 'Rocky', 'dakotaz', 'itsHafu', 'DansGaming', 'AdmiralBahroo', 'emilyywang', 'dogdog', 'geenelly', 'fuslie']","['itsHafu', 'sjokz', 'dogdog', 'geenelly', 'keanelol', 'AdmiralBahroo', 'dakotaz', 'fuslie', 'TaliaMar', 'Pobelter', 'pokimane', 'TeaLex', 'LCS']",13
+195599774,impulsevita,ImpulseVita,24687283,jorbs,jorbs,2021-02-08T07:38:36Z,1,230,"['dakotaz', 'Risker', 'Kayuun', 'Naturesbf', 'itsHafu', 'emilyywang']","['Svennoss', 'itsHafu', 'DeliciousMilkGG', 'Naturesbf', 'keanelol', 'dakotaz', 'Doublelift', 'pokimane', 'Riot Games', 'Becca', 'Scarra']",11
+210793303,stoopsyshoots,stoopsyshoots,24687283,jorbs,jorbs,2021-02-08T07:37:27Z,1,214,['dakotaz'],"['dakotaz', 'LCK', 'pokimane', 'Riot Games', 'LCS']",5
+145999849,macadamio,macadamio,24687283,jorbs,jorbs,2021-02-08T07:30:59Z,1,53,['s2jfalcon'],[],0
+78679518,winter576,Winter576,24687283,jorbs,jorbs,2021-02-08T07:29:47Z,1,55,"['Tijoe', 'Celerity']","['nl_Kripp', 'Amaz', 'Celerity']",3
+29893349,z1lv3,z1lv3,24687283,jorbs,jorbs,2021-02-08T07:23:35Z,1,29,"['Arumba07', 'DansGaming', 'TerrenceMHS']","['LEC', 'Arumba07', 'Amaz', 'Florryworry', 'LCK', 'Riot Games', 'LCS']",7
+245855092,n0ted117,n0ted117,24687283,jorbs,jorbs,2021-02-08T07:11:30Z,1,60,"['aliensrock', 'FrostPrime_']",[],0
+125091196,myrandhir,myrandhir,24687283,jorbs,jorbs,2021-02-08T06:52:06Z,1,98,"['Smight', 'Haughington', 'SLEEPCYCLES', 'AdmiralBahroo', 'ProblemsIRL', 'Celerity', 'FilthyRobot', 'JankyJexal', 'haelian', 'Vorime', 'Wriste13', 'courtenberry']","['SLEEPCYCLES', 'Celerity', 'AdmiralBahroo', 'FilthyRobot']",4
+26792446,canaryumbrella,CanaryUmbrella,24687283,jorbs,jorbs,2021-02-08T06:23:24Z,0,1,[],[],0
+137236749,lolcryomaniac,lolcryomaniac,24687283,jorbs,jorbs,2021-02-08T06:11:46Z,1,29,['emilyywang'],['LCS'],1
+152073126,roku40573,roku40573,24687283,jorbs,jorbs,2021-02-08T06:08:31Z,1,17,['AsmodaiTV'],"['CeeCee_Lia', 'AsmodaiTV']",2
+47297457,mcspacky,Mcspacky,24687283,jorbs,jorbs,2021-02-08T05:50:22Z,1,133,"['PleaseWelcome', 'CalebDMTG', 'Quin69']","['Quin69', 'CalebDMTG', 'NASA', 'nl_Kripp', 'Magic', 'LCK', 'Warhammer', 'Riot Games']",8
+502875626,bardokutv,BardokuTV,24687283,jorbs,jorbs,2021-02-08T05:43:01Z,0,39,[],[],0
+74854651,jaunty411,Jaunty411,24687283,jorbs,jorbs,2021-02-08T05:31:49Z,1,202,"['Astrogation7', 'itsHafu', 'Blaustoise', 'emilyywang', 'Scott_Seiver']","['Aphromoo', 'keanelol', 'LCK', 'superjj102', 'Becca', 'runitoncepoker', 'Scarra', 'chess24', 'sjokz', 'LEC', 'DeliciousMilkGG', 'Magic', 'LCS', 'LexVeldhuis', 'Scott_Seiver', 'philgalfond', 'AOC', 'Riot Games', 'itsHafu', 'Chess']",20
+157069049,lowkeyhuy,lowkeyhuy,24687283,jorbs,jorbs,2021-02-08T05:24:04Z,1,77,"['Kayuun', 'itsHafu', 'Naturesbf']","['itsHafu', 'Naturesbf', 'keanelol', 'pokimane', 'Becca', 'Scarra']",6
+176138624,automationfor,automationfor,24687283,jorbs,jorbs,2021-02-08T05:21:04Z,1,174,"['Nomakk', 'SLEEPCYCLES', 'Arumba07', 'Lethalfrag', 'cl0wnt0wn', 'Disnof', 'KrillinTheKilla', 'PekinWoof', 'AsmodaiTV', 'Sinvicta', 'itsHafu']","['itsHafu', 'SLEEPCYCLES', 'sjokz', 'LEC', 'Disnof', 'Lethalfrag', 'Arumba07', 'Aphromoo', 'AsmodaiTV', 'AOC', 'LCK', 'Scarra', 'chocoTaco', 'Pobelter', 'JayMewes', 'Riot Games', 'LCS', 'desertbus']",18
+93876149,dblbug,dblbug,24687283,jorbs,jorbs,2021-02-08T05:16:14Z,0,30,[],['RaizQT'],1
+169838151,hardhittaah,HardHittaaH,24687283,jorbs,jorbs,2021-02-08T05:13:55Z,1,464,"['AIRWISBTS', 'Naturesbf', 'emilyywang']","['Naturesbf', 'Trainwreckstv', 'pokimane', 'Becca', 'AustinShow', 'LexVeldhuis']",6
+86359107,somnochrome,somnochrome,24687283,jorbs,jorbs,2021-02-08T05:02:11Z,1,77,"['DumbDog', 'dogdog', 'itsHafu']","['itsHafu', 'dogdog', 'Aphromoo', 'Doublelift', 'AOC', 'Limmy', 'DumbDog', 'GMHikaru', 'superjj102', 'Riot Games', 'LCS', 'Scarra']",12
+48457849,tozmab,Tozmab,24687283,jorbs,jorbs,2021-02-08T05:02:05Z,1,71,"['Savjz', 'Anti_Flame', 'Celerity', 'AsmodaiTV', 'itsHafu', 'dogdog', 'Lethalfrag']","['itsHafu', 'dogdog', 'LEC', 'Lethalfrag', 'AsmodaiTV', 'Celerity', 'Amaz', 'pokimane', 'Riot Games', 'LCS']",10
+550410595,shanehelp,shanehelp,24687283,jorbs,jorbs,2021-02-08T04:55:53Z,0,52,[],['pokimane'],1
+108992280,repressedzebra1,RepressedZebra1,24687283,jorbs,jorbs,2021-02-08T04:40:01Z,1,151,"['AsmodaiTV', 'BannHammR']","['AsmodaiTV', 'Amaz', 'Dyrus', 'Riot Games', 'LCS', 'AustinShow', 'Scarra']",7
+174072569,arcanocrystal,Arcanocrystal,24687283,jorbs,jorbs,2021-02-08T04:31:53Z,1,211,"['AdmiralBahroo', 'Quin69', 'dogdog', 'itsHafu', 'AnnieFuchsia']","['Quin69', 'itsHafu', 'dogdog', 'nl_Kripp', 'AdmiralBahroo', 'AnnieFuchsia', 'twlevewinsHS', 'NASA']",8
+72941507,ozal1ce,ozal1ce,24687283,jorbs,jorbs,2021-02-08T04:26:06Z,1,29,['Fafrd'],"['Doublelift', 'imaqtpie', 'Pobelter', 'GMHikaru', 'Riot Games', 'LCS']",6
+444146334,idgafomfglmfao,idgafomfglmfao,24687283,jorbs,jorbs,2021-02-08T04:22:46Z,1,101,"['Quin69', 'DonTheCrown']","['Quin69', 'Trainwreckstv', 'imaqtpie', 'RaizQT']",4
+143069779,wanito,Wanito,24687283,jorbs,jorbs,2021-02-08T04:05:55Z,1,126,['Fareeha'],"['Chess', 'AOC']",2
+172570591,mrkardos,mrkardos,24687283,jorbs,jorbs,2021-02-08T03:48:12Z,1,23,"['Alliestrasza', 'Savjz']",['Alliestrasza'],1
+164888112,slicedown,Slicedown,24687283,jorbs,jorbs,2021-02-08T03:44:24Z,0,83,[],"['DeliciousMilkGG', 'pokimane', 'Riot Games', 'Becca', 'Scarra']",5
+29137526,drayfas,Drayfas,24687283,jorbs,jorbs,2021-02-08T03:43:55Z,1,149,"['DarkTwinge', 'sips_', 'dogdog', 'Shadybunny', 'AsmodaiTV', 'pheylop', 'itsHafu', 'bmkibler', 'dreads', 'WobbleWeezy', 'Merl61']","['WobbleWeezy', 'itsHafu', 'dogdog', 'nl_Kripp', 'AsmodaiTV', 'Amaz', 'DarkTwinge', 'Shadybunny', 'superjj102', 'bmkibler', 'sips_']",11
+484530543,0yoi,0yoi,24687283,jorbs,jorbs,2021-02-08T03:27:13Z,1,7,['jrm1ah'],[],0
+102181206,stonzytv,Stonzytv,24687283,jorbs,jorbs,2021-02-08T03:24:20Z,1,184,"['Kronovi', 'dakotaz', 'Quin69', 'dogdog']","['Quin69', 'Svennoss', 'dogdog', 'LEC', 'ESL_PUBG', 'PUBG', 'dakotaz', 'LCK', 'Dyrus', 'Riot Games', 'LCS']",11
+74982944,elsuperprofe,ElSuperProfe,24687283,jorbs,jorbs,2021-02-08T03:19:08Z,1,91,"['DansGaming', 'Draskyl', 'Lethalfrag', 'DiaTech']","['Draskyl', 'Lethalfrag']",2
+63611763,pingsofthepeople,pingsofthepeople,24687283,jorbs,jorbs,2021-02-08T03:14:17Z,1,77,"['itsHafu', '5uppp', 'Baalorlord']","['itsHafu', 'Aphromoo', 'Doublelift', 'AOC', 'LCK', 'MonteCristo', 'Baalorlord', 'imaqtpie', 'OGNEsports', '5uppp', 'Riot Games', 'LCS']",12
+647505347,aapw_97,aapw_97,24687283,jorbs,jorbs,2021-02-08T03:13:13Z,0,2,[],[],0
+30174909,mrquackerslol,MrQuackerslol,24687283,jorbs,jorbs,2021-02-08T03:02:28Z,1,167,"['TidesofTime', 'itsHafu', 'bmkibler', 'pocketstream', 'dakotaz', 'dogdog', 'edisonparklive', 'Quin69', '5uppp']","['keanelol', '5uppp', 'Becca', 'Scarra', 'Quin69', 'dogdog', 'Doublelift', 'Dyrus', 'imaqtpie', 'Pobelter', 'pokimane', 'edisonparklive', 'LCS', 'LexVeldhuis', 'dakotaz', 'OGNEsports', 'Riot Games', 'bmkibler', 'AustinShow', 'itsHafu', 'GMHikaru', 'TidesofTime']",22
+26138883,subsubl1me,subSubl1me,24687283,jorbs,jorbs,2021-02-08T02:59:25Z,1,424,"['Temp0', 'LuminousInverse', 'iNcontroLTV', 'Kronovi', 'itsHafu', 'dogdog']","['itsHafu', 'dogdog', 'AOC', 'Chess', 'GMHikaru', 'iNcontroLTV', 'TastelessTV', 'Becca', 'chessbrah']",9
+187923454,vzmuric,vzmuric,24687283,jorbs,jorbs,2021-02-08T02:50:59Z,1,35,['ster'],['itsHafu'],1
+175381830,lexicondevil_,lexicondevil_,24687283,jorbs,jorbs,2021-02-08T02:07:07Z,1,25,['Nodeps'],"['chocoTaco', 'keanelol']",2
+50766845,hikier,hikier,24687283,jorbs,jorbs,2021-02-08T02:00:06Z,1,43,"['AdmiralBahroo', 'Savjz', 'DansGaming', 'bmkibler', 'TidesofTime', 'AsmodaiTV', 'Aluco', 'Lethalfrag', '5uppp', 'dakotaz']","['Lethalfrag', 'AsmodaiTV', 'AdmiralBahroo', 'Amaz', 'dakotaz', '5uppp', 'TidesofTime', 'bmkibler']",8
+584485945,timberdemonn,TimberdemoNN,24687283,jorbs,jorbs,2021-02-08T01:59:35Z,0,23,[],['Doublelift'],1
+82188670,hellsbane80,Hellsbane80,24687283,jorbs,jorbs,2021-02-08T01:55:09Z,1,86,"['dogdog', 'itsHafu', 'Baalorlord', 'TerrenceMHS']","['itsHafu', 'dogdog', 'LEC', 'keanelol', 'Doublelift', 'LCK', 'Dyrus', 'Fandom', 'Baalorlord', 'superjj102', 'Riot Games', 'LCS', 'Scarra']",13
+21939594,duckdrive86,DuckDrive86,24687283,jorbs,jorbs,2021-02-08T01:53:52Z,1,93,['Lethalfrag'],['Lethalfrag'],1
+23009665,dervishnihil,DervishNihil,24687283,jorbs,jorbs,2021-02-08T01:53:26Z,0,11,[],['nl_Kripp'],1
+29816612,keldryn,Keldryn,24687283,jorbs,jorbs,2021-02-08T01:33:15Z,1,239,"['GabySpartz', 'bmkibler']","['keanelol', 'Magic', 'LCK', 'Dyrus', 'GabySpartz', 'Riot Games', 'bmkibler']",7
+407696129,recursor42,recursor42,24687283,jorbs,jorbs,2021-02-08T01:20:37Z,0,7,[],['BeagsAndJam'],1
+55694195,matenoia,matenoia,24687283,jorbs,jorbs,2021-02-08T01:05:37Z,1,70,"['BoarControlHS', 'dogdog', 'dreads']","['dogdog', 'Amaz', 'LCS', 'BoarControlHS', 'pokimane', 'Riot Games', 'Becca']",7
+59915829,billricardi,billricardi,24687283,jorbs,jorbs,2021-02-08T00:55:51Z,1,27,"['CalebDMTG', 'StunlockFTW', 'Snow_Schwartz']","['Becca', 'CalebDMTG']",2
+133824113,8diti,8DiTi,24687283,jorbs,jorbs,2021-02-08T00:42:59Z,0,37,[],"['pokimane', 'Riot Games', 'imaqtpie', 'Doublelift']",4
+113876874,dexgrobar,dexgrobar,24687283,jorbs,jorbs,2021-02-08T00:41:44Z,1,77,"['Draskyl', 'AdmiralBahroo', 'Arumba07', 'KenseiTV']","['Arumba07', 'Florryworry', 'AdmiralBahroo', 'Draskyl']",4
+647456467,osana_chan_,osana_chan_,24687283,jorbs,jorbs,2021-02-08T00:09:47Z,0,9,[],[],0
+647454697,kovac_whichistaken,kovac_whichistaken,24687283,jorbs,jorbs,2021-02-08T00:04:53Z,0,11,[],[],0
+644666077,2_japzn_sofiya,2_japzn_sofiya,24687283,jorbs,jorbs,2021-02-08T00:03:49Z,0,1,[],[],0
+647454152,lxvash,lxvash,24687283,jorbs,jorbs,2021-02-08T00:00:14Z,0,18,[],[],0
+97039759,kaldawins,kaldawins,24687283,jorbs,jorbs,2021-02-07T23:59:34Z,1,43,"['bmkibler', 'GabySpartz', 'nicholena', 'Alliestrasza', 'itsHafu', 'Slysssa', 'Savjz', '5uppp', 'dogdog']","['itsHafu', 'dogdog', 'nl_Kripp', 'Alliestrasza', 'Slysssa', 'GabySpartz', 'nicholena', '5uppp', 'bmkibler']",9
+647452860,i_simp_for_anime_charters,i_simp_for_anime_charters,24687283,jorbs,jorbs,2021-02-07T23:56:08Z,0,4,[],[],0
+647452371,puggo123456789,puggo123456789,24687283,jorbs,jorbs,2021-02-07T23:54:33Z,0,12,[],[],0
+647451374,lockable_cartridge1,lockable_cartridge1,24687283,jorbs,jorbs,2021-02-07T23:51:06Z,0,12,[],[],0
+647059703,brekmoven,brekmoven,24687283,jorbs,jorbs,2021-02-07T23:44:36Z,0,14,[],[],0
+615483778,prohod_newton,prohod_newton,24687283,jorbs,jorbs,2021-02-07T23:40:03Z,0,11,[],[],0
+647446205,benrahma,benrahma,24687283,jorbs,jorbs,2021-02-07T23:30:25Z,0,6,[],[],0
+647440523,gamer414870,gamer414870,24687283,jorbs,jorbs,2021-02-07T23:11:54Z,0,11,[],[],0
+611087451,salinesoiution,salinesoiution,24687283,jorbs,jorbs,2021-02-07T23:11:53Z,0,45,[],[],0
+647440258,calebjensen1,calebjensen1,24687283,jorbs,jorbs,2021-02-07T23:11:22Z,0,56,[],[],0
+647437515,beckybogz,beckybogz,24687283,jorbs,jorbs,2021-02-07T23:00:45Z,0,3,[],['Baalorlord'],1
+647433805,chicken_nugget_5289,chicken_nugget_5289,24687283,jorbs,jorbs,2021-02-07T22:57:44Z,0,5,[],[],0
+76340723,chillajustplay,ChillaJustPlay,24687283,jorbs,jorbs,2021-02-07T22:49:27Z,1,43,"['AdmiralBahroo', 'Quin69', 'dogdog', 'TidesofTime']","['Quin69', 'dogdog', 'nl_Kripp', 'AdmiralBahroo', 'Doublelift', 'TidesofTime', 'Riot Games']",7
+405563575,tavirawr,TaviRawr,24687283,jorbs,jorbs,2021-02-07T22:49:06Z,1,89,"['Lethalfrag', 'Fitzyhere']","['Fitzyhere', 'Lethalfrag']",2
+647431919,hamzakb01,hamzakb01,24687283,jorbs,jorbs,2021-02-07T22:45:30Z,0,101,[],[],0
+647427270,random____1,random____1,24687283,jorbs,jorbs,2021-02-07T22:41:20Z,0,61,[],[],0
+647429114,jimmyswindellsgmail,jimmyswindellsgmail,24687283,jorbs,jorbs,2021-02-07T22:35:10Z,0,13,[],[],0
+647427177,lexiwinter1,lexiwinter1,24687283,jorbs,jorbs,2021-02-07T22:34:32Z,0,4,[],[],0
+647427094,iahteyou,iahteyou,24687283,jorbs,jorbs,2021-02-07T22:33:29Z,0,2,[],[],0
+647428378,matveijaryj,matveijaryj,24687283,jorbs,jorbs,2021-02-07T22:30:53Z,0,4,[],[],0
+647427411,skb91id,skb91id,24687283,jorbs,jorbs,2021-02-07T22:29:07Z,0,12,[],[],0
+154974830,funnytimesforfunnyguys,funnytimesforfunnyguys,24687283,jorbs,jorbs,2021-02-07T22:17:53Z,1,10,"['bmkibler', 'dogdog']","['nl_Kripp', 'dogdog', 'bmkibler']",3
+592667226,kateeeeeeeee_,kateeeeeeeee_,24687283,jorbs,jorbs,2021-02-07T22:16:39Z,1,79,['5uppp'],"['5uppp', 'pokimane', 'Trainwreckstv', 'AustinShow']",4
+647422977,golfy627827726,golfy627827726,24687283,jorbs,jorbs,2021-02-07T22:15:01Z,0,13,[],[],0
+647421635,bomber36542,bomber36542,24687283,jorbs,jorbs,2021-02-07T22:10:45Z,0,11,[],[],0
+647420818,danielle123love,danielle123love,24687283,jorbs,jorbs,2021-02-07T22:09:05Z,0,5,[],[],0
+236660422,mashbawttt,mashbawttt,24687283,jorbs,jorbs,2021-02-07T22:08:42Z,1,34,"['DansGaming', 'Arumba07', 'Quin69']","['Arumba07', 'Quin69']",2
+45788981,pyrosq,PyroSQ,24687283,jorbs,jorbs,2021-02-07T22:03:53Z,1,19,"['bmkibler', 'itsHafu']","['nl_Kripp', 'BeagsAndJam', 'bmkibler', 'itsHafu']",4
+32932352,echo63,Echo63,24687283,jorbs,jorbs,2021-02-07T22:02:32Z,1,204,"['MegaZeroLoL', 'Lethalfrag', 'chimpakt', 'itsHafu']","['itsHafu', 'Lethalfrag', 'Aphromoo', 'nl_Kripp', 'Amaz', 'Doublelift', 'Dyrus', 'Riot Games', 'chessbrah', 'Scarra']",10
+38413261,brokolama,Brokolama,24687283,jorbs,jorbs,2021-02-07T22:01:35Z,1,152,"['Lethalfrag', 'Kronovi', 'Savjz', 'Crowrevell', 'Goblin_Juggler', 'the_farb', 'Smight', 'FilthyRobot', 'Disnof', 'Indrek', 'LuckyLuckLuc2', 'Arvius', 'kevinjordan']","['chess24', 'Disnof', 'Lethalfrag', 'Arvius', 'nl_Kripp', 'Amaz', 'Yoruus', 'Chess', 'GMHikaru', 'Indrek', 'FilthyRobot', 'chessbrah']",12
+504423941,idontknowuss,idontknowuss,24687283,jorbs,jorbs,2021-02-07T21:56:37Z,1,61,"['Quin69', 'AdmiralBahroo']","['Quin69', 'AdmiralBahroo', 'Trainwreckstv', 'pokimane', 'NASA']",5
+647416060,awakentgyt,awakentgyt,24687283,jorbs,jorbs,2021-02-07T21:55:24Z,1,42,"['itsHafu', 'DumbDog']","['itsHafu', 'DumbDog', 'quqco']",3
+591480793,xaltaxas,Xaltaxas,24687283,jorbs,jorbs,2021-02-07T21:53:14Z,0,22,[],[],0
+647064281,bolachadearroz,bolachadearroz,24687283,jorbs,jorbs,2021-02-07T21:49:59Z,0,28,[],[],0
+639045970,ianninja10,ianninja10,24687283,jorbs,jorbs,2021-02-07T21:46:22Z,0,17,[],[],0
+647411701,the15jd,the15jd,24687283,jorbs,jorbs,2021-02-07T21:46:00Z,0,32,[],[],0
+647408127,matigofer123456,matigofer123456,24687283,jorbs,jorbs,2021-02-07T21:33:46Z,0,20,[],[],0
+43744489,narcilus,narcilus,24687283,jorbs,jorbs,2021-02-07T21:17:34Z,1,21,"['BabaYetu_', 'dogdog', 'SaphirexX', 'Baalorlord']","['BabaYetu_', 'Baalorlord', 'dogdog']",3
+647401814,kingsharkoo,kingsharkoo,24687283,jorbs,jorbs,2021-02-07T21:16:10Z,1,83,"['dakotaz', 'DumbDog']","['Dyrus', 'DumbDog', 'dakotaz']",3
+647079183,ahmed_moussa2508,ahmed_moussa2508,24687283,jorbs,jorbs,2021-02-07T21:05:20Z,1,18,['DumbDog'],['DumbDog'],1
+647393475,aventadorsvjroadster,aventadorsvjroadster,24687283,jorbs,jorbs,2021-02-07T20:57:02Z,0,5,[],[],0
+647387489,guccicameronc69,guccicameronc69,24687283,jorbs,jorbs,2021-02-07T20:45:46Z,1,56,"['itsHafu', 'dakotaz', 'DumbDog']","['itsHafu', 'DumbDog', 'dakotaz']",3
+206449583,hoodletv,HOODLETV,24687283,jorbs,jorbs,2021-02-07T20:44:15Z,1,208,['DansGaming'],[],0
+480758285,danisdigital,danisdigital,24687283,jorbs,jorbs,2021-02-07T20:43:39Z,1,72,"['sips_', 'AdmiralBahroo']","['AdmiralBahroo', 'sips_']",2
+647385925,mamamorainbow,mamamorainbow,24687283,jorbs,jorbs,2021-02-07T20:36:32Z,0,39,[],"['Riot Games', 'imaqtpie', 'LCS']",3
+157025922,komiker56,komiker56,24687283,jorbs,jorbs,2021-02-07T20:36:05Z,1,7,"['sneakyteak', 'moneymoneyloot', 'Baalorlord', 'jrm1ah']",['Baalorlord'],1
+63007325,badburd,BadBurd,24687283,jorbs,jorbs,2021-02-07T18:50:33Z,1,103,"['GhettoThunder', 'GeoRacer', 'Disnof', 'AdmiralBahroo']","['DumbDog', 'AdmiralBahroo', 'Disnof']",3
+39727465,denningk,denningk,24687283,jorbs,jorbs,2021-02-07T18:18:39Z,1,141,"['Draskyl', 'AdmiralBahroo']","['LEC', 'Aphromoo', 'AdmiralBahroo', 'LCK', 'LCS', 'MonteCristo', 'imaqtpie', 'TastelessTV', 'Riot Games', 'Draskyl']",10
+126355591,freddschultz,FreddSchultz,24687283,jorbs,jorbs,2021-02-07T18:15:23Z,1,39,"['SLEEPCYCLES', 'DumbDog', 'Wolfabelle', 'itsHafu']","['itsHafu', 'SLEEPCYCLES', 'Doublelift', 'LCK', 'DumbDog', 'Wolfabelle', 'Riot Games', 'Scarra']",8
+54643201,washeranddwyer,WasherAndDwyer,24687283,jorbs,jorbs,2021-02-07T18:01:34Z,1,79,['AdmiralBahroo'],"['Badger', 'LEC', 'Aphromoo', 'AdmiralBahroo', 'Doublelift', 'LCS', 'Dyrus', 'imaqtpie', 'Riot Games', 'Becca']",10
+26074607,cryogos,Cryogos,24687283,jorbs,jorbs,2021-02-07T17:07:42Z,1,38,['DansGaming'],[],0
+208889076,lktiley,lktiley,24687283,jorbs,jorbs,2021-02-07T16:08:46Z,1,33,"['aliensrock', 'freyzplayz', '5uppp']","['5uppp', 'Amaz', 'TaliaMar', 'freyzplayz']",4
+647250674,manchildsts,manchildsts,24687283,jorbs,jorbs,2021-02-07T15:07:03Z,1,4,['TerrenceMHS'],['Baalorlord'],1
+108309924,iamfjt,iamfjt,24687283,jorbs,jorbs,2021-02-07T13:16:00Z,1,25,"['dogdog', 'Savjz', 'Quin69', 'dakotaz', 'AdmiralBahroo']","['Quin69', 'dogdog', 'nl_Kripp', 'AdmiralBahroo', 'dakotaz', 'superjj102']",6
+117628335,vesperstarr,vesperstarr,24687283,jorbs,jorbs,2021-02-07T13:11:13Z,1,86,"['Pathra', 'Alliestrasza', 'Fitzyhere', 'TidesofTime']","['nl_Kripp', 'Pathra', 'Fitzyhere', 'Alliestrasza', 'TidesofTime']",5
+61534959,specter27,Specter27,24687283,jorbs,jorbs,2021-02-07T12:49:14Z,0,24,[],[],0
+47369885,levtrinxii,LevTrinXII,24687283,jorbs,jorbs,2021-02-07T12:40:42Z,1,75,"['LeagueofGeeks', 'ExtraCredits', 'DansGaming']","['Amaz', 'LEC']",2
+67611890,pschbb12,피에쓰씨,24687283,jorbs,jorbs,2021-02-07T10:49:10Z,0,4,[],[],0
+96021665,ovoshman,Ovoshman,24687283,jorbs,jorbs,2021-02-07T10:18:23Z,1,20,"['jesuisBuzz', 'fauxintel']",[],0
+119035257,tempusvenator,tempusvenator,24687283,jorbs,jorbs,2021-02-07T09:00:13Z,0,49,[],[],0
+451382072,sirdilbet,SirDilbet,24687283,jorbs,jorbs,2021-02-07T07:56:16Z,1,9,['aliensrock'],[],0
+232241663,graphicviolins,graphicviolins,24687283,jorbs,jorbs,2021-02-07T07:43:38Z,1,15,"['AsmodaiTV', 'Savjz', 'dogdog']","['AsmodaiTV', 'dogdog']",2
+609135433,beeeses,beeeses,24687283,jorbs,jorbs,2021-02-07T06:51:54Z,0,12,[],[],0
+533125095,vyruwu,Vyruwu,24687283,jorbs,jorbs,2021-02-07T06:09:58Z,1,12,['EladDifficult'],[],0
+171300769,vadimpruzhanov,VadimPruzhanov,24687283,jorbs,jorbs,2021-02-07T04:29:16Z,1,84,['CallMeMast'],[],0
+647068603,fleetingsheep,fleetingsheep,24687283,jorbs,jorbs,2021-02-07T02:02:04Z,0,1,[],[],0
+57700990,goldacious,Goldacious,24687283,jorbs,jorbs,2021-02-07T01:04:24Z,0,3,[],['Limmy'],1
+121796929,rawpwn,RAWPWN,24687283,jorbs,jorbs,2021-02-07T00:08:15Z,1,72,"['SimCopter1', 'DansGaming', 'DiaTech', 'Geef', 'AdmiralBahroo', 'Bloody', 'Etalyx']","['SimCopter1', 'BitterBits', 'AdmiralBahroo', 'Bloody']",4
+157653277,tomycrab,tomycrab,24687283,jorbs,jorbs,2021-02-07T00:03:56Z,1,12,['haelian'],['imaqtpie'],1
+195262225,niechcic,Niechcic,24687283,jorbs,jorbs,2021-02-06T23:20:59Z,0,12,[],"['Baalorlord', 'chessbrah']",2
+195560776,vongolealvapore,vongolealvapore,24687283,jorbs,jorbs,2021-02-06T23:18:20Z,1,12,['LSV'],['LSV'],1
+53406816,zouuek_,zouuek_,24687283,jorbs,jorbs,2021-02-06T22:45:36Z,0,50,[],"['Riot Games', 'LEC']",2
+610712308,imnuckingfoob,ImNuckingFoob,24687283,jorbs,jorbs,2021-02-06T22:17:11Z,0,2,[],[],0
+646929853,sneckobeko,sneckobeko,24687283,jorbs,jorbs,2021-02-06T21:36:26Z,0,2,[],[],0
+177551223,4amdonuts,4AMDonuts,24687283,jorbs,jorbs,2021-02-06T21:21:14Z,1,104,"['bmkibler', 'itsHafu', 'dogdog', 'Fitzyhere', 'Savjz', 'Fareeha', 'GoingOptimal', 'GabySpartz', 'LSV', 'FilthyRobot', 'mattnass', 'CalebDMTG', 'FFfreakMTG', 'SergeYager', 'Bloody', 'Mullibok', 'Arumba07', 'Marshall_LR', 'abaeckstrom', 'Samuelhblack', 'k_prinz', 'Voxy']","['CalebDMTG', 'Arumba07', 'GabySpartz', 'Fandom', 'LSV', 'desertbus', 'Scarra', 'dogdog', 'nl_Kripp', 'Magic', 'Dyrus', 'Fitzyhere', 'yellowhat', 'Bloody', 'bmkibler', 'FilthyRobot', 'ArenaDecklists', 'itsHafu', 'Amaz']",19
+224852652,applemandude,applemandude,24687283,jorbs,jorbs,2021-02-06T21:13:25Z,1,30,['CallMeMast'],[],0
+43106682,tkrustle,tkRustle,24687283,jorbs,jorbs,2021-02-06T20:36:48Z,1,17,['5uppp'],"['5uppp', 'Amaz']",2
+632522648,merricatb,merricatb,24687283,jorbs,jorbs,2021-02-06T20:36:41Z,0,2,[],[],0
+79085195,lung000000,lung000000,24687283,jorbs,jorbs,2021-02-06T20:27:50Z,1,43,"['dogdog', 'itsHafu', 'WobbleWeezy', 'Savjz', 'JessicaMunchdown', 'Baalorlord']","['WobbleWeezy', 'itsHafu', 'dogdog', 'JessicaMunchdown', 'nl_Kripp', 'Amaz', 'CeeCee_Lia', 'Baalorlord', 'superjj102', 'Riot Games', 'LCS']",11
+609302812,yoggsarontheunpredictable,yoggsarontheunpredictable,24687283,jorbs,jorbs,2021-02-06T20:26:56Z,1,23,"['Dekkster', 'Roffle', 'bmkibler', 'FrostPrime_']","['Dekkster', 'bmkibler']",2
+91616625,bookius,Bookius,24687283,jorbs,jorbs,2021-02-06T20:17:21Z,1,278,"['AdmiralBahroo', 'DansGaming', 'Savjz', 'TidesofTime', 'itsHafu', 'haelian', 'courtenberry']","['itsHafu', 'dogdog', 'Amaz', 'AdmiralBahroo', 'Chess', 'TidesofTime']",6
+132391049,jocelm,jocelm,24687283,jorbs,jorbs,2021-02-06T20:10:30Z,1,52,"['Marshall_LR', 'GabySpartz', 'GoingOptimal', 'CalebDMTG', 'Samuelhblack', 'mattnass', 'LSV']","['CalebDMTG', 'Magic', 'GabySpartz', 'LSV', 'FiraxisGames', 'yellowhat']",6
+63188132,dxnxex,Dxnxex,24687283,jorbs,jorbs,2021-02-06T20:07:18Z,1,75,"['Savjz', 'bmkibler']","['Amaz', 'bmkibler']",2
+179524995,linkam_,linkAM_,24687283,jorbs,jorbs,2021-02-06T20:06:14Z,1,69,['DJNattie'],['LCK'],1
+49088841,morinus,Morinus,24687283,jorbs,jorbs,2021-02-06T19:56:47Z,1,26,"['SimCopter1', 'Arvius', 'Celerity', 'AdmiralBahroo', 'LSV']","['Arvius', 'AdmiralBahroo', 'Celerity', 'Magic', 'SimCopter1', 'LSV']",6
+86368714,iiiliss,Iiiliss,24687283,jorbs,jorbs,2021-02-06T19:44:49Z,1,67,"['Savjz', '식빵월드', '중괄호']",[],0
+84412420,nicchu1997,nicchu1997,24687283,jorbs,jorbs,2021-02-06T19:43:33Z,0,16,[],"['nl_Kripp', 'Amaz']",2
+50684962,lopad97,lopad97,24687283,jorbs,jorbs,2021-02-06T19:26:25Z,1,59,['Fitzyhere'],"['LEC', 'LCK', 'Fitzyhere', 'Riot Games', 'LCS']",5
+558318188,massiveblackhole2,massiveblackhole2,24687283,jorbs,jorbs,2021-02-06T19:22:51Z,1,11,"['grobobobo', 'Ronar1', 'foyboy']","['Ronar1', 'BeagsAndJam']",2
+92377894,edonos,edonos,24687283,jorbs,jorbs,2021-02-06T19:21:20Z,1,53,"['ProblemsIRL', 'NuRelic', 'Cyber_1', 'BrainTM', 'Celerity']","['BrainTM', 'Celerity', 'imaqtpie', 'Riot Games']",4
+49222201,lokio991,Lokio991,24687283,jorbs,jorbs,2021-02-06T19:15:29Z,1,180,"['AdmiralBahroo', 'itsHafu', 'BrainTM', 'Un33D', 'fuslie', 'dogdog', 'Keuhn']","['itsHafu', 'dogdog', 'nl_Kripp', 'Amaz', 'AdmiralBahroo', 'BrainTM', 'fuslie', 'pokimane', 'Scarra']",9
+20640546,licid,Licid,24687283,jorbs,jorbs,2021-02-06T19:15:20Z,1,283,"['bmkibler', 'ZennithGP', 'MattiasNL', 'itsHafu', 'AdmiralBahroo', 'Temp0', 'FilthyRobot', 'MattOblivium', 'nhi_pham', 'Savjz', 'DonTheCrown', 'Quin69', 'MTGNerdGirl', 'Voxy', 'CalebDMTG', 'GoingOptimal']","['Quin69', 'itsHafu', 'MTGNerdGirl', 'CalebDMTG', 'nl_Kripp', 'Amaz', 'AdmiralBahroo', 'FrankLepore', 'Magic', 'bmkibler', 'chocoTaco', 'superjj102', 'LexVeldhuis', 'FilthyRobot']",14
+176838070,issacchun1990,issacchun1990,24687283,jorbs,jorbs,2021-02-06T19:12:12Z,0,9,[],"['Amaz', 'LCK']",2
+39244118,ereth322,Ereth322,24687283,jorbs,jorbs,2021-02-06T19:04:30Z,1,366,"['iNcontroLTV', 'itsHafu', 'dogdog', 'Kronovi', 'Quin69', 'Savjz', 'holyspagetty', 'TheCrimsonBlur', 'AsmodaiTV', 'vegetablebread', 'FrostPrime_', 'voyix64']","['Quin69', 'itsHafu', 'dogdog', 'LEC', 'nl_Kripp', 'AsmodaiTV', 'AOC', 'LCK', 'Dyrus', 'twlevewinsHS', 'imaqtpie', 'Chess', 'GMHikaru', 'iNcontroLTV', 'Riot Games', 'LCS']",16
+156007670,gergelim2201200,Gergelim2201200,24687283,jorbs,jorbs,2021-02-06T18:59:09Z,1,189,"['Alliestrasza', 'bmkibler', 'Fareeha', 'fuslie', 'FerociouslySteph', 'Bloody', '5uppp', 'Kronovi', 'dogdog']","['dogdog', 'nl_Kripp', 'Amaz', 'bmkibler', 'fuslie', 'GMHikaru', 'Bloody', 'Alliestrasza', 'pokimane', 'Riot Games', '5uppp', 'Scarra']",12
+67905357,i_am_bakaaa,i_am_bakaaa,24687283,jorbs,jorbs,2021-02-06T18:50:27Z,1,173,"['Savjz', 'AsmodaiTV', 'control', 'fuslie', 'itsHafu']","['itsHafu', 'Aphromoo', 'nl_Kripp', 'AsmodaiTV', 'Amaz', 'imaqtpie', 'fuslie', 'GMHikaru', 'pokimane', 'Riot Games', 'Scarra']",11
+203329950,morganagrom1,morganagrom1,24687283,jorbs,jorbs,2021-02-06T18:49:33Z,1,4,['LSV'],['LSV'],1
+135878661,salihzzz,salihzzz,24687283,jorbs,jorbs,2021-02-06T18:47:03Z,0,10,[],"['nl_Kripp', 'Amaz']",2
+29047159,salyir,Salyir,24687283,jorbs,jorbs,2021-02-06T18:45:11Z,1,48,"['CalebDMTG', 'aliensrock']","['CalebDMTG', 'nl_Kripp', 'Amaz', 'Magic', 'Dyrus', 'Riot Games']",6
+182277243,q01649681,q01649681,24687283,jorbs,jorbs,2021-02-06T18:44:58Z,1,75,"['mattnass', 'LSV', 'Bloody', 'dogdog', 'Levunga21']","['dogdog', 'Amaz', 'CeeCee_Lia', 'Magic', 'Fandom', 'Bloody', 'LSV', 'yellowhat']",8
+108117546,cjboooosh,cjboooosh,24687283,jorbs,jorbs,2021-02-06T18:40:50Z,1,10,['Baalorlord'],['Baalorlord'],1
+157755269,chaosvii_,chaosvii_,24687283,jorbs,jorbs,2021-02-06T18:40:46Z,0,20,[],[],0
+85046380,fleib,Fleib,24687283,jorbs,jorbs,2021-02-06T18:40:28Z,1,223,"['rrReyn', 'dogdog', 'AsmodaiTV', 'Markhaim', 'Savjz', 'MerlinChess', 'WarlockTD', '중괄호', 'BoarControlHS']","['dogdog', 'AsmodaiTV', 'Amaz', 'BoarControlHS', 'superjj102']",5
+132657358,monkeyman6938,monkeyman6938,24687283,jorbs,jorbs,2021-02-06T18:28:05Z,1,60,"['Lethalfrag', 'BrainTM']","['pokimane', 'BrainTM', 'AustinShow', 'Lethalfrag']",4
+24419139,macaqued,Macaqued,24687283,jorbs,jorbs,2021-02-06T18:21:29Z,1,36,"['Draskyl', 'HCJustin', 'Arumba07', 'kevinjordan']","['Arumba07', 'Draskyl']",2
+106114033,mathiasx21,mathiasx21,24687283,jorbs,jorbs,2021-02-06T18:21:21Z,0,21,[],"['Amaz', 'Riot Games']",2
+646804015,charlestonw,charlestonw,24687283,jorbs,jorbs,2021-02-06T18:15:41Z,1,123,"['Quin69', '5uppp', 'AdmiralBahroo', 'dakotaz']","['Quin69', 'nl_Kripp', 'AsmodaiTV', 'AdmiralBahroo', 'Trainwreckstv', 'dakotaz', '5uppp', 'sips_']",8
+452302509,myvariablename,myvariablename,24687283,jorbs,jorbs,2021-02-06T18:11:53Z,0,10,[],['ProGamerJenny'],1
+61868862,x3n0gears,x3n0gears,24687283,jorbs,jorbs,2021-02-06T18:09:22Z,1,42,"['Savjz', 'itsHafu', 'TidesofTime', 'Celerity']","['itsHafu', 'Amaz', 'Celerity', 'TidesofTime', 'superjj102']",5
+424554863,snowblu,SnowBlu,24687283,jorbs,jorbs,2021-02-06T18:01:03Z,0,4,[],['GMHikaru'],1
+214217406,mildew_sampler,mildew_sampler,24687283,jorbs,jorbs,2021-02-06T17:54:09Z,0,13,[],[],0
+425140134,worldrunnerhigh,worldrunnerhigh,24687283,jorbs,jorbs,2021-02-06T17:53:09Z,0,2,[],[],0
+36475277,touchingpriests,Touchingpriests,24687283,jorbs,jorbs,2021-02-06T17:49:09Z,1,27,['Celerity'],"['Celerity', 'Riot Games', 'LEC', 'LCS']",4
+96299025,hos_zn,hos_zn,24687283,jorbs,jorbs,2021-02-06T17:47:59Z,1,129,"['DansGaming', 'Savjz', 'dogdog', 'AsmodaiTV', 'WobbleWeezy', 'itsHafu']","['WobbleWeezy', 'itsHafu', 'dogdog', 'nl_Kripp', 'AsmodaiTV', 'Amaz', 'superjj102']",7
+490030333,feelsbadman5181,feelsbadman5181,24687283,jorbs,jorbs,2021-02-06T17:38:50Z,0,15,[],"['Amaz', 'dogdog', 'Doublelift']",3
+122195632,pedrobiagioni,pedrobiagioni,24687283,jorbs,jorbs,2021-02-06T17:37:34Z,1,57,"['Arumba07', 'FrostPrime_']","['Arumba07', 'pokimane', 'Baalorlord']",3
+95720288,mattyboix,MattyBoix,24687283,jorbs,jorbs,2021-02-06T17:20:37Z,1,103,"['fuslie', 'edisonparklive', 'Baalorlord', 'TheCrimsonBlur', 'itsHafu']","['itsHafu', 'Aphromoo', 'edisonparklive', 'Doublelift', 'Dyrus', 'Baalorlord', 'fuslie', 'Trainwreckstv', 'pokimane', 'Riot Games', 'LCS', 'AustinShow', 'Scarra']",13
+645408133,lunaticbeans,lunaticbeans,24687283,jorbs,jorbs,2021-02-06T17:16:57Z,1,8,['Baalorlord'],"['Baalorlord', 'GMHikaru']",2
+129436796,leodurlevant,Leodurlevant,24687283,jorbs,jorbs,2021-02-06T17:05:48Z,1,45,"['Disnof', 'Billy1Kirby', 'Arvius', 'FilthyRobot', 'plbrta']","['Disnof', 'Arvius', 'plbrta', 'OGNEsports', 'FilthyRobot']",5
+39884944,the_mv7,the_mv7,24687283,jorbs,jorbs,2021-02-06T17:03:07Z,1,468,"['itsHafu', 'dogdog', 'Shadybunny', 'Educated_Collins', 'bmkibler', 'dreads', 'AsmodaiTV', 'TidesofTime', 'BoarControlHS', 'RedBeard']","['AsmodaiTV', 'keanelol', 'LCK', 'dogdog', 'LEC', 'nl_Kripp', 'Doublelift', 'Dyrus', 'Pobelter', 'Shadybunny', 'LCS', 'LexVeldhuis', 'Educated_Collins', 'OGNEsports', 'Riot Games', 'bmkibler', 'itsHafu', 'Amaz', 'RedBeard', 'BoarControlHS', 'Chess', 'GMHikaru', 'TidesofTime']",23
+53706655,nesquesters,NESQuesters,24687283,jorbs,jorbs,2021-02-06T17:00:54Z,0,24,[],[],0
+98168308,hcm8080,Hcm8080,24687283,jorbs,jorbs,2021-02-06T16:58:01Z,1,38,"['bmkibler', '搜憨']","['nl_Kripp', 'Amaz', 'bmkibler']",3
+38748159,pawlo_o,pawlo_o,24687283,jorbs,jorbs,2021-02-06T16:53:04Z,1,246,"['Savjz', 'itsHafu', 'dogdog', 'Lizbeans', '5uppp', 'Wolfabelle', 'Blaustoise', 'Deansocool']","['Svennoss', 'itsHafu', 'dogdog', 'ESL_PUBG', 'Amaz', 'Trainwreckstv', 'Chess', 'TaliaMar', 'GMHikaru', '5uppp', 'Wolfabelle', 'pokimane', 'superjj102', 'Riot Games', 'Becca', 'AustinShow', 'Scarra']",17
+547479803,samueljkramer,samueljkramer,24687283,jorbs,jorbs,2021-02-06T16:43:22Z,0,9,[],[],0
+159504057,stolenrogue,StolenRogue,24687283,jorbs,jorbs,2021-02-06T16:42:03Z,1,8,"['sips_', 'TerrenceMHS']",['sips_'],1
+23590261,rf3ng,rf3ng,24687283,jorbs,jorbs,2021-02-06T16:41:38Z,1,21,['emilyywang'],"['Becca', 'LEC', 'Doublelift', 'pokimane', 'LCS']",5
+517133009,warchase0,warchase0,24687283,jorbs,jorbs,2021-02-06T16:29:50Z,1,4,['AdmiralBahroo'],['AdmiralBahroo'],1
+45371989,siks_,Siks_,24687283,jorbs,jorbs,2021-02-06T16:21:11Z,1,47,"['Quin69', 'Naguura', 'Celerity', 'Baalorlord']","['Quin69', 'Baalorlord', 'Celerity', 'Trainwreckstv']",4
+26006634,skyismygf,skyismygf,24687283,jorbs,jorbs,2021-02-06T16:19:06Z,1,11,['AsmodaiTV'],"['nl_Kripp', 'AsmodaiTV']",2
+95064200,belford21,belford21,24687283,jorbs,jorbs,2021-02-06T16:13:53Z,1,19,"['SimCopter1', 'Nomakk', 'Baalorlord', 'sneakyteak', 'Lethalfrag']","['nl_Kripp', 'Baalorlord', 'SimCopter1', 'Lethalfrag']",4
+255380908,richbadatgame,richbadatgame,24687283,jorbs,jorbs,2021-02-06T15:52:41Z,1,136,['Baalorlord'],"['PUBG', 'Baalorlord', 'BeagsAndJam']",3
+166012631,fr0zenarttt,fr0zenarttt,24687283,jorbs,jorbs,2021-02-06T15:50:27Z,0,10,[],[],0
+501611218,fnyk001,fnyk001,24687283,jorbs,jorbs,2021-02-06T15:08:27Z,0,7,[],[],0
+487017957,blazing_apath,Blazing_Apath,24687283,jorbs,jorbs,2021-02-06T14:45:36Z,1,33,['fuslie'],"['fuslie', 'AustinShow']",2
+92447754,lukebarnett0000,Lukebarnett0000,24687283,jorbs,jorbs,2021-02-06T12:50:06Z,1,126,"['jrm1ah', 'sips_', 'itsHafu']","['Limmy', 'itsHafu', 'sheevergaming', 'sips_']",4
+646702590,morbus86,morbus86,24687283,jorbs,jorbs,2021-02-06T11:40:02Z,0,2,[],[],0
+646715360,illlililiiilll,illlililiiilll,24687283,jorbs,jorbs,2021-02-06T09:44:44Z,0,7,[],[],0
+582222339,zephin1,zephin1,24687283,jorbs,jorbs,2021-02-06T09:35:56Z,1,11,['Savjz'],"['nl_Kripp', 'superjj102', 'twlevewinsHS', 'Trainwreckstv']",4
+187119333,protoxication,Protoxication,24687283,jorbs,jorbs,2021-02-06T08:32:27Z,0,2,[],['5uppp'],1
+144304377,molnsnor,molnsnor,24687283,jorbs,jorbs,2021-02-06T07:56:45Z,1,23,['Baalorlord'],['Baalorlord'],1
+510112556,frostbittenkitten22,frostbittenkitten22,24687283,jorbs,jorbs,2021-02-06T07:48:50Z,0,7,[],['pokimane'],1
+121894694,niplequake,niplequake,24687283,jorbs,jorbs,2021-02-06T07:13:36Z,0,13,[],[],0
+85819573,xelanader,xelanader,24687283,jorbs,jorbs,2021-02-06T05:23:40Z,1,5,"['Etalyx', 'SimCopter1']",['SimCopter1'],1
+125223375,shumway9,shumway9,24687283,jorbs,jorbs,2021-02-06T05:12:44Z,1,65,"['Savjz', 'AsmodaiTV', 'Quin69', 'haelian']","['Quin69', 'LEC', 'nl_Kripp', 'AsmodaiTV', 'twlevewinsHS', 'GMHikaru', 'superjj102', 'Riot Games', 'LCS', 'RaizQT']",10
+207141070,baconmccord,baconmccord,24687283,jorbs,jorbs,2021-02-06T05:00:47Z,1,28,"['Arumba07', 'Alyska', 'Retromation']","['Arumba07', 'Warhammer', 'Florryworry', 'ProGamerJenny']",4
+176641395,technoraptor72,technoraptor72,24687283,jorbs,jorbs,2021-02-06T04:25:35Z,1,74,"['Draskyl', 'dogdog', 'CalebDMTG', 'Arvius', 'Savjz']","['dogdog', 'CalebDMTG', 'Arvius', 'nl_Kripp', 'AOC', 'TastelessTV', 'Draskyl']",7
+24457238,grilledcheesesandies,GrilledCheeseSandies,24687283,jorbs,jorbs,2021-02-06T04:06:57Z,1,86,"['GabySpartz', 'dokomoy', 'Danytlaw']",['GabySpartz'],1
+24407325,fettsvett201,fettsvett201,24687283,jorbs,jorbs,2021-02-06T03:20:29Z,0,35,[],[],0
+81832521,knucklesuppers,Knucklesuppers,24687283,jorbs,jorbs,2021-02-06T02:45:52Z,1,17,"['DumbDog', 'dogdog', 'TidesofTime']","['nl_Kripp', 'TidesofTime', 'DumbDog', 'dogdog']",4
+633183688,glassjabberwocky,GlassJabberwocky,24687283,jorbs,jorbs,2021-02-06T02:37:37Z,0,14,[],[],0
+49979397,freeharold,FreeHarold,24687283,jorbs,jorbs,2021-02-06T02:33:34Z,1,47,"['dogdog', 'EndoZoa', 'WobbleWeezy']","['WobbleWeezy', 'twlevewinsHS', 'dogdog', 'LexVeldhuis']",4
+42175652,ghoulfreight,ghoulfreight,24687283,jorbs,jorbs,2021-02-06T02:23:58Z,1,75,"['thebroodles', 'control']","['ArenaDecklists', 'LEC', 'keanelol', 'Magic', 'LCK', 'Doublelift', 'Chess', 'GMHikaru', 'Riot Games', 'LCS', 'yellowhat']",11
+100280955,ch0mpster_22,Ch0mpster_22,24687283,jorbs,jorbs,2021-02-06T02:19:07Z,1,73,"['jpegexe', 'MetaHer0', 'itsHafu', 'dogdog', 'DumbDog']","['itsHafu', 'dogdog', 'LEC', 'Aphromoo', 'keanelol', 'Doublelift', 'LCK', 'LCS', 'DumbDog', 'imaqtpie', 'Pobelter', 'Riot Games', 'Becca']",13
+71241943,asockmonky,asockmonky,24687283,jorbs,jorbs,2021-02-06T01:58:40Z,1,151,"['bmkibler', 'Savjz', 'AdmiralBahroo', 'SLEEPCYCLES', 'dogdog', 'ster', 'sips_']","['SLEEPCYCLES', 'dogdog', 'nl_Kripp', 'AdmiralBahroo', 'imaqtpie', 'bmkibler', 'sips_']",7
+143689817,amersenne,amersenne,24687283,jorbs,jorbs,2021-02-06T01:24:45Z,0,26,[],[],0
+433289308,bigpapidanimal,BigPapiDanimal,24687283,jorbs,jorbs,2021-02-06T00:52:25Z,0,112,[],"['PUBG', 'nl_Kripp', 'Doublelift', 'Scarra']",4
+131010740,albrina123,albrina123,24687283,jorbs,jorbs,2021-02-05T23:38:25Z,1,10,['aliensrock'],"['Amaz', 'chessbrah']",2
+65083411,asilentorchestra,asilentorchestra,24687283,jorbs,jorbs,2021-02-05T23:08:15Z,1,15,"['itsHafu', 'fuslie', '5uppp']","['itsHafu', '5uppp', 'fuslie']",3
+55430094,wizardcud_,wizardcud_,24687283,jorbs,jorbs,2021-02-05T21:57:32Z,1,97,"['Savjz', 'sips_', 'itsHafu', 'dogdog', 'Frodan', 'TidesofTime', 'AsmodaiTV', 'Quin69']","['Quin69', 'itsHafu', 'dogdog', 'sips_', 'nl_Kripp', 'AsmodaiTV', 'AOC', 'Limmy', 'GMHikaru', 'TidesofTime', 'AustinShow']",11
+102987885,laurieowo,LaurieOwO,24687283,jorbs,jorbs,2021-02-05T21:46:58Z,1,84,"['ster', 'aliensrock']",['pokimane'],1
+57204593,shandoo01,ShandoO01,24687283,jorbs,jorbs,2021-02-05T21:40:20Z,1,56,"['itsHafu', 'dogdog', 'LSV', 'tomatoanus']","['itsHafu', 'dogdog', 'LEC', 'Amaz', 'Magic', 'LCK', 'Pobelter', 'LSV', 'Riot Games', 'LCS']",10
+22994055,jubear720,jubear720,24687283,jorbs,jorbs,2021-02-05T20:29:32Z,1,89,"['Tarolg', 'Bounceyboy', 'Kaianite']",['pokimane'],1

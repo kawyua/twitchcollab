@@ -1,29 +1,103 @@
 {% extends "success.html" %}
-{% block head %}
-  {{ super() }}
-{% endblock %}
+{% block grapher%}
+  <div class="card green">
+    <div class="additional">
+      <div class="user-card">
+        <div class="level center">
+          Views: {{ view_count }}
+        </div>
+        <div class="points center">
+          Follows: {{ followlen }}
+        </div>
+        <svg width="110" height="110" viewBox="0 0 250 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" class="center">
+          <title id="title">Teacher</title>
+          <desc id="desc">Cartoon of a Caucasian woman smiling, and wearing black glasses and a purple shirt with white collar drawn by Alvaro Montoro.</desc>
+          <circle cx="125" cy="125" r="120" fill="rgba(0,0,0,0.15)" />
+          <a href="https://twitch.tv/{{login}}/profile"><img src={{profile_image_url}} alt="test" class="avatar center"></a>
+        </svg>
+      </div>
+      <div class="more-info">
+        <h1>{{login}}</h1>
+        <div class="coords">
+          <h3>{{broadcaster_type}}</h3>
+          <h3>Joined {{ created_at }}</h3>
+          <img src={{offlineimg}} alt="Offline image" class="logo offcenter">
+        </div>
+        <div class="coords">
+          
+          <h3>{{ type }}</h3>
+          <h3>  <a href="https://twitch.tv/{{login}}">{{login}}🔗</a></h3>
+        </div>
+        <div class="stats">
+          
+        </div>
+      </div>
+    </div>
+    <div class="general">
+      <h1>{{login}}</h1>
+      <p>{{ description }}</p>
+      <span class="more">Mouse over the card for more info</span>
+    </div>
+  </div>
 
-{% block totalfollowshead %}
-<th>Total Follows</th>
-{% endblock %}
-{% block totalfollows %}
-<td>{{total}}</th>
-  {% endblock %}
-{% block content %}
-      <table>
-        <tr>
-          <th>Username</th>
-          <th>Followed at</th>
-        </tr>
-        {% for followdata in data %}
-        <tr>
-          <td>
-            <a href="https://twitch.tv/{{followdata.to_name}}">{{followdata.to_name}}</a>
-          </td>
-          <td>
-            {{followdata.followed_at}}
-          </td>
-        </tr>
-        {% endfor %}
-      </table>
+    {% for userinfo in data %}
+    <div class="card green">
+      <div class="additional">
+        <div class="user-card">
+          <div class="level center textcenter">
+            Views: {{ userinfo["view_count"] }} <br/>
+            {{ type }}
+          </div>
+          <div class="points center textcenter">
+            Follows: {{followdata[loop.index-1]["follow_total"]}}<br/>
+            {{userinfo['broadcaster_type']}}
+        </div>
+          <svg width="110" height="110" viewBox="0 0 250 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" class="center">
+            <title id="title">Teacher</title>
+            <desc id="desc">Cartoon of a Caucasian woman smiling, and wearing black glasses and a purple shirt with white collar drawn by Alvaro Montoro.</desc>
+            <circle cx="125" cy="125" r="120" fill="rgba(0,0,0,0.15)" />
+            <a href="https://twitch.tv/{{ userinfo['login'] }}/profile"><img src="{{ userinfo['profile_image_url'] }}" alt="test" class="avatar center"></a>
+          </svg>
+        </div>
+        <div class="more-info">
+          <h1> <a href="https://twitch.tv/{{ userinfo['login'] }}">{{ userinfo['login'] }}</a></h1>
+          <div class="coords">
+            <h3>Followed: {% set list1 = followdata[loop.index-1]["followed_at"].split('T') %}{{list1[0]}}</h3>
+            {% if followdata[loop.index-1]['video_id'] is defined %}   
+              <h3><a href="https://twitch.tv/videos/{{ followdata[loop.index-1]['video_id'] }}?t={{ followdata[loop.index-1]['video_timestamp'] }}">{{followdata[loop.index-1]['video_info']}}</a></h3>
+            {% else %}
+              <h3><a href="https://twitch.tv/{{ userinfo['login'] }}/videos">Video at Date is Deleted</a></h3>
+            {% endif %}
+            
+            <h3>Follow Matches: 
+              {% for match in followdata[loop.index-1]["follow_match"] %}
+              <a>{{match}}, </a>
+              {% endfor %}
+            </h3>
+            <h3>
+              {% if followdata[loop.index-1]['triad_set'] is defined %}
+              Possibly Discovered Through:
+            {% endif %}
+              {% for triad in followdata[loop.index-1]["triad_set"] %}
+              <a>{{triad}}, </a>
+              {% endfor %}
+            </h3>
+              
+          </div>
+          
+          <div class="coords">
+          </div>
+          <div class="stats">
+            
+          </div>
+        </div>
+      </div>
+      <div class="general">
+        <h1> <a href="https://twitch.tv/{{ userinfo['login'] }}">{{ userinfo['login'] }}</a></h1>
+        <h3>Joined: {% set list1 = userinfo['created_at'].split('T') %}{{list1[0]}}</h3>
+        <p>{{ userinfo['description'] }}</p>
+        <span class="more">Mouse over the card for more info</span>
+      </div>
+    </div>
+      {% endfor %}
 {% endblock %}

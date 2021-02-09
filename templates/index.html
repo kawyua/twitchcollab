@@ -1,29 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <link rel="stylesheet" href="../static/style.css" />
-    <title>twitch collab header</title>
-    <a href="/"><img src="../static/twitchcollab3.png" alt="TwitchCollab" class="logo" /></a>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Starter Template for Bootstrap</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{url_for('static', filename='bootstrap.css')}}" rel="stylesheet">
+
+    <!-- Add custom CSS here -->
+    <link href="{{url_for('static', filename='simple-sidebar.css')}}" rel="stylesheet">
+    <link href="{{url_for('static', filename='font-awesome.min.css')}}" rel="stylesheet">
+    <link href="{{url_for('static', filename='style.css')}}" rel="stylesheet">
+
   </head>
+
   <body>
-    <div class="container2">
-      {% if message %}
-      <p class="message">{{ message | safe }}</p>
-      {% endif %}
-      <form action="/submit" method="POST">
-        <div class="form-group">
-          <h3>Enter a User</h3>
-          <input
+  
+    <div id="wrapper">
+      
+      <!-- Sidebar -->
+      <div id="sidebar-wrapper">
+        <ul class="sidebar-nav">
+          
+          <li class="sidebar-brand"><a href="/">Twitch Collab</a></li>
+          <!--<li><a href="#">Home</a></li>
+          <li><a href="#">Overview</a></li>
+          <li><a href="#">Events</a></li>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Services</a></li>
+          <li><a href="#">Contact</a></li>
+          <li> <a></a></li>
+          -->
+          
+          <form action="/follow" method="POST">
+          <li><input
             type="text"
-            name="twitchuser"
-            placeholder="twitch username"
-          />
+            name="login"
+            placeholder="Enter a twitch user"
+          /></li>
+          <input type="submit" name = "follows" value="Get Follows" class="btn btn-primary" />
+          <input type="submit" name = "graph" value= "Get Graph" class="btn btn-primary" formaction="/submit"/>
+        </form>
+        </ul>
+      </div>
+          
+      <!-- Page content -->
+      <div id="page-content-wrapper">
+        <div class="content-header">
+          <h1>
+            <a id="menu-toggle" href="#" class="btn btn-default"><i class="icon-reorder"></i></a>
+          </h1>
         </div>
-        <input type="submit" value="Get Recommendation" class="btn"; >
-      </form>
+        <!-- Keep all page content within the page-content inset div! -->
+        <div class="page-content inset">
+          <div class="row">
+            <!--<div class="col-md-12">
+              <p class="lead">This simple sidebar template has a hint of JavaScript to make the template responsive. It also includes Font Awesome icon fonts.</p>
+            </div>
+            <div class="col-md-6">
+              <p class="well">The template still uses the default Bootstrap rows and columns.</p>
+            </div>
+            <div class="col-md-6">
+              <p class="well">But the full-width layout means that you wont be using containers.</p>
+            </div>
+            <div class="col-md-4">
+              <p class="well">Three Column Example</p>
+            </div>
+            <div class="col-md-4">
+              <p class="well">Three Column Example</p>
+            </div>
+            <div class="col-md-4">
+              <p class="well">You get the idea! Do whatever you want in the page content area!</p>
+            </div> -->
+          </div>
+        </div>
+      </div>
+      
     </div>
+	
+    <!-- JavaScript -->
+    <script src="{{url_for('static', filename='jquery-1.10.2.js')}}"></script>
+    <script src="{{url_for('static', filename='bootstrap.js')}}"></script>
+
+    <!-- Custom JavaScript for the Menu Toggle -->
+    <script>
+    $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("active");
+    });
+    </script>
   </body>
 </html>
