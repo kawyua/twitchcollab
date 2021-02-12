@@ -24,6 +24,7 @@ coverage = "*"
 jsonify = "*"
 requests-toolbelt = "*"
 retry = "*"
+escapejson = "*"
 
 [requires]
 python_version = "3.7"
