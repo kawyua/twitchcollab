@@ -236,13 +236,14 @@ def follow():
         rs = db.session.execute(
              text('SELECT * FROM Followcache WHERE from_id = :userid AND updated_at > :timenow ORDER BY updated_at ASC '),
              {"userid":int(userid), "timenow":timenow })
-        if rs.rowcount > 0:
-            newfollowdata = followcompare(userfollowset, followdata)
-        else:
-            newfollowdata = []
-            #y = ast.literal_eval(x)
-            for row in rs:
-                newfollowdata.append({'from_id':row.from_id, 'from_login':row.from_login, 'to_id':row.to_id, 'to_login':row.to_login, 'followed_at':row.followed_at, 'triad_set':row.triad_set})
+        newfollowdata = followcompare(userfollowset, followdata)
+        #if rs.rowcount > 0:
+        #    newfollowdata = followcompare(userfollowset, followdata)
+        #else:
+        #    newfollowdata = []
+        #    #y = ast.literal_eval(x)
+        #    for row in rs:
+        #        newfollowdata.append({'from_id':row.from_id, 'from_login':row.from_login, 'to_id':row.to_id, 'to_login':row.to_login, 'followed_at':row.followed_at, 'triad_set':row.triad_set})
         followcomparison = addvideoinfo(newfollowdata)
 
         userIDlist = []
