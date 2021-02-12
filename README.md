@@ -14,5 +14,10 @@ pipenv install
 
 # Serve on localhost:5000
 python app.py
-```
 
+# Setting up Postgres database
+python
+from app import db
+db.create_all()
+exit()
+```

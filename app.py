@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql import text
 import requests
 import json
 import datetime
@@ -12,6 +13,7 @@ from requests.packages.urllib3.util.retry import Retry
 from requests_toolbelt import sessions
 import re
 import csv
+import ast
 
 
 # load dotenv in the base root
@@ -25,7 +27,7 @@ SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI")
 POSTGRESQL_DATABASE_URI = os.getenv("POSTGRESQL_DATABASE_URI")
 ENV = os.getenv("ENV")
 BASE_URL = 'https://api.twitch.tv/helix/'
-url ='https://id.twitch.tv/oauth2/token'
+url ='https://id.twitch.tv/oauth2/token' 
 access_token = ''
 http = sessions.BaseUrlSession(base_url="https://api.twitch.tv/helix")
 http = requests.Session()
@@ -95,19 +97,46 @@ else:
 
 
 
-class Feedback(db.Model):
-    __tablename__ = 'feedback'
+class Users(db.Model):
+    __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
-    customer = db.Column(db.String(200), unique=True)
-    dealer = db.Column(db.String(200))
-    rating = db.Column(db.Integer)
-    comments = db.Column(db.Text())
+    user_id = db.Column(db.Integer)
+    login = db.Column(db.String(32))
+    updated_at = db.Column(db.DateTime)
+    def __init__(self, user_id, login, updated_at):
+        self.user_id = user_id
+        self.login = login
+        self.updated_at = updated_at
 
-    def __init__(self, customer, dealer, rating, comments):
-        self.customer = customer
-        self.dealer = dealer
-        self.rating = rating
-        self.comments = comments
+class Followcache(db.Model):
+    '''
+    id = db.Column(db.Integer, primary_key=True)
+    from_id = db.Column(db.Integer)
+    from_login = db.Column(db.String(200), unique=True)
+    to_id = db.Column(db.Integer)
+    to_login = db.Column(db.String(200), unique=True)
+    followed_at = db.Column(db.DateTime)
+    triad_set = db.Column(db.Text)
+    updated_at = db.Column(db.DateTime)
+    '''
+    __tablename__ = 'followcache'
+    id = db.Column(db.Integer, primary_key=True)
+    from_id = db.Column(db.Integer)
+    from_login = db.Column(db.Unicode(100))
+    to_id = db.Column(db.Integer)
+    to_login = db.Column(db.Unicode(100))
+    followed_at = db.Column(db.DateTime)
+    triad_set = db.Column(db.Text)
+    updated_at = db.Column(db.DateTime)
+    def __init__(self, from_id, from_login, to_id, to_login, followed_at, triad_set, updated_at):
+        self.from_id = from_id
+        self.from_login = from_login
+        self.to_id = to_id
+        self.to_login = to_login
+        self.followed_at = followed_at
+        self.triad_set = triad_set
+        self.updated_at = updated_at
+
 
 @app.route('/')
 def index():
@@ -140,17 +169,38 @@ def submit():
             return render_template('index.html', message='User doesnt exist.')
         print("entering graphdata")
         graphdata = datatograph(userdata["data"][0]["id"])
-        print("entering getfollows")
-        getfollows(userdata["data"][0]["id"])
-        print("leaving getfollows")
         graphdata["users"].append(userdata["data"][0])
-        userdata = graphdata["users"]
-        followdata = graphdata["follows"]
-
+        graphdata = json.dumps(graphdata)
         return render_template('graph.html', 
-            userdata = userdata,
-            followdata = followdata
+            graphdata = graphdata
         )
+    else:
+        return'Bad Request', 400 
+
+@app.route('/gettriads', methods=['POST'])
+def gettriads():
+    '''
+    from submission, sets the page for /submit and calls to make recommendations
+    Parameters in post: twitchuser
+    Returns: /submit template page
+    '''
+    if request.method == 'POST':
+        
+        if 'login' not in request.form:
+            return render_template('index.html', message='Input is wrong')
+        #print(request.form['login'])
+        login = request.form['login']
+        if login == '':
+            #print("empty user")
+            return render_template('index.html', message='Please enter required fields')
+        userdata = getuser(login)
+        print(login)
+        print(userdata)
+        if len(userdata["data"]) == 0:
+            return render_template('index.html', message='User doesnt exist.')
+        getfollows(userdata["data"][0]["id"])
+
+        return render_template('index.html')
     else:
         return'Bad Request', 400 
 
@@ -175,12 +225,25 @@ def follow():
         date_time_obj = datetime.datetime.strptime((userdata["data"][0]["created_at"]), '%Y-%m-%dT%H:%M:%S.%fZ')
         #print((userdata["data"][0]["created_at"]))
         #remember followdata is already sorted by most recent follow date
+        timenow = datetime.datetime.utcnow() - timedelta(days=7)
+        userid = userdata["data"][0]["id"]
+        # & Followcache.updated_at - timenow < delta
         followdata = getfollowers(userdata["data"][0]["id"])
-        userfollowdata = getfollowers(userdata["data"][0]["id"])
+        #
         userfollowset = []
-        for streamuser in userfollowdata:
+        for streamuser in followdata:
             userfollowset.append(streamuser["to_name"])
-        followcomparison = addvideoinfo(followcompare(userfollowset, followdata))
+        rs = db.session.execute(
+             text('SELECT * FROM Followcache WHERE from_id = :userid AND updated_at > :timenow ORDER BY updated_at ASC '),
+             {"userid":int(userid), "timenow":timenow })
+        if rs.rowcount > 0:
+            newfollowdata = followcompare(userfollowset, followdata)
+        else:
+            newfollowdata = []
+            #y = ast.literal_eval(x)
+            for row in rs:
+                newfollowdata.append({'from_id':row.from_id, 'from_login':row.from_login, 'to_id':row.to_id, 'to_login':row.to_login, 'followed_at':row.followed_at, 'triad_set':row.triad_set})
+        followcomparison = addvideoinfo(newfollowdata)
 
         userIDlist = []
         for follow in followdata:
@@ -237,6 +300,7 @@ def followcompare(userdata, followdata):
     if followdatalength > 0:
         originfollows = {}
         triadset = {}
+        updated_at = datetime.datetime.utcnow()
 
         for twitchuser in followdata:
             date_time_twitchuser = datetime.datetime.strptime(twitchuser["followed_at"], '%Y-%m-%dT%H:%M:%SZ')
@@ -276,8 +340,18 @@ def followcompare(userdata, followdata):
             #print("for user" + followdata[followdatalength - index - 1]["to_name"])
             #Sprint(followdata[followdatalength - index - 1]["triad_set"])
             streamfollowset.clear()
+            from_id = followdata[followdatalength - index - 1]["from_id"]
+            from_login = str(followdata[followdatalength - index - 1]["from_login"])
+            to_id = followdata[followdatalength - index - 1]["to_id"]
+            to_login = str(followdata[followdatalength - index - 1]["to_login"])
+            followed_at = followdata[followdatalength - index - 1]["followed_at"]
+            triad_set = str(followdata[followdatalength - index - 1]["triad_set"])
+            
+            dbdata = Followcache(from_id, from_login, to_id, to_login, followed_at, triad_set,updated_at)
+            db.session.add(dbdata)
+            #print(followdata)
+            db.session.commit()
     
-    #print(followdata)
     return followdata
 
 def addvideoinfo(followdata):
@@ -330,7 +404,14 @@ def getuser(username):
         return render_template('index.html', message='Other error occurred: {0}'.format(err))
     else:
         #print(response.text.encode("utf-8"))
-        return response.json()
+        data = response.json()
+        user_id = data["data"][0]["id"]
+        login = username
+        updated_at = datetime.datetime.utcnow()
+        userdata = Users(user_id, login, updated_at)
+        db.session.add(userdata)
+        db.session.commit()
+        return data
 
 def getMultiUserInfo(userIDlist):
     '''
@@ -661,7 +742,7 @@ def gettriadicclosure(userfollowdata, twitchuserfollows):
             streamerfollows = getspecificfollows(twitchuser["to_id"], userfollowdata["to_id"])
             if streamerfollows:
                 date_time_streameruser = datetime.datetime.strptime(streamerfollows[0]["followed_at"], '%Y-%m-%dT%H:%M:%SZ')
-                triadset.setdefault(streamerfollows[0]["from_name"], date_time_streameruser)
+                triadset.setdefault(streamerfollows[0]["from_login"], date_time_streameruser)
             #followrecency = (currDate - date_time_obj)
             #gets matches with search origin
             #print(triadset)
@@ -673,7 +754,7 @@ def gettriadicclosure(userfollowdata, twitchuserfollows):
                 print(userfollowdata["from_name"] + "followed" + twitchuser["to_name"])
                 print(triadset)
                 for triad in triadset:
-                    if triadset[triad] < originfollows[userfollowdata["from_name"]]:
+                    if triadset[triad] < originfollows[userfollowdata["from_login"]]:
                         userfollowdata["triad_set"].append(triad)
                         userfollowdata["closure"] = 1
                 return userfollowdata
