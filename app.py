@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, session,url_for
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import text
 import requests
@@ -25,12 +25,14 @@ CLIENT_ID = os.getenv("CLIENT_ID")
 CILENT_SECRET = os.getenv("CILENT_SECRET")
 SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI")
 POSTGRESQL_DATABASE_URI = os.getenv("POSTGRESQL_DATABASE_URI")
+REDIRECT_URI = os.getenv("REDIRECT_URI")
+SCOPE = os.getenv("SCOPE")
 ENV = os.getenv("ENV")
 BASE_URL = 'https://api.twitch.tv/helix/'
 url ='https://id.twitch.tv/oauth2/token' 
-access_token = ''
 http = sessions.BaseUrlSession(base_url="https://api.twitch.tv/helix")
 http = requests.Session()
+
 
 DEFAULT_TIMEOUT = 5 # seconds
 
@@ -68,34 +70,15 @@ if ENV == 'dev':
 else:
     app.debug = False
     app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 
 db = SQLAlchemy(app)
 
 '''sets access token up given a cilent id and secret
 returns {"access_token":"string","expires_in":5290773,"token_type":"bearer"}
 '''
-try:
-    print("getting access_token")
-    response = http.post(url, 
-    data={'client_id':CLIENT_ID,
-    'client_secret':CILENT_SECRET,
-    'grant_type':'client_credentials'
-    })
-
-    # If the response was successful, no Exception will be raised
-    response.raise_for_status()
-except HTTPError as http_err:
-    print('HTTP error occurred:{0}'.format(http_err))  # Python 3.6
-except Exception as err:
-    print('Other error occurred: {0}'.format(err))  # Python 3.6
-else:
-    #print('Success!')
-    #Sprint('response?{0}'.format(response.text))
-    access_token =  response.json()[u'access_token']
-    #print(access_token)
-
-
 
 class Users(db.Model):
     __tablename__ = 'users'
@@ -143,8 +126,148 @@ def index():
     '''
     / is the default page, returns template index.html
     '''
+    if 'refresh_token' in session:
+        try:
+            print("getting access_token")
+            response = http.post(url, 
+            data={'grant_type':'refresh_token',
+            'refresh_token':session['refresh_token'],
+            'client_id':CLIENT_ID,
+            'client_secret':CILENT_SECRET
+            })
+
+            # If the response was successful, no Exception will be raised
+            response.raise_for_status()
+        except HTTPError as http_err:
+            print('HTTP error occurred:{0}'.format(http_err))  # Python 3.6
+        except Exception as err:
+            print('Other error occurred: {0}'.format(err))  # Python 3.6
+        else:
+            #print('Success!')
+            data = response.json()
+            session['access_token'] =  data['access_token']
+            session['refresh_token'] =  data['refresh_token']
+            print(data)
+            print(data)
+            headers = {
+                'client-id': CLIENT_ID,
+                'Authorization': 'Bearer {0}'.format(session['access_token']),
+            }
+            #print("checking user")
+            params = (
+            )
+            try:
+                response2 = http.get('https://id.twitch.tv/oauth2/validate?', headers=headers, params=params)
+
+                # If the response was successful, no Exception will be raised
+                response2.raise_for_status()
+            except HTTPError as http_err:
+                print('HTTP error occurred:{0}'.format(http_err))  # Python 3.6
+
+            except Exception as err:
+                print('Other error occurred: {0}'.format(err))  # Python 3.6
+            else:
+                #print(response.text.encode("utf-8"))
+                data2 = response2.json()
+                print(data2)
+                session['user_id'] =  data2['user_id']
+        return render_template('index.html')
+    else:
+        return redirect('https://id.twitch.tv/oauth2/authorize?response_type=code&client_id={0}&redirect_uri={1}&scope={2}'.format(CLIENT_ID, REDIRECT_URI, SCOPE))
+
+@app.route("/anon")
+def getanon():
+    try:
+        print("getting access_token")
+        response = http.post(url, 
+        data={'client_id':CLIENT_ID,
+        'client_secret':CILENT_SECRET,
+        'grant_type':'client_credentials'
+        })
+
+        # If the response was successful, no Exception will be raised
+        response.raise_for_status()
+    except HTTPError as http_err:
+        print('HTTP error occurred:{0}'.format(http_err))  # Python 3.6
+    except Exception as err:
+        print('Other error occurred: {0}'.format(err))  # Python 3.6
+    else:
+        #print('Success!')
+        #Sprint('response?{0}'.format(response.text))
+        session['access_token'] =  response.json()[u'access_token']
+        print(response.json())
+        headers = {
+            'client-id': CLIENT_ID,
+            'Authorization': 'Bearer {0}'.format(session['access_token']),
+        }
+        #print("checking user")
+        params = (
+        )
+        try:
+            response2 = http.get('https://id.twitch.tv/oauth2/validate?', headers=headers, params=params)
+
+            # If the response was successful, no Exception will be raised
+            response2.raise_for_status()
+        except HTTPError as http_err:
+            print('HTTP error occurred:{0}'.format(http_err))  # Python 3.6
+
+        except Exception as err:
+            print('Other error occurred: {0}'.format(err))  # Python 3.6
+        else:
+            #print(response.text.encode("utf-8"))
+            print(response2.json())
     return render_template('index.html')
 
+@app.route("/login", methods=['GET'])
+def login():
+    code = request.args.get('code', None)
+    print(code)
+    scope = request.args.get('scope', None)
+    print(scope)
+    if code and scope:
+        try:
+            response = http.post(url, 
+        data={'client_id':CLIENT_ID,
+        'client_secret':CILENT_SECRET,
+        'code':request.args.get('code', None),
+        'grant_type':'authorization_code',
+        'redirect_uri':REDIRECT_URI
+        })
+
+            # If the response was successful, no Exception will be raised
+            response.raise_for_status()
+        except HTTPError as http_err:
+            print('HTTP error occurred:{0}'.format(http_err))  # Python 3.6
+
+        except Exception as err:
+            print('Other error occurred: {0}'.format(err))  # Python 3.6
+        else:
+            data = response.json()
+            print(data)
+            session['access_token'] = data["access_token"]
+            session['refresh_token'] = data["refresh_token"]
+            
+            headers = {
+                'Authorization': 'OAuth {0}'.format(data["access_token"])
+            }
+            #print("checking user")
+            try:
+                response2 = http.get('https://id.twitch.tv/oauth2/validate?', headers=headers)
+
+                # If the response was successful, no Exception will be raised
+                response2.raise_for_status()
+            except HTTPError as http_err:
+                print('HTTP error occurred:{0}'.format(http_err))  # Python 3.6
+
+            except Exception as err:
+                print('Other error occurred: {0}'.format(err))  # Python 3.6
+            else:
+                #print(response.text.encode("utf-8"))
+                data2 = response2.json()
+                session['user_id'] =  data2.json()['user_id']
+                return render_template('index.html')
+    else:
+        return redirect(url_for('getanon'))
 
 @app.route('/submit', methods=['POST'])
 def submit():
@@ -228,7 +351,11 @@ def follow():
         timenow = datetime.datetime.utcnow() - timedelta(days=7)
         userid = userdata["data"][0]["id"]
         # & Followcache.updated_at - timenow < delta
-        followdata = getfollowers(userdata["data"][0]["id"])
+        followdata2 = getfollowers(userdata["data"][0]["id"])
+        if 'user_id' in session:
+            followdata = getfollowers(session['user_id'])
+        else:
+            followdata = followdata2
         #
         userfollowset = []
         for streamuser in followdata:
@@ -236,7 +363,7 @@ def follow():
         rs = db.session.execute(
              text('SELECT * FROM Followcache WHERE from_id = :userid AND updated_at > :timenow ORDER BY updated_at ASC '),
              {"userid":int(userid), "timenow":timenow })
-        newfollowdata = followcompare(userfollowset, followdata)
+        newfollowdata = followcompare(userfollowset, followdata2)
         #if rs.rowcount > 0:
         #    newfollowdata = followcompare(userfollowset, followdata)
         #else:
@@ -247,15 +374,15 @@ def follow():
         followcomparison = addvideoinfo(newfollowdata)
 
         userIDlist = []
-        for follow in followdata:
+        for follow in followdata2:
             userIDlist.append(('id',follow["to_id"]))
             
         #print("entering getmultiuserinfo function")
         multiuserinfo = getMultiUserInfo(userIDlist)
         #sorts multiuserinfo by follow date
         object_map = {o['id']: o for o in multiuserinfo}
-        multiuserinfo = [object_map[id["to_id"]] for id in followdata]
-        totalfollows = len(followdata)
+        multiuserinfo = [object_map[id["to_id"]] for id in followdata2]
+        totalfollows = len(followdata2)
 
         return render_template('follow.html',
             data = multiuserinfo, 
@@ -270,7 +397,7 @@ def follow():
             created_at=date_time_obj.strftime("%d-%b-%Y"),
             description=userdata["data"][0]["description"],
 
-            id=userdata["data"][0]["id"],
+            id=userdata["data"][0]["id"]
         )
     else:
         return 'Bad Request', 400\
@@ -385,7 +512,7 @@ def getuser(username):
     '''
     headers = {
         'client-id': CLIENT_ID,
-        'Authorization': 'Bearer {0}'.format(access_token),
+        'Authorization': 'Bearer {0}'.format(session['access_token']),
     }
     #print("checking user")
     params = (
@@ -437,7 +564,7 @@ def getMultiUserInfo(userIDlist):
     #print(str(userIDlist))
     headers = {
         'client-id': CLIENT_ID,
-        'Authorization': 'Bearer {0}'.format(access_token),
+        'Authorization': 'Bearer {0}'.format(session['access_token']),
     }
     count = 0
     userinfolist = []
@@ -504,7 +631,7 @@ def getfollowers(userID):
     
     headers = {
         'client-id': CLIENT_ID,
-        'Authorization': 'Bearer {0}'.format(access_token),
+        'Authorization': 'Bearer {0}'.format(session['access_token']),
     }
     totaldata = []
 
@@ -575,7 +702,7 @@ def getspecificfollows(fromuserID, touserID):
     
     headers = {
         'client-id': CLIENT_ID,
-        'Authorization': 'Bearer {0}'.format(access_token),
+        'Authorization': 'Bearer {0}'.format(session['access_token']),
     }
     try:
         response = http.get('https://api.twitch.tv/helix/users/follows?', headers=headers, params=params)
@@ -626,7 +753,7 @@ def getfollows(userID):
     
     headers = {
         'client-id': CLIENT_ID,
-        'Authorization': 'Bearer {0}'.format(access_token),
+        'Authorization': 'Bearer {0}'.format(session['access_token']),
     }
     totaldata = []
 
@@ -798,7 +925,7 @@ def getvideoID(userID, timestamp):
     
     headers = {
         'client-id': CLIENT_ID,
-        'Authorization': 'Bearer {0}'.format(access_token),
+        'Authorization': 'Bearer {0}'.format(session['access_token']),
     }
     #now = datetime.datetime.utcnow()
     timestamp = datetime.datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%SZ')
