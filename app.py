@@ -224,12 +224,15 @@ def login():
     print(code)
     scope = request.args.get('scope', None)
     print(scope)
+    print(CLIENT_ID)
+    print(CILENT_SECRET)
+    print(REDIRECT_URI)
     if code and scope:
         try:
             response = http.post(url, 
         data={'client_id':CLIENT_ID,
         'client_secret':CILENT_SECRET,
-        'code':request.args.get('code', None),
+        'code':code,
         'grant_type':'authorization_code',
         'redirect_uri':REDIRECT_URI
         })
@@ -963,6 +966,21 @@ def getvideoID(userID, timestamp):
                     returnInfo = video["title"]
                 return [video["id"], returnTime, returnInfo]
        
+def gettwitchapigetrequest(url, headers, params):
+    params = params
+    headers = headers
+    try:
+        response = http.get(url, headers=headers, params=params)
+        # If the response was successful, no Exception will be raised
+        response.raise_for_status()
+    except HTTPError as http_err:
+        #print('HTTP error occurred:{0}'.format(http_err))  # Python 3.6
+        return render_template('index.html', message='Other error occurred: {0}'.format(http_err))
+    except Exception as err:
+        #print('Other error occurred: {0}'.format(err))  # Python 3.6
+        return render_template('index.html', message='Other error occurred: {0}'.format(err))
+    else:
+        return response.json()
 
 
 
