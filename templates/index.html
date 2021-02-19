@@ -56,8 +56,15 @@
         </div>
         <!-- Keep all page content within the page-content inset div! -->
         <div class="page-content inset">
-          <div class="row"><div class="col-md-12">
-              <p class="lead">Twitch Collab shows what your favorite streamers are following on Twitch - with information related to You.</p>
+          <div class="row">
+            
+            <div class="row"><div class="col-md-12">
+              {% if session['login'] %}
+                <p class="lead">Welcome {{session['login']}}!</p>
+              {% else %}
+                <p class="lead">Twitch Collab shows what your favorite streamers are following on Twitch - with information related to You.</p>
+
+              {% endif %}
             </div>
             <div class="col-md-12">
               <iframe src="https://www.facebook.com/plugins/like.php?href=http%3A%2F%2Ftwitchcollab.com&width=450&layout=standard&action=like&size=large&share=true&height=35&appId" width="450" height="35" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
