@@ -62,7 +62,7 @@
         <div class="more-info">
           <h1> <a href="https://twitch.tv/{{ userinfo['login'] }}">{{ userinfo['login'] }}</a></h1>
           <div class="coords">
-            <h3>Followed: {% set list1 = followdata[loop.index-1]["followed_at"].split('T') %}{{list1[0]}}</h3>
+            <h3>Followed: {{followdata[loop.index-1]["followed_at"].strftime('%Y-%m-%d')}}</h3>
             {% if followdata[loop.index-1]['video_id'] is defined %}   
               <h3><a href="https://twitch.tv/videos/{{ followdata[loop.index-1]['video_id'] }}?t={{ followdata[loop.index-1]['video_timestamp'] }}">{{followdata[loop.index-1]['video_info']}}</a></h3>
             {% else %}
@@ -70,15 +70,15 @@
             {% endif %}
             
             <h3>Follow Matches: 
-              {% for match in followdata[loop.index-1]["follow_match"] %}
+              {% for match in followdata[loop.index-1]["commonfollowsession"] %}
               <a>{{match}}, </a>
               {% endfor %}
             </h3>
             <h3>
-              {% if followdata[loop.index-1]['triad_set'] is defined %}
+              {% if followdata[loop.index-1]['triad'] is defined %}
               Possibly Discovered Through:
             {% endif %}
-              {% for triad in followdata[loop.index-1]["triad_set"] %}
+              {% for triad in followdata[loop.index-1]["triad"] %}
               <a>{{triad}}, </a>
               {% endfor %}
             </h3>

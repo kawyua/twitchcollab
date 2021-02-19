@@ -6,7 +6,7 @@
 {% block grapher %}
   <div id="cy"></div>
   <script>
-    new Promise(function(resolve, reject) {
+    promise = new Promise(function(resolve, reject) {
       var graphdata = {{ graphdata|tojson|safe }};
       console.log(graphdata);
       graphdata = jQuery.parseJSON(graphdata);
@@ -42,9 +42,8 @@
       };
       console.log(data);
       
-      setTimeout(() => resolve(data), 100); // (*)
-
-    }).then(function(data) {
+      setTimeout(() => resolve(data), 100);});
+    promise.then(function(data) {
       var cy = window.cy = cytoscape({
       container: document.getElementById('cy'),
 
@@ -52,13 +51,7 @@
       autounselectify: true,
 
       layout: {
-        name: 'concentric',
-        concentric: function( node ){
-          return node.degree();
-        },
-        levelWidth: function( nodes ){
-          return 2;
-        }
+        name: 'cose'
       },
 
       style: [

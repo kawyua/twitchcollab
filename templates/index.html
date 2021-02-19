@@ -6,7 +6,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Twich Collab</title>
+    <title>Twitch Collab</title>
 
     <!-- Bootstrap core CSS -->
     <link href="{{url_for('static', filename='bootstrap.css')}}" rel="stylesheet">
@@ -32,10 +32,7 @@
           <li><a href="#">Events</a></li>
           <li><a href="#">About</a></li>
           <li><a href="#">Services</a></li>
-          <li><a href="#">Contact</a></li>
-          <li> <a></a></li>
           -->
-          
           <form action="/follow" method="POST">
           <li><input
             type="text"
@@ -55,19 +52,27 @@
           <h1>
             <a id="menu-toggle" href="#" class="btn btn-default"><i class="icon-reorder"></i></a>
           </h1>
+
         </div>
         <!-- Keep all page content within the page-content inset div! -->
         <div class="page-content inset">
           <div class="row">
-            <!--<div class="col-md-12">
-              <p class="lead">This simple sidebar template has a hint of JavaScript to make the template responsive. It also includes Font Awesome icon fonts.</p>
+            
+            <div class="row"><div class="col-md-12">
+              {% if session['login'] %}
+                <p class="lead">Welcome {{session['login']}}!</p>
+              {% else %}
+                <p class="lead">Twitch Collab shows what your favorite streamers are following on Twitch - with information related to You.</p>
+
+              {% endif %}
             </div>
-            <div class="col-md-6">
-              <p class="well">The template still uses the default Bootstrap rows and columns.</p>
+            <div class="col-md-12">
+              <iframe src="https://www.facebook.com/plugins/like.php?href=http%3A%2F%2Ftwitchcollab.com&width=450&layout=standard&action=like&size=large&share=true&height=35&appId" width="450" height="35" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
             </div>
-            <div class="col-md-6">
-              <p class="well">But the full-width layout means that you wont be using containers.</p>
+            <div class="col-md-12">
+                <a href="https://twitter.com/intent/tweet?button_hashtag=TwitchCollab&ref_src=twsrc%5Etfw" class="twitter-hashtag-button" data-show-count="false">Tweet #TwitchCollab</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
             </div>
+           <!-- 
             <div class="col-md-4">
               <p class="well">Three Column Example</p>
             </div>
@@ -82,7 +87,17 @@
       </div>
       
     </div>
-	
+      <!-- Load Facebook SDK for JavaScript -->
+  <div id="fb-root"></div>
+  <script async defer crossorigin="anonymous" 
+        src="https://connect.facebook.net/en_US/sdk.js#xfbml=1
+             &version={graph-api-version}
+             &appId={your-facebook-app-id}
+             &autoLogAppEvents=1" 
+        nonce="FOKrbAYI">
+  </script>
+
+
     <!-- JavaScript -->
     <script src="{{url_for('static', filename='jquery-1.10.2.js')}}"></script>
     <script src="{{url_for('static', filename='bootstrap.js')}}"></script>
