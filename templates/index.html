@@ -48,6 +48,9 @@
           {% if session['login'] %}
           <li><a href='/history?login={{session["login"]}}'>{{session["login"]}} Follow History</a></li>
           <li><a href='/graph?login={{session["login"]}}'>{{session["login"]}} Graph</a></li>
+          {% else %}
+          <li><a href='https://id.twitch.tv/oauth2/authorize?response_type=code&client_id={{session["client_id"]}}&redirect_uri={{session["redirect_uri"]}}&scope=' >Login through twitch</a>
+          </li>
           {% endif %}
           
           
@@ -85,8 +88,9 @@
               {% if session['login'] %}
                 <p class="lead">Welcome {{session['login']}}!</p>
               {% else %}
-                <p class="lead">Twitch Collab shows what your favorite streamers are following on Twitch - with information related to You.</p>
-
+              <p class="lead">Twitch Collab shows you your history of your follows on twitch and history of others.</p>
+              <p class="lead">Sign in through twitch to see related information to you.</p>
+              <a href='https://id.twitch.tv/oauth2/authorize?response_type=code&client_id={{session["client_id"]}}&redirect_uri={{session["redirect_uri"]}}&scope=' >Login through twitch</a>
               {% endif %}
             </div>
             <div class="col-md-12">

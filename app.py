@@ -190,8 +190,8 @@ def index():
             'https://id.twitch.tv/oauth2/authorize?response_type=code&client_id={0}&redirect_uri={1}&scope={2}'
         .format(CLIENT_ID, REDIRECT_URI, SCOPE))
     else:
-        isIndex = True
-        return render_template('index.html', isIndex = isIndex)
+        isindex = True
+        return render_template('index.html', isIndex = isindex)
 
 def getanon():
     '''
@@ -242,6 +242,9 @@ def validateaccesstoken():
      returns boolean where if not valid and no refresh token in session, noredirect is false
     '''
     noredirect = True
+    print(CLIENT_ID)
+    session["client_id"] = CLIENT_ID
+    session["redirect_uri"] = REDIRECT_URI
     if 'access_token' in session:
         headers = {
             'client-id': CLIENT_ID,
