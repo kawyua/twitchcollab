@@ -9,6 +9,7 @@
 	padding: 5px;
 }
 
+
 .container {
 	display: flex;
 	position: relative;
@@ -350,3 +351,11 @@ html, body {
   background-color:rgba(255, 166, 0, 0);
   border-color: #4cae4c;
 }
+
+div#loading {
+  width: 250px;
+  height: 35px;
+  display: none;
+  background: url(/static/loadingimage.gif) no-repeat;
+  cursor: wait;
+  }

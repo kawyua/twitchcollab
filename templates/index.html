@@ -54,16 +54,18 @@
           {% endif %}
           
           
+          <div id="loading"></div>
+          <div id="content">
           <form action="/history" method="GET">
           <li>
-          <input type="text" name="login" class="form-control" id ="login" placeholder="Enter a twitch user" /></li>
-          <li><input type="submit" value="Get Follow History" class="btn btn-outline-secondary btn-block" /></li>
-          <li><input type="submit" value= "Get Graph" class="btn btn-outline-secondary btn-block" formaction="/graph"/></li>
+          <input type="text" name="login" class="form-control" id ="login" placeholder="Enter a twitch user"></li>
+          <li><input type="submit" value="Get Follow History" class="btn btn-outline-secondary btn-block" onclick="loading();" ></li>
+          <li><input type="submit" value= "Get Graph" class="btn btn-outline-secondary btn-block" formaction="/graph" onclick="loading();"></li>
           <!--<input type="submit" name = "Get triads" value= "Get triads" class="btn btn-primary" formaction="/gettriads"/>-->
           </form>
           <li><input type="checkbox" checked id="deleteorlink" data-toggle="toggle" data-on="Link Saves" data-off="Delete Saves" data-onstyle="outline-light" data-offstyle="outline-dark" data-height="100%">
           </li>
-        
+          </div>
           {% if session['login'] and session["saved_users"] %}
             {% for user in session["saved_users"]%}
             <li id="usersave{{user[1]}}" onclick='deleteorredirect("/history?login={{user[0]}}","{{user[0]}}",{{user[1]}})'>{{user[0]}} Follow History</li>
@@ -114,7 +116,6 @@
           </div>
         </div>
       </div>
-      
     </div>
       <!-- Load Facebook SDK for JavaScript -->
   <div id="fb-root"></div>
@@ -126,7 +127,7 @@
         nonce="FOKrbAYI">
   </script>
 
-
+  
 
     <!-- Custom JavaScript for the Menu Toggle -->
     <script>
@@ -171,6 +172,18 @@
       $('[data-toggle="tooltip"]').tooltip()
     })
     </script>
+
+    
+    <script type="text/javascript">// <![CDATA[
+      //loading icon for time consuming function
+      //stackoverflow: https://stackoverflow.com/questions/14525029/display-a-loading-message-while-a-time-consuming-function-is-executed-in-flask
+      function loading(){
+        console.log("loading")
+          $("#loading").show();
+          $("#content").hide();       
+      }
+    // ]]></script>
+
 
     
     {% block followscroll %}{% endblock %}
