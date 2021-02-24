@@ -7,17 +7,30 @@
     <meta name="author" content="">
 
     <title>Twitch Collab</title>
-
-    <!-- Bootstrap core CSS -->
-    <link href="{{url_for('static', filename='bootstrap.css')}}" rel="stylesheet">
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
     <!-- Add custom CSS here -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
     <link href="{{url_for('static', filename='simple-sidebar.css')}}" rel="stylesheet">
-    <link href="{{url_for('static', filename='font-awesome.min.css')}}" rel="stylesheet">
     <link href="{{url_for('static', filename='style.css')}}" rel="stylesheet">
 
+    {% block head %}{% endblock %}
+    
   </head>
-
+  <style>
+    #cy {
+        width: 100%;
+        height: 90%;
+        position: absolute;
+        margin-top:30px;
+        top: 30px;
+        left: 0px;
+    }
+  </style>
   <body>
   
     <div id="wrapper">
@@ -31,18 +44,28 @@
           <li><a href="#">Overview</a></li>
           <li><a href="#">Events</a></li>
           <li><a href="#">About</a></li>
-          <li><a href="#">Services</a></li>
           -->
-          <form action="/follow" method="POST">
-          <li><input
-            type="text"
-            name="login"
-            placeholder="Enter a twitch user"
-          /></li>
-          <input type="submit" name = "follows" value="Get Follows" class="btn btn-primary" />
-          <input type="submit" name = "graph" value= "Get Graph" class="btn btn-primary" formaction="/submit"/>
+          {% if session['login'] %}
+          <li><a href='/history?login={{session["login"]}}'>{{session["login"]}} Follow History</a></li>
+          <li><a href='/graph?login={{session["login"]}}'>{{session["login"]}} Graph</a></li>
+          {% endif %}
+          
+          
+          <form action="/history" method="GET">
+          <li>
+          <input type="text" name="login" class="form-control" id ="login" placeholder="Enter a twitch user" /></li>
+          <li><input type="submit" value="Get Follow History" class="btn btn-outline-secondary btn-block" /></li>
+          <li><input type="submit" value= "Get Graph" class="btn btn-outline-secondary btn-block" formaction="/graph"/></li>
           <!--<input type="submit" name = "Get triads" value= "Get triads" class="btn btn-primary" formaction="/gettriads"/>-->
-        </form>
+          </form>
+          <li><input type="checkbox" checked id="deleteorlink" data-toggle="toggle" data-on="Link Saves" data-off="Delete Saves" data-onstyle="outline-light" data-offstyle="outline-dark" data-height="100%">
+          </li>
+        
+          {% if session['login'] and session["saved_users"] %}
+            {% for user in session["saved_users"]%}
+            <li id="usersave{{user[1]}}" onclick='deleteorredirect("/history?login={{user[0]}}","{{user[0]}}",{{user[1]}})'>{{user[0]}} Follow History</li>
+            {% endfor %}
+          {% endif %}
         </ul>
       </div>
           
@@ -52,12 +75,12 @@
           <h1>
             <a id="menu-toggle" href="#" class="btn btn-default"><i class="icon-reorder"></i></a>
           </h1>
-
+          {% block info%}{% endblock %}
         </div>
         <!-- Keep all page content within the page-content inset div! -->
         <div class="page-content inset">
           <div class="row">
-            
+            {% if isIndex %}
             <div class="row"><div class="col-md-12">
               {% if session['login'] %}
                 <p class="lead">Welcome {{session['login']}}!</p>
@@ -72,6 +95,7 @@
             <div class="col-md-12">
                 <a href="https://twitter.com/intent/tweet?button_hashtag=TwitchCollab&ref_src=twsrc%5Etfw" class="twitter-hashtag-button" data-show-count="false">Tweet #TwitchCollab</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
             </div>
+            {% endif %}
            <!-- 
             <div class="col-md-4">
               <p class="well">Three Column Example</p>
@@ -82,6 +106,7 @@
             <div class="col-md-4">
               <p class="well">You get the idea! Do whatever you want in the page content area!</p>
             </div> -->
+            {% block grapher%}{% endblock %}
           </div>
         </div>
       </div>
@@ -91,23 +116,59 @@
   <div id="fb-root"></div>
   <script async defer crossorigin="anonymous" 
         src="https://connect.facebook.net/en_US/sdk.js#xfbml=1
-             &version={graph-api-version}
-             &appId={your-facebook-app-id}
+             &version={GRAPH_API_VERSION}
+             &appId={FACEBOOK_APP_ID}
              &autoLogAppEvents=1" 
         nonce="FOKrbAYI">
   </script>
 
 
-    <!-- JavaScript -->
-    <script src="{{url_for('static', filename='jquery-1.10.2.js')}}"></script>
-    <script src="{{url_for('static', filename='bootstrap.js')}}"></script>
 
     <!-- Custom JavaScript for the Menu Toggle -->
     <script>
+      
+    function deleteorredirect(url, login, user_id) {
+      console.log(url)
+      var login = login.toString(200)
+      var id = 'usersave'+user_id
+      if ( document.getElementById('deleteorlink').checked) {
+        // Returns true if checked
+        console.log("redirecting");
+        window.location.href = url;
+    } else {
+        // Returns false if not checked
+        $.ajax({
+          data : {
+            login : login,
+            user_id: user_id,
+            },
+          type : 'POST',
+          url : '/deleteuser'
+        }).done(function(data) {
+          console.log(data);
+          console.log("hello test");
+          console.log(id);
+          if (data.toString(10) == 'Success'){
+            console.log("hello success");
+            console.log(id);
+            document.getElementById(id).remove();
+          }
+        });
+    }
+    }
+
+
     $("#menu-toggle").click(function(e) {
         e.preventDefault();
         $("#wrapper").toggleClass("active");
     });
+
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip()
+    })
     </script>
+
+    
+    {% block followscroll %}{% endblock %}
   </body>
 </html>

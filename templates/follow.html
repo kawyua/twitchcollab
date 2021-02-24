@@ -1,10 +1,10 @@
-{% extends "success.html" %}
+{% extends "index.html" %}
 {% block grapher%}
-  <div class="card green">
+<div class="card green">
     <div class="additional">
       <div class="user-card">
         <div class="level center">
-          Views: {{ view_count }}
+          Views: {{ userdata[0]["view_count"] }}
         </div>
         <div class="points center">
           Follows: {{ followlen }}
@@ -13,20 +13,21 @@
           <title id="title">Teacher</title>
           <desc id="desc">Cartoon of a Caucasian woman smiling, and wearing black glasses and a purple shirt with white collar drawn by Alvaro Montoro.</desc>
           <circle cx="125" cy="125" r="120" fill="rgba(0,0,0,0.15)" />
-          <a href="https://twitch.tv/{{login}}/profile"><img src={{profile_image_url}} alt="test" class="avatar center"></a>
+          <a href='https://twitch.tv/{{userdata[0]["login"]}}/profile'><img src={{userdata[0]["profile_image_url"]}} alt="test" class="avatar center"></a>
         </svg>
       </div>
       <div class="more-info">
-        <h1>{{login}}</h1>
+        <h2 class= "text-center"  ><a href="https://twitch.tv/{{ userdata[0]['login'] }}"  target="_blank" rel="noopener noreferrer">{{ userdata[0]["login"] }}</a>
+          <button class="btn btn-success3 btn-circle btn-circle-sm m-1" onclick='adduser({{userdata[0]["login"]}}, {{userdata[0]["id"]}})'>+</button></h2>
         <div class="coords">
-          <h3>{{broadcaster_type}}</h3>
-          <h3>Joined {{ created_at }}</h3>
+          <h3>{{userdata[0]["broadcaster_type"]}}</h3>
+          <h3>Joined {{ userdata[0]["created_at"] }}</h3>
           <img src={{offlineimg}} alt="Offline image" class="logo offcenter">
         </div>
         <div class="coords">
           
-          <h3>{{ type }}</h3>
-          <h3>  <a href="https://twitch.tv/{{login}}">{{login}}🔗</a></h3>
+          <h3>{{ userdata[0]['type']}}</h3>
+          <h3>  <a href="https://twitch.tv/{{userdata[0]['login']}}">{{userdata[0]["login"]}}🔗</a></h3>
         </div>
         <div class="stats">
           
@@ -34,8 +35,10 @@
       </div>
     </div>
     <div class="general">
-      <h1>{{login}}</h1>
-      <p>{{ description }}</p>
+      <h2 class= "text-center"  ><a href="https://twitch.tv/{{ userdata[0]['login'] }}"  target="_blank" rel="noopener noreferrer">{{ userdata[0]["login"] }}</a>
+        
+        <button class="btn btn-success2 btn-circle btn-circle-sm m-1" onclick='adduser("{{ userdata[0]["login"]}}", {{ userdata[0]["id"] }})'>+</button></h2>
+      <p>{{ userdata[0]["description"] }}</p>
       <span class="more">Mouse over the card for more info</span>
     </div>
   </div>
@@ -46,43 +49,97 @@
         <div class="user-card">
           <div class="level center textcenter">
             Views: {{ userinfo["view_count"] }} <br/>
-            {{ type }}
+            {{userinfo['broadcaster_type']}} {{ type }}
           </div>
           <div class="points center textcenter">
-            Follows: {{followdata[loop.index-1]["follow_total"]}}<br/>
-            {{userinfo['broadcaster_type']}}
+            Follows: {{followdata[loop.index-1]["followtotal"]}}<br/>
         </div>
           <svg width="110" height="110" viewBox="0 0 250 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" class="center">
-            <title id="title">Teacher</title>
-            <desc id="desc">Cartoon of a Caucasian woman smiling, and wearing black glasses and a purple shirt with white collar drawn by Alvaro Montoro.</desc>
+            <title id="title">Twitchfollower</title>
+            <desc id="desc">A twitch user</desc>
             <circle cx="125" cy="125" r="120" fill="rgba(0,0,0,0.15)" />
-            <a href="https://twitch.tv/{{ userinfo['login'] }}/profile"><img src="{{ userinfo['profile_image_url'] }}" alt="test" class="avatar center"></a>
+            <a href="https://twitch.tv/{{ userinfo['login'] }}/profile"  target="_blank" rel="noopener noreferrer"><img src="{{ userinfo['profile_image_url'] }}" alt="test" class="avatar center"></a>
+            
           </svg>
         </div>
         <div class="more-info">
-          <h1> <a href="https://twitch.tv/{{ userinfo['login'] }}">{{ userinfo['login'] }}</a></h1>
+          <h2 class= "text-center"  > <a href="https://twitch.tv/{{ userinfo['login'] }}"  target="_blank" rel="noopener noreferrer">{{ userinfo['login'] }}</a>
+          <button class="btn btn-success3 btn-circle btn-circle-sm m-1" onclick='adduser("{{ userinfo["login"]}}", {{ userinfo["id"] }})'>+</button></h2>
           <div class="coords">
             <h3>Followed: {{followdata[loop.index-1]["followed_at"].strftime('%Y-%m-%d')}}</h3>
             {% if followdata[loop.index-1]['video_id'] is defined %}   
-              <h3><a href="https://twitch.tv/videos/{{ followdata[loop.index-1]['video_id'] }}?t={{ followdata[loop.index-1]['video_timestamp'] }}">{{followdata[loop.index-1]['video_info']}}</a></h3>
+              <h3><a href="https://twitch.tv/videos/{{ followdata[loop.index-1]['video_id'] }}?t={{ followdata[loop.index-1]['video_timestamp'] }}"  target="_blank" rel="noopener noreferrer">
+                {{followdata[loop.index-1]['video_info']}}</a></h3>
             {% else %}
-              <h3><a href="https://twitch.tv/{{ userinfo['login'] }}/videos">Video at Date is Not Found</a></h3>
+              <h3><a href="https://twitch.tv/{{ userinfo['login'] }}/videos" target="_blank" rel="noopener noreferrer">Video at Date is Not Found</a></h3>
             {% endif %}
             
-            <h3>Follow Matches: 
-              {% for match in followdata[loop.index-1]["commonfollowsession"] %}
-              <a>{{match}}, </a>
-              {% endfor %}
-            </h3>
+            {% if session['login'] and session['login'] != userdata[0]["login"]%}
             <h3>
-              {% if followdata[loop.index-1]['triad'] is defined %}
-              Possibly Discovered Through:
-            {% endif %}
-              {% for triad in followdata[loop.index-1]["triad"] %}
-              <a>{{triad}}, </a>
-              {% endfor %}
+              {{ userinfo['login'] }} is followed by:
+              {% if followdata[loop.index-1]["familiarfollowers"]|length > 5 %}
+                {% for familiar in followdata[loop.index-1]["familiarfollowers"] %}
+                  {% if loop.index-1 < 5 %}
+                    <a>{{familiar[0]}}, </a>
+                    {% elif loop.index-1 == 5 %}
+                    <a data-toggle="tooltip" data-placement="top" title="{{familiar[0]}}, 
+                    {% else %}
+                    {{familiar[0]}}, 
+                  {% endif %}
+                {% endfor %}
+                {% if loop.index-1 >= 5 %}
+                ">and {{followdata[loop.index-1]["familiarfollowers"]|length - 5}} others</a>
+                {% endif %}
+              {% else %}
+                {% for familiar in followdata[loop.index-1]["familiarfollowers"] %}
+                  <a>{{familiar[0]}}, </a>
+                {% endfor %}
+              {% endif %}
             </h3>
-              
+            {% endif %}
+            {% if followdata[loop.index-1]['triad'] is defined %}
+            <h3>
+              Possibly Discovered Through:
+              {% if followdata[loop.index-1]["triad"]|length > 5 %}
+                {% for triad in followdata[loop.index-1]["triad"] %}
+                  {% if loop.index-1 < 5 %}
+                    <a>{{triad[0]}}, </a>
+                    {% elif loop.index-1 == 5 %}
+                    <a data-toggle="tooltip" data-placement="top" title="{{triad[0]}}, 
+                    {% else %}
+                    {{triad[0]}}, 
+                  {% endif %}
+                {% endfor %}
+                {% if loop.index-1 >= 5 %}
+                ">and {{followdata[loop.index-1]["triad"]|length - 5}} others</a>
+                {% endif %}
+              {% else %}
+                {% for triad in followdata[loop.index-1]["triad"] %}
+                  <a>{{triad[0]}}, </a>
+                {% endfor %}
+              {% endif %}
+            </h3>
+            {% endif %}
+            <h3>Follow Matches: 
+              {% if followdata[loop.index-1]["commonfollowsession"]|length > 5 %}
+                {% for commonfollowsession in followdata[loop.index-1]["commonfollowsession"] %}
+                  {% if loop.index-1 < 5 %}
+                    <a>{{commonfollowsession[0]}}, </a>
+                    {% elif loop.index-1 == 5 %}
+                    <a data-toggle="tooltip" data-placement="top" title="{{commonfollowsession[0]}}, 
+                    {% else %}
+                    {{commonfollowsession[0]}}, 
+                  {% endif %}
+                {% endfor %}
+                {% if loop.index-1 >= 5 %}
+                ">and {{followdata[loop.index-1]["commonfollowsession"]|length - 5}} others</a>
+                {% endif %}
+              {% else %}
+                {% for commonfollowsession in followdata[loop.index-1]["commonfollowsession"] %}
+                  <a>{{commonfollowsession[0]}}, </a>
+                {% endfor %}
+              {% endif %}
+            </h3>
           </div>
           
           <div class="coords">
@@ -93,13 +150,17 @@
         </div>
       </div>
       <div class="general">
-        <h1> <a href="https://twitch.tv/{{ userinfo['login'] }}">{{ userinfo['login'] }}</a></h1>
-        <h3>Joined: {% set list1 = userinfo['created_at'].split('T') %}{{list1[0]}}</h3>
+        <h2 class= "text-center"  > <a href="https://twitch.tv/{{ userinfo['login'] }}"  target="_blank" rel="noopener noreferrer">{{ userinfo['login'] }}</a>
+          <button class="btn btn-success2 btn-circle btn-circle-sm m-1" onclick='adduser("{{ userinfo["login"]}}", {{ userinfo["id"] }})'>+</button></h2>
+        <h3>Joined: {% if userinfo['created_at'] %}{% set list1 = userinfo['created_at'].split('T') %}{{list1[0]}} {% endif %}</h3>
         <p>{{ userinfo['description'] }}</p>
         <span class="more">Mouse over the card for more info</span>
       </div>
     </div>
       {% endfor %}
+{% endblock %}
+
+{% block deletelistitem %}
 {% endblock %}
 
 {% block followscroll %}
@@ -123,6 +184,27 @@
     function topFunction() {
       document.body.scrollTop = 0;
       document.documentElement.scrollTop = 0;
+    }
+    function adduser(login, user_id){
+        console.log(login);
+        console.log(user_id);
+        var stringlogin = login.toString(10)
+        var txt1 = '<li id="usersave'+user_id+'" onclick='+"'"+'deleteorredirect("/history?login='+stringlogin+'","'+stringlogin+'",'+user_id+')'+"'"+'>'+stringlogin+' Follow History</li>';
+        console.log(txt1);
+        $.ajax({
+          data : {
+            login : login,
+            user_id: user_id,
+            },
+          type : 'POST',
+          url : '/adduser'
+        }).done(function(data) {
+          console.log(data);
+          if (data.toString(10) == 'Success'){
+            $(".sidebar-nav").append(txt1);
+          }
+        });
+      console.log("adding to sidebar")
     }
     </script>
 {% endblock %}

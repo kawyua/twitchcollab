@@ -25,6 +25,10 @@ jsonify = "*"
 requests-toolbelt = "*"
 retry = "*"
 escapejson = "*"
+pylint-flask = "*"
+pylint-flask-sqlalchemy = "*"
+pylint = "*"
+urllib3 = "*"
 
 [requires]
 python_version = "3.7"
