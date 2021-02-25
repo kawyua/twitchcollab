@@ -1,83 +1,148 @@
-{% extends "success.html" %}
-{% block head %}
+
 <meta id="my-data" data-name="graphdata" data-other="{{graphdata}}">
-<script src="{{url_for('static', filename='cytoscape.min.js')}}"></script>
-{% endblock %}}
-{% block grapher %}
-  <div id="cy"></div>
-  <script>
-    promise = new Promise(function(resolve, reject) {
-      var graphdata = {{ graphdata|tojson|safe }};
-      console.log(graphdata);
-      graphdata = jQuery.parseJSON(graphdata);
-      console.log(graphdata);
-      var followdata = graphdata.follows;
-      var users = graphdata.users;
-      console.log(graphdata);
-      console.log(followdata);
-      console.log(users);
-      data = []
-      
-      console.log(data);
-      for (var i = 0; i < users.length; i++) {
-            user = users[i].id;
-            console.log(user)
-            data.push({
-                data: {id: user}
-                }
-            );
-      };
-      console.log(data);
-      for (var i = 0; i < followdata.length; i++) {
-        var source = followdata[i].from_id;
-        var target = followdata[i].to_id;
-        console.log(source + " follows " + target)
-        data.push({
-            data: {
-                id: 'edge' + i,
-                source: source.toString(10),
-                target: target.toString(10)
-            }
-        });
-      };
-      console.log(data);
-      
-      setTimeout(() => resolve(data), 100);});
-    promise.then(function(data) {
-      var cy = window.cy = cytoscape({
-      container: document.getElementById('cy'),
-
-      boxSelectionEnabled: false,
-      autounselectify: true,
-
-      layout: {
-        name: 'cose'
-      },
-
-      style: [
-        {
-          selector: 'node',
-          style: {
-            'height': 20,
-            'width': 20,
-            'background-color': '#30c9bc'
+<div id="cy"></div>
+<script>
+  var graphdata = {{ graphdata|tojson|safe }};
+  var total = Math.floor({{ total }});
+  graphdata = jQuery.parseJSON(graphdata);
+  console.log(graphdata);
+  console.log(total);
+  var followdata = graphdata.follows;
+  var users = graphdata.users;
+  triad = 0;
+  var totalparts = 30;
+  var partition = total/totalparts;
+  promise = new Promise(function(resolve, reject) {
+    data = []
+    for (var i = 0; i < users.length; i++) {
+          user = users[i].id;
+          login = users[i].login;
+          profile_image_url = users[i].profile_image_url;
+          data.push({
+              data: {id: user, name: login, profile_image_url: profile_image_url}
+              }
+          );
+    };
+    for (var i = 0; i < followdata.length; i++) {
+      var source = followdata[i].from_id;
+      var target = followdata[i].to_id;
+      var followtime = followdata[i].followtime;
+      var time = Math.floor(followtime/partition).toString(10)+'s';
+      data.push({
+          data: {
+              id: 'edge' + i,
+              source: source.toString(10),
+              target: target.toString(10),
+              color: '#a8eae5',
+              width: 10,
+              time: time
           }
-        },
-
-        {
-          selector: 'edge',
-          style: {
-            'curve-style': 'haystack',
-            'haystack-radius': 0,
-            'width': 5,
-            'opacity': 0.5,
-            'line-color': '#a8eae5'
-          }
+      });
+      if (followdata[i].hasOwnProperty("triad")){
+        for(var j = 0; j < followdata[i].triad.length; j++) {
+          var source = followdata[i].triad[j][1];
+          var target = followdata[i].to_id;
+          var followedtime = followdata[i].triad[j][2];
+          var time = Math.floor(followedtime/partition).toString(10)+'s';
+          data.push({
+              data: {
+                  id: 'triad' + triad,
+                  source: source.toString(10),
+                  target: target.toString(10),
+                  color: '#aa5f85',
+                  width: 5,
+                  time: time
+              }
+          });
+          triad++;
         }
-      ],
+      }
+    };
+    
+    setTimeout(() => resolve(data), 100);});
+  promise.then(function(data) {
+    var cy = window.cy = cytoscape({
+    container: document.getElementById('cy'),
 
-      elements: data
-    });
+    boxSelectionEnabled: false,
+    autounselectify: true,
+
+    layout: {
+      name: 'concentric'
+    },
+
+    style: [
+      {
+        selector: 'node',
+        style: {
+          'height': 250,
+          'width': 250,
+          'content': 'data(name)',
+          'font-size': "36px",
+          'background-color': '#30c9bc',
+          'background-image': 'data(profile_image_url)'
+        }
+
+      },
+      {
+        selector: 'edge',
+        style: {
+          'curve-style': 'straight',
+          'target-arrow-shape': 'triangle',
+          'width': 'data(width)',
+          'opacity': 0,
+          'line-color': 'data(color)',
+          'target-arrow-color': 'data(color)',
+          'transition-duration': '2s',
+          'transition-delay': 'data(time)'
+        }
+      },
+      {
+        selector: '.highlighted',
+        style: {
+          'opacity': 0.8,
+          'width': 17,
+          'line-color': 'data(color)',
+          'transition-property': 'opacity, width'
+        }
+      }
+    ],
+
+    elements: data
   });
-        </script>
-{% endblock %}
+  var bfs = cy.edges().addClass('highlighted');
+});
+var now = Date.now();
+console.log(now);
+var adjusted = now - total*1000;
+if(adjusted > now){
+  adjusted = now;
+}
+console.log(adjusted);
+function updateClock() {
+  adjusted += partition*1000;
+  var newtime = new Date();
+  newtime.setTime(adjusted); // current date
+  var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']; // you get the idea
+  var time = newtime.getHours() + ':' + newtime.getMinutes().toLocaleString('en-US', {
+  minimumIntegerDigits: 2,
+  useGrouping: false
+  }); // again, you get the idea
+
+      // a cleaner way than string concatenation
+  var date = [newtime.getDate(), 
+              months[newtime.getMonth()],
+              newtime.getFullYear()].join(' ');
+
+  // set the content of the element with the ID time to the formatted string
+  document.getElementById('time').innerHTML = [date, time].join(' / ');
+
+  // call this function again in 1000ms
+  if(now > adjusted){
+    setTimeout(updateClock, 1000);
+  }
+}
+updateClock(); // initial call
+
+
+</script>

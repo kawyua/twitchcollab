@@ -66,8 +66,10 @@
 }
 
 .content-header {
-  height: 65px;
-  line-height: 65px;
+  height: 30px;
+  line-height: 30px;
+  position: fixed;
+  z-index:3000
 }
 
 .content-header h1 {
