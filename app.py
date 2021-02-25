@@ -4,6 +4,7 @@ import csv
 import json
 import datetime
 import requests
+import html
 from flask import Flask, render_template, request, redirect, session,url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import text
@@ -382,11 +383,11 @@ def graph():
             print("login"+login)
             if str(login) == '':
                 print("empty user")
-                return render_template('index.html', message='Please enter required fields')
+                return jsonify({'data': "empty user input"})
             login = str(login)
             userdata = getuser(login)
             if len(userdata) == 0:
-                return render_template('index.html', message='User doesnt exist.')
+                return jsonify({'data': "user doesn't exist."})
             #print("entering graphdata")
             graphdata = datatograph(userdata[0]["id"])
             graphdata["users"].append(userdata[0])
@@ -414,14 +415,14 @@ def history():
     '''
     if request.method == 'POST':
         if validateaccesstoken():
-            login = request.form['login']
+            login = html.escape(request.form['login'])
             if str(login) == '':
                 print("empty user")
-                return render_template('index.html', message='Please enter required fields')
+                return jsonify({'data': "empty user"})
             login = str(login)
             userdata = getuser(login)
             if len(userdata) == 0:
-                return render_template('index.html', message='User doesnt exist.')
+                return jsonify({'data': "user doesn't exist."})
             print("entering followdata")
             date_time_obj = datetime.datetime.strptime((userdata[0]["created_at"]), '%Y-%m-%dT%H:%M:%S.%fZ')
             print(date_time_obj)
@@ -467,8 +468,8 @@ def adduser():
     '''
     print("entering adduser")
     if request.method == 'POST' and "user_id" in session:
-        login = request.form['login']
-        user_id = request.form['user_id']
+        login = html.escape(request.form['login'])
+        user_id = html.escape(request.form['user_id'])
         print(login)
         print(user_id)
         #check if already in database
@@ -509,8 +510,8 @@ def deleteuser():
     '''
     print("entering deleteuser")
     if request.method == 'POST' and "user_id" in session:
-        login = request.form['login']
-        user_id = request.form['user_id']
+        login = html.escape(request.form['login'])
+        user_id = html.escape(request.form['user_id'])
         print(login)
         print(user_id)
         #delete and add followers of this user_id
@@ -556,7 +557,7 @@ def gettriads():
         
         if 'login' not in request.form:
             return render_template('index.html', message='Input is wrong')
-        login = request.form['login']
+        login = html.escape(request.form['login'])
         if login == '':
             #print("empty user")
             return render_template('index.html', message='Please enter required fields')

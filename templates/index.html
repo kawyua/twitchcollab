@@ -6,7 +6,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Twitch Collab</title>
+    <title>Twitch History</title>
     <!-- Add js here -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
@@ -33,7 +33,7 @@
       <div id="sidebar-wrapper">
         <ul class="sidebar-nav">
           
-          <li class="sidebar-brand"><a href="/">Twitch Collab</a></li>
+          <li class="sidebar-brand"><a href="/">Twitch History</a></li>
           <!--<li><a href="#">Home</a></li>
           <li><a href="#">Overview</a></li>
           <li><a href="#">Events</a></li>
@@ -88,7 +88,7 @@
                   {% if session['login'] %}
                     <p class="lead">Welcome {{session['login']}}!</p>
                   {% else %}
-                  <p class="lead">Twitch Collab shows you your history of your follows on twitch and history of others.</p>
+                  <p class="lead">Twitch History shows you your history of your follows on twitch and history of others.</p>
                   <p class="lead">Sign in through twitch to see related information to you.</p>
                   <a href='https://id.twitch.tv/oauth2/authorize?response_type=code&client_id={{session["client_id"]}}&redirect_uri={{session["redirect_uri"]}}&scope=' >Login through twitch</a>
                   {% endif %}
