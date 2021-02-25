@@ -7,34 +7,28 @@
     <meta name="author" content="">
 
     <title>Twitch Collab</title>
+    <!-- Add js here -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
-    <!-- Add custom CSS here -->
+    <script src="{{url_for('static', filename='cytoscape.min.js')}}"></script>
+    
+    <!-- Add CSS here -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+    <!-- Add custom CSS here -->
     <link href="{{url_for('static', filename='simple-sidebar.css')}}" rel="stylesheet">
     <link href="{{url_for('static', filename='style.css')}}" rel="stylesheet">
 
     {% block head %}{% endblock %}
     
   </head>
-  <style>
-    #cy {
-        width: 100%;
-        height: 90%;
-        position: absolute;
-        margin-top:30px;
-        top: 30px;
-        left: 0px;
-    }
-  </style>
   <body>
   
     <div id="wrapper">
-      
       <!-- Sidebar -->
       <div id="sidebar-wrapper">
         <ul class="sidebar-nav">
@@ -46,29 +40,26 @@
           <li><a href="#">About</a></li>
           -->
           {% if session['login'] %}
-          <li><a href='/history?login={{session["login"]}}'>{{session["login"]}} Follow History</a></li>
-          <li><a href='/graph?login={{session["login"]}}'>{{session["login"]}} Graph</a></li>
-          {% else %}
+          <li><input type="button"  name='{{session["login"]}}' class="btn btn-outline-secondary btn-block" id='sessionuserhistory' value='{{session["login"]}} Follow History' onclick="loading(this,'/history')"></li>
+          <li ><input type="button" name='{{session["login"]}}' class="btn btn-outline-secondary btn-block" id='sessionusergraph' value='{{session["login"]}} Graph' onclick="loading(this,'/graph')"></li>
+          {% else %}"
           <li><a href='https://id.twitch.tv/oauth2/authorize?response_type=code&client_id={{session["client_id"]}}&redirect_uri={{session["redirect_uri"]}}&scope=' >Login through twitch</a>
           </li>
           {% endif %}
           
           
-          <div id="loading"></div>
-          <div id="content">
-          <form action="/history" method="GET">
+          <form>
           <li>
           <input type="text" name="login" class="form-control" id ="login" placeholder="Enter a twitch user"></li>
-          <li><input type="submit" value="Get Follow History" class="btn btn-outline-secondary btn-block" onclick="loading();" ></li>
-          <li><input type="submit" value= "Get Graph" class="btn btn-outline-secondary btn-block" formaction="/graph" onclick="loading();"></li>
+          <li><input type="button" value="Get Follow History" class="btn btn-outline-secondary btn-block"  onclick="loading(this, '/history')"></li>
+          <li><input type="button" value= "Get Graph" class="btn btn-outline-secondary btn-block"  onclick="loadinng(this, '/graph')"></li>
           <!--<input type="submit" name = "Get triads" value= "Get triads" class="btn btn-primary" formaction="/gettriads"/>-->
           </form>
-          <li><input type="checkbox" checked id="deleteorlink" data-toggle="toggle" data-on="Link Saves" data-off="Delete Saves" data-onstyle="outline-light" data-offstyle="outline-dark" data-height="100%">
-          </li>
-          </div>
+          
           {% if session['login'] and session["saved_users"] %}
+          <input type="checkbox" checked id="deleteorlink" data-toggle="toggle" data-on="Link Saves" data-off="Delete Saves" data-onstyle="outline-light" data-offstyle="outline-dark" data-height="100%">
             {% for user in session["saved_users"]%}
-            <li id="usersave{{user[1]}}" onclick='deleteorredirect("/history?login={{user[0]}}","{{user[0]}}",{{user[1]}})'>{{user[0]}} Follow History</li>
+            <input id="usersave{{user[1]}}" class="btn btn-outline-secondary btn-block" name="{{user[0]}}" value="{{user[0]}} Follow History" onclick='deleteorredirect(this,"/history","{{user[0]}}",{{user[1]}})'>
             {% endfor %}
           {% endif %}
         </ul>
@@ -78,30 +69,35 @@
       <div id="page-content-wrapper">
         <div class="content-header">
           <h1>
-            <a id="menu-toggle" href="#" class="btn btn-default"><i class="icon-reorder"></i></a>
+            <a id="menu-toggle" href="#" class="btn btn-default infront"><i class="icon-reorder"></i></a>
           </h1>
+          <h2><div id="time"> </div></h2>
           {% block info%}{% endblock %}
         </div>
         <!-- Keep all page content within the page-content inset div! -->
-        <div class="page-content inset">
+        <div class="page-content inset" >
           <div class="row">
-            {% if isIndex %}
-            <div class="row"><div class="col-md-12">
-              {% if session['login'] %}
-                <p class="lead">Welcome {{session['login']}}!</p>
-              {% else %}
-              <p class="lead">Twitch Collab shows you your history of your follows on twitch and history of others.</p>
-              <p class="lead">Sign in through twitch to see related information to you.</p>
-              <a href='https://id.twitch.tv/oauth2/authorize?response_type=code&client_id={{session["client_id"]}}&redirect_uri={{session["redirect_uri"]}}&scope=' >Login through twitch</a>
+            <div id="loading">
+              <h2>The first request for a user will take a while. Please come back in ~30 secs for a user with ~50 follows or more for larger follow sets. Adding unique follows will also take more time.
+              </h2>
+            </div>
+            <div id="content">
+              {% if isIndex %}
+              <div class="row">
+                <div class="col-md-12">
+                  {% if session['login'] %}
+                    <p class="lead">Welcome {{session['login']}}!</p>
+                  {% else %}
+                  <p class="lead">Twitch Collab shows you your history of your follows on twitch and history of others.</p>
+                  <p class="lead">Sign in through twitch to see related information to you.</p>
+                  <a href='https://id.twitch.tv/oauth2/authorize?response_type=code&client_id={{session["client_id"]}}&redirect_uri={{session["redirect_uri"]}}&scope=' >Login through twitch</a>
+                  {% endif %}
+                </div>
+                <div class="col-md-12">
+                    <a href="https://twitter.com/intent/tweet?button_hashtag=TwitchCollab&ref_src=twsrc%5Etfw" class="twitter-hashtag-button" data-show-count="false">Tweet #TwitchCollab</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                </div>
+              </div>
               {% endif %}
-            </div>
-            <div class="col-md-12">
-              <iframe src="https://www.facebook.com/plugins/like.php?href=http%3A%2F%2Ftwitchcollab.com&width=450&layout=standard&action=like&size=large&share=true&height=35&appId" width="450" height="35" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
-            </div>
-            <div class="col-md-12">
-                <a href="https://twitter.com/intent/tweet?button_hashtag=TwitchCollab&ref_src=twsrc%5Etfw" class="twitter-hashtag-button" data-show-count="false">Tweet #TwitchCollab</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-            </div>
-            {% endif %}
            <!-- 
             <div class="col-md-4">
               <p class="well">Three Column Example</p>
@@ -112,35 +108,31 @@
             <div class="col-md-4">
               <p class="well">You get the idea! Do whatever you want in the page content area!</p>
             </div> -->
-            {% block grapher%}{% endblock %}
+
+            
+            </div>
+          </div>
+          <div id="dataresponsefield" class="row">
           </div>
         </div>
       </div>
-    </div>
-      <!-- Load Facebook SDK for JavaScript -->
-  <div id="fb-root"></div>
-  <script async defer crossorigin="anonymous" 
-        src="https://connect.facebook.net/en_US/sdk.js#xfbml=1
-             &version={GRAPH_API_VERSION}
-             &appId={FACEBOOK_APP_ID}
-             &autoLogAppEvents=1" 
-        nonce="FOKrbAYI">
-  </script>
 
-  
+<button onclick="topFunction()" id="myBtn" title="Go to top">Top</button>
+
 
     <!-- Custom JavaScript for the Menu Toggle -->
     <script>
       
-    function deleteorredirect(url, login, user_id) {
-      console.log(url)
-      var login = login.toString(200)
-      var id = 'usersave'+user_id
+    function deleteorredirect(ele, url, login, user_id) {
+      $("#loading").show();
+      console.log(url);
+      var login = login.toString(200);
+      var id = 'usersave'+user_id;
       if ( document.getElementById('deleteorlink').checked) {
         // Returns true if checked
-        console.log("redirecting");
-        window.location.href = url;
-    } else {
+        loading(ele, url);
+      }else {
+        $("#loading").hide();
         // Returns false if not checked
         $.ajax({
           data : {
@@ -156,13 +148,13 @@
           if (data.toString(10) == 'Success'){
             console.log("hello success");
             console.log(id);
-            document.getElementById(id).remove();
+            ele.remove();
           }
         });
-    }
+      }
     }
 
-
+    
     $("#menu-toggle").click(function(e) {
         e.preventDefault();
         $("#wrapper").toggleClass("active");
@@ -174,18 +166,108 @@
     </script>
 
     
-    <script type="text/javascript">// <![CDATA[
+    <script>// <![CDATA[
       //loading icon for time consuming function
       //stackoverflow: https://stackoverflow.com/questions/14525029/display-a-loading-message-while-a-time-consuming-function-is-executed-in-flask
-      function loading(){
-        console.log("loading")
+      function loading(ele, url){
+        var login = ele.name;
+        console.log(login)
+        $("input").attr("disabled", "disable")
+        console.log("loading content")
           $("#loading").show();
-          $("#content").hide();       
+          $("#content").hide();
+          $("#time").hide();
+          $.ajax({
+            data : {
+            login : login,
+            },
+            url: url,
+            type: 'POST',
+            success: function(resp){
+                console.log("Successfully loaded content")
+                document.getElementById('dataresponsefield').innerHTML = "";
+                $('div#dataresponsefield').append(resp.data);
+                $("#loading").hide();
+                $("input").removeAttr("disabled");
+                
+                if(url == '/graph'){
+                  $("#time").show();
+                }
+                else{
+                  $("#time").hide();
+                }
+            }
+        });      
+      }
+      function loadinput(ele, url){
+        login = document.getElementById("login").value;
+        $("input").attr("disabled", "disable")
+          $("#loading").show();
+          $("#content").hide();
+          $("#time").hide();
+          $.ajax({
+            data : {
+            login : login,
+            },
+            url: url,
+            type: 'POST',
+            success: function(resp){
+                console.log("Successfully loaded content");
+                document.getElementById('dataresponsefield').innerHTML = "";
+                $('div#dataresponsefield').append(resp.data);
+                $("#loading").hide();
+                $("input").removeAttr("disabled");
+                if(url == '/graph'){
+                  $("#time").show();
+                }
+                else{
+                  $("#time").hide();
+                }
+            }
+        });      
       }
     // ]]></script>
-
-
-    
-    {% block followscroll %}{% endblock %}
+  <script>
+  //Get the button
+  var mybutton = document.getElementById("myBtn");
+  
+  // When the user scrolls down 20px from the top of the document, show the button
+  window.onscroll = function() {scrollFunction()};
+  
+  function scrollFunction() {
+    if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+      mybutton.style.display = "block";
+    } else {
+      mybutton.style.display = "none";
+    }
+  }
+  
+  // When the user clicks on the button, scroll to the top of the document
+  function topFunction() {
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+  }
+  function adduser(login, user_id){
+      console.log(login);
+      console.log(user_id);
+      var stringlogin = login.toString(10)
+      var txt1 = '<input id="usersave'+user_id+'" class="btn btn-outline-secondary btn-block" name="'+login+'" value="'+login+' Follow History" onclick='+"'deleteorredirect(this,"+'"/history","'+login+'",'+user_id+")'>";
+      console.log(txt1);
+      $.ajax({
+        data : {
+          login : login,
+          user_id: user_id,
+          },
+        type : 'POST',
+        url : '/adduser'
+      }).done(function(data) {
+        console.log(data);
+        if (data.toString(10) == 'Success'){
+          $(".sidebar-nav").append(txt1);
+        }
+      });
+    console.log("adding to sidebar")
+  }
+  </script>
   </body>
 </html>

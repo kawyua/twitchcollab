@@ -4,7 +4,7 @@ import csv
 import json
 import datetime
 import requests
-from flask import Flask, render_template, request, redirect, session,url_for
+from flask import Flask, render_template, request, redirect, session,url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import text
 from datetime import timedelta
@@ -370,15 +370,16 @@ def insertfollows2(user_id):
         db.session.commit()
     return followdata2
 
-@app.route('/graph', methods=['GET'])
+@app.route('/graph', methods=['POST'])
 def graph():
     '''
     post from submission, sets the page for /submit and gets graph
     Returns: /submit template page
     '''
-    if request.method == 'GET':
+    if request.method == 'POST':
         if validateaccesstoken():
-            login = request.args.get("login")
+            login = request.form['login']
+            print("login"+login)
             if str(login) == '':
                 print("empty user")
                 return render_template('index.html', message='Please enter required fields')
@@ -392,11 +393,11 @@ def graph():
             firstfollow = datetime.datetime.strptime(graphdata["follows"][len(graphdata["follows"]) - 1]["followed_at"], '%Y-%m-%dT%H:%M:%SZ')
             graphdata = json.dumps(graphdata)
             now = datetime.datetime.utcnow()
-            return render_template('graph.html',
+            return jsonify({'data': render_template('graph.html',
                 graphdata = graphdata,
                 total = (now - firstfollow).total_seconds(),
                 login = login
-            )
+            )})
         else:
             return redirect(
                 'https://id.twitch.tv/oauth2/authorize?response_type=code&client_id={0}&redirect_uri={1}&scope={2}'
@@ -405,15 +406,15 @@ def graph():
     else:
         return'Bad Request', 400
 
-@app.route('/history',methods = ['POST', 'GET'])
+@app.route('/history',methods = ['POST'])
 def history():
     '''
     post from submission, sets the page for /submit and gets graph
     Returns: /submit template page
     '''
-    if request.method == 'GET':
+    if request.method == 'POST':
         if validateaccesstoken():
-            login = request.args.get("login")
+            login = request.form['login']
             if str(login) == '':
                 print("empty user")
                 return render_template('index.html', message='Please enter required fields')
@@ -445,11 +446,12 @@ def history():
                     multiuserinfo.append(object_map[id["to_id"]])
             totalfollows = followdata2["total"]
             print("leaving follow")
-            return render_template('follow.html',
+            return jsonify({'data': render_template('follow.html',
                 data = multiuserinfo,
                 followdata = followcomparison,
                 followlen = totalfollows,
                 userdata=userdata)
+            })
         else:
             return redirect(
                 'https://id.twitch.tv/oauth2/authorize?response_type=code&client_id={0}&redirect_uri={1}&scope={2}'
