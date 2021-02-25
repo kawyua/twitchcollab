@@ -13,7 +13,6 @@ from dotenv import load_dotenv
 from requests.exceptions import HTTPError
 from requests.adapters import HTTPAdapter
 from urllib3.util import Retry
-from requests_toolbelt import sessions
 
 
 # load dotenv in the base root
@@ -30,8 +29,6 @@ SCOPE = ''
 ENV = os.getenv("ENV")
 GRAPH_API_VERSION = os.getenv("GRAPH_API_VERSION")
 FACEBOOK_APP_ID = os.getenv("FACEBOOK_APP_ID")
-BASE_URL = 'https://api.twitch.tv/helix/'
-http = sessions.BaseUrlSession(base_url="https://api.twitch.tv/helix")
 http = requests.Session()
 
 
