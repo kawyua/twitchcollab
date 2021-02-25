@@ -2,7 +2,7 @@
 
 > Python Flask app to shows the history of twitch follows and display the web of followers
 Production build: https://twitchhistory.herokuapp.com/
-Development build: https://twitchhistory.herokuapp.com/
+Development build: https://twitchhistorydev.herokuapp.com/
 
 ## Quick Start
 
