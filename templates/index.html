@@ -26,7 +26,7 @@
     {% block head %}{% endblock %}
     
   </head>
-  <body>
+  <body onload="onload();">
   
     <div id="wrapper">
       <!-- Sidebar -->
@@ -50,14 +50,14 @@
           
           <form>
           <li>
-          <input type="text" name="login" class="form-control" id ="login" placeholder="Enter a twitch user"></li>
-          <li><input type="button" value="Get Follow History" class="btn btn-outline-secondary btn-block"  onclick="loading(this, '/history')"></li>
-          <li><input type="button" value= "Get Graph" class="btn btn-outline-secondary btn-block"  onclick="loadinng(this, '/graph')"></li>
+          <input type="text" name="login" class="form-control" id ="login" placeholder="Enter a twitch user" ></li>
+          <li><input type="button" value="Get Follow History" class="btn btn-outline-secondary btn-block"  onclick="loadinput(this, '/history')"></li>
+          <li><input type="button" value= "Get Graph" class="btn btn-outline-secondary btn-block"  onclick="loadinput(this, '/graph')"></li>
           <!--<input type="submit" name = "Get triads" value= "Get triads" class="btn btn-primary" formaction="/gettriads"/>-->
           </form>
           
-          {% if session['login'] and session["saved_users"] %}
           <input type="checkbox" checked id="deleteorlink" data-toggle="toggle" data-on="Link Saves" data-off="Delete Saves" data-onstyle="outline-light" data-offstyle="outline-dark" data-height="100%">
+          {% if session['login'] and session["saved_users"] %}
             {% for user in session["saved_users"]%}
             <input id="usersave{{user[1]}}" class="btn btn-outline-secondary btn-block" name="{{user[0]}}" value="{{user[0]}} Follow History" onclick='deleteorredirect(this,"/history","{{user[0]}}",{{user[1]}})'>
             {% endfor %}
@@ -199,8 +199,14 @@
             }
         });      
       }
+      var logininput;
+      function onload() { 
+        logininput = document.getElementById('login');
+      }
       function loadinput(ele, url){
-        login = document.getElementById("login").value;
+        login = logininput.value;
+        console.log("login");
+        console.log(login);
         $("input").attr("disabled", "disable")
           $("#loading").show();
           $("#content").hide();
