@@ -8,7 +8,7 @@ load_dotenv()
 
 listen = ['high', 'default', 'low']
 
-redis_url = os.getenv('REDISTOGO_URL', 'redis://localhost:6379')
+redis_url = os.getenv('REDISTOGO_URL')
 ENV = os.getenv("ENV")
 
 conn = redis.from_url(redis_url)
