@@ -47,7 +47,6 @@
           </li>
           {% endif %}
           
-          
           <form>
           <li>
           <input type="text" name="login" class="form-control" id ="login" placeholder="Enter a twitch user" ></li>
@@ -72,47 +71,35 @@
             <a id="menu-toggle" href="#" class="btn btn-default infront"><i class="icon-reorder"></i></a>
           </h1>
           <h2><div id="time"> </div></h2>
+          <div id="loading" class="container">
+            <h2>Loading Request...
+            </h2>
+          </div>
           {% block info%}{% endblock %}
         </div>
         <!-- Keep all page content within the page-content inset div! -->
         <div class="page-content inset" >
-          <div class="row">
-            <div id="loading">
-              <h2>The first request for a user will take a while. Please come back in ~30 secs for a user with ~50 follows or more for larger follow sets. Adding unique follows will also take more time.
-              </h2>
-            </div>
-            <div id="content">
-              {% if isIndex %}
-              <div class="row">
-                <div class="col-md-12">
-                  {% if session['login'] %}
-                    <p class="lead">Welcome {{session['login']}}!</p>
-                  {% else %}
-                  <p class="lead">Twitch History shows you your history of your follows on twitch and history of others.</p>
-                  <p class="lead">Sign in through twitch to see related information to you.</p>
-                  <a href='https://id.twitch.tv/oauth2/authorize?response_type=code&client_id={{session["client_id"]}}&redirect_uri={{session["redirect_uri"]}}&scope=' >Login through twitch</a>
-                  {% endif %}
-                </div>
-                <div class="col-md-12">
-                    <a href="https://twitter.com/intent/tweet?button_hashtag=TwitchCollab&ref_src=twsrc%5Etfw" class="twitter-hashtag-button" data-show-count="false">Tweet #TwitchCollab</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-                </div>
-              </div>
-              {% endif %}
-           <!-- 
-            <div class="col-md-4">
-              <p class="well">Three Column Example</p>
-            </div>
-            <div class="col-md-4">
-              <p class="well">Three Column Example</p>
-            </div>
-            <div class="col-md-4">
-              <p class="well">You get the idea! Do whatever you want in the page content area!</p>
-            </div> -->
-
-            
-            </div>
+          <div id="jobqueue" class="row">
           </div>
-          <div id="dataresponsefield" class="row">
+          <div class="row">
+              <div id="content" class= "row">
+                {% if isIndex %}
+                  <div class="col-md-12">
+                    {% if session['login'] %}
+                      <p class="lead">Welcome {{session['login']}}!</p>
+                    {% else %}
+                    <p class="lead">Twitch History shows you your history of your follows on twitch and history of others.</p>
+                    <p class="lead">Sign in through twitch to see related information to you.</p>
+                    <a href='https://id.twitch.tv/oauth2/authorize?response_type=code&client_id={{session["client_id"]}}&redirect_uri={{session["redirect_uri"]}}&scope=' >Login through twitch</a>
+                    {% endif %}
+                  </div>
+                  <div class="col-md-12">
+                      <a href="https://twitter.com/intent/tweet?button_hashtag=TwitchCollab&ref_src=twsrc%5Etfw" class="twitter-hashtag-button" data-show-count="false">Tweet #TwitchCollab</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                  </div>
+                {% endif %}
+              </div>
+              <div id="dataresponsefield" class="row">
+              </div>
           </div>
         </div>
       </div>
@@ -122,6 +109,75 @@
 
     <!-- Custom JavaScript for the Menu Toggle -->
     <script>
+   function polldata(jobID, url) {
+    var timeout = 20000;
+    var timeoutmax = 3000
+    var firstloop = 0;
+    var poller = function() {
+      // fire another request
+      $.ajax({
+            data : {
+            },
+            url: '/results/'+jobID+url,
+            type: 'GET',
+            success: function(resp){
+              if(resp.status == 202) {
+                  console.log(resp.data)
+                  if(firstloop == 0){
+                    var delay = resp.data;
+                    console.log("waiting for queries to finish.");
+                    
+                    var delaymessage = 
+                    '<div class="container"><div class="row"><div class="col"><p> Querying '
+                        + resp.data +' from the database. Getting results approximately in an average '
+                        + (delay/4+ 3) 
+                        + ' seconds</p></div></div><div class="row" id="delaymessage" ></div></div>';
+                    $('div#jobqueue').append(delaymessage);
+                    setTimeout(poller, Math.max(Math.min(delay*250,20000), timeoutmax)); 
+                    if(delay*250 > 20000){
+                      timeout = delay*250 - 20000;
+                    }
+                    else{
+                      timeout = delay*250;
+                    }
+                    firstloop++;
+                    
+                  } 
+                  else{
+                    firstloop++;
+                    timeout -= 20000;
+                    console.log("polling for results");
+                    var delaymessage = 
+                    '<div class="row"><div class="col"><p> Polling results. Job is currently '
+                      + resp.job_status+'. Requesting again in '+ Math.max(Math.min(timeout,20000), timeoutmax)/1000
+                      +' seconds ('+firstloop+')</p></div></div>';
+                    
+                    document.getElementById('delaymessage').innerHTML = "";
+                    $('div#delaymessage').append(delaymessage);
+                    setTimeout(poller, Math.max(Math.min(timeout,20000), timeoutmax));
+                  }
+              } 
+              else if (resp.status == 200){
+                console.log("Successfully called");
+                document.getElementById('jobqueue').innerHTML = "";
+                document.getElementById('dataresponsefield').innerHTML = "";
+                $('div#dataresponsefield').append(resp.data);
+              }
+              else{
+                console.log("entering failed due to unknown error")
+                console.log(resp)
+                console.log(status)
+                console.log("request failed")
+              }
+            },
+            failed: function(){
+              console.log("failed to connect");
+            }
+        });
+    };
+    poller();
+  }
+
       
     function deleteorredirect(ele, url, login, user_id) {
       $("#loading").show();
@@ -184,18 +240,19 @@
             url: url,
             type: 'POST',
             success: function(resp){
-                console.log("Successfully loaded content")
-                document.getElementById('dataresponsefield').innerHTML = "";
-                $('div#dataresponsefield').append(resp.data);
-                $("#loading").hide();
-                $("input").removeAttr("disabled");
-                
-                if(url == '/graph'){
-                  $("#time").show();
-                }
-                else{
-                  $("#time").hide();
-                }
+              console.log("Successfully queued")
+              document.getElementById('jobqueue').innerHTML = "";
+              $('div#jobqueue').append(resp.data);
+              $("#loading").hide();
+              $("input").removeAttr("disabled");
+              
+              if(url == '/graph'){
+                $("#time").show();
+              }
+              else{
+                $("#time").hide();
+              }
+              polldata(resp.job_id, url)
             }
         });      
       }
@@ -218,17 +275,19 @@
             url: url,
             type: 'POST',
             success: function(resp){
-                console.log("Successfully loaded content");
-                document.getElementById('dataresponsefield').innerHTML = "";
-                $('div#dataresponsefield').append(resp.data);
-                $("#loading").hide();
-                $("input").removeAttr("disabled");
-                if(url == '/graph'){
-                  $("#time").show();
-                }
-                else{
-                  $("#time").hide();
-                }
+              console.log("Successfully queued")
+              document.getElementById('jobqueue').innerHTML = "";
+              $('div#jobqueue').append(resp.data);
+              $("#loading").hide();
+              $("input").removeAttr("disabled");
+              
+              if(url == '/graph'){
+                $("#time").show();
+              }
+              else{
+                $("#time").hide();
+              }
+              polldata(resp.job_id, url)
             }
         });      
       }

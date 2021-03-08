@@ -1,4 +1,3 @@
-import re
 import os
 import csv
 import json
@@ -13,7 +12,14 @@ from dotenv import load_dotenv
 from requests.exceptions import HTTPError
 from requests.adapters import HTTPAdapter
 from urllib3.util import Retry
+import redis
+from rq import Queue
+from rq.job import Job
+from worker import conn
+import urllib.request
 
+from functions import (postrequest, getrequest, getvideoID,
+getfollowers, getMultiUserInfo, getuser, addvideoinfo, getallfollows, get_app_access_token_header)
 
 # load dotenv in the base root
 #APP_ROOT = os.path.join(os.path.dirname(__file__), '..')   # refers to application_top
@@ -29,42 +35,7 @@ SCOPE = ''
 ENV = os.getenv("ENV")
 GRAPH_API_VERSION = os.getenv("GRAPH_API_VERSION")
 FACEBOOK_APP_ID = os.getenv("FACEBOOK_APP_ID")
-http = requests.Session()
 
-
-DEFAULT_TIMEOUT = 5 # seconds
-
-class TimeoutHTTPAdapter(HTTPAdapter):
-    '''
-    sets up http adaptor for custom request settings
-    '''
-    def __init__(self, *args, **kwargs):
-        self.timeout = DEFAULT_TIMEOUT
-        if "timeout" in kwargs:
-            self.timeout = kwargs["timeout"]
-            del kwargs["timeout"]
-        super().__init__(*args, **kwargs)
-
-    def send(self, request, **kwargs):
-        timeout = kwargs.get("timeout")
-        if timeout is None:
-            kwargs["timeout"] = self.timeout
-        return super().send(request, **kwargs)
-
-# Mount it for both http and https usage
-ADAPTER = TimeoutHTTPAdapter(timeout=2.5)
-http.mount("https://", ADAPTER)
-http.mount("http://", ADAPTER)
-TOTAL = 3
-STATUS_FORCELIST=[413, 429, 500, 502, 503, 504]
-METHOD_WHITELIST=["HEAD", "GET", "PUT", "DELETE", "OPTIONS", "TRACE", "POST"]
-BACKOFF_FACTOR = 1
-
-retries = Retry(total=TOTAL,
-    backoff_factor=BACKOFF_FACTOR,
-    status_forcelist=STATUS_FORCELIST,
-    method_whitelist = METHOD_WHITELIST)
-http.mount("https://", TimeoutHTTPAdapter(max_retries=retries))
 
 app = Flask(__name__)
 #def testmode(ENV):
@@ -79,6 +50,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 
 db = SQLAlchemy(app)
+
+r = redis.Redis()
+q = Queue(connection=r)
 
 class Users(db.Model):
     """
@@ -176,6 +150,21 @@ class Followcache(db.Model):
         self.followed_at = followed_at
         self.updated_at = updated_at
 
+class SavedFollows(db.Model):
+    '''
+    id = db.Column(db.Integer, primary_key=True)
+    to_id = db.Column(db.Integer)
+    to_login = db.Column(db.String(200), unique=True)
+    updated_at = db.Column(db.DateTime)
+    '''
+    __tablename__ = 'savedfollows'
+    id = db.Column(db.Integer, primary_key=True)
+    to_id = db.Column(db.Integer)
+    updated_at = db.Column(db.DateTime)
+    def __init__(self, to_id, updated_at):
+        self.to_id = to_id
+        self.updated_at = updated_at
+
 @app.route('/')
 def index():
     '''
@@ -183,7 +172,7 @@ def index():
     '''
     print("scope print")
     print(SCOPE)
-    if not validateaccesstoken():
+    if not validate_access_token():
         return redirect(
             'https://id.twitch.tv/oauth2/authorize?response_type=code&client_id={0}&redirect_uri={1}&scope={2}'
         .format(CLIENT_ID, REDIRECT_URI, SCOPE))
@@ -195,46 +184,33 @@ def getanon():
     '''
     For people that do not login through their twitch,
     '''
-    url ='https://id.twitch.tv/oauth2/token' 
-    try:
-        print("getting access_token")
-        response = http.post(url,
-        data={'client_id':CLIENT_ID,
+    url ='https://id.twitch.tv/oauth2/token'
+    data={'client_id':CLIENT_ID,
         'client_secret':CILENT_SECRET,
         'grant_type':'client_credentials'
-        })
-
-        # If the response was successful, no Exception will be raised
-        response.raise_for_status()
-    except HTTPError as http_err:
-        print('HTTP error occurred:{0}'.format(http_err))  # Python 3.6
-    except Exception as err:
-        print('Other error occurred: {0}'.format(err))  # Python 3.6
-    else:
-        #print('Success!')
-        #Sprint('response?{0}'.format(response.text))
-        session['access_token'] =  response.json()[u'access_token']
-        print(response.json())
-        headers = {
-            'client-id': CLIENT_ID,
-            'Authorization': 'Bearer {0}'.format(session['access_token']),
         }
-        #print("checking user")
-        params = (
-        )
-        url = 'https://id.twitch.tv/oauth2/validate?'
-        data2 = getrequest(url,headers, params)
-        
-        if len(data2) > 0:
-            user_id = 0
-            login = ""
-            updated_at = datetime.datetime.utcnow()
-            userdata = Users(user_id, login, updated_at)
-            db.session.add(userdata)
-            db.session.commit()
+    response = postrequest(url, data)
+    session['access_token'] =  response['access_token']
+    headers = {
+        'client-id': CLIENT_ID,
+        'Authorization': 'Bearer {0}'.format(session['access_token']),
+    }
+    #print("checking user")
+    params = (
+    )
+    url = 'https://id.twitch.tv/oauth2/validate?'
+    data2 = getrequest(url,headers, params)
+    
+    if len(data2) > 0:
+        user_id = 0
+        login = ""
+        updated_at = datetime.datetime.utcnow()
+        userdata = Users(user_id, login, updated_at)
+        db.session.add(userdata)
+        db.session.commit()
     return
 
-def validateaccesstoken():
+def validate_access_token():
     '''
      checks if access token is valid, if none in session go anon
      returns boolean where if not valid and no refresh token in session, noredirect is false
@@ -292,81 +268,34 @@ def login():
     'refresh_token': 'sfjh8uwo2zav76a97werjubquy11pbat2e4ve12q03uw8gzx12', 
     'scope': ['user_read'], 'token_type': 'bearer'} for logged in
     '''
-    url ='https://id.twitch.tv/oauth2/token' 
     code = request.args.get('code', None)
     scope = request.args.get('scope', None)
-    print("printing scope:"+scope)
-    if code:
-        try:
-            response = http.post(url, 
-        data={'client_id':CLIENT_ID,
+    url ='https://id.twitch.tv/oauth2/token'
+    data={'client_id':CLIENT_ID,
         'client_secret':CILENT_SECRET,
         'code':code,
         'grant_type':'authorization_code',
         'redirect_uri':REDIRECT_URI
-        })
+        }
+    print("printing scope:"+scope)
+    if code:
+        data = postrequest(url,data)
+        print("logging in")
+        print(data)
+        session['access_token'] = data["access_token"]
+        session['refresh_token'] = data["refresh_token"]
 
-            # If the response was successful, no Exception will be raised
-            response.raise_for_status()
-        except HTTPError as http_err:
-            print('HTTP error occurred:{0}'.format(http_err))  # Python 3.6
-            return redirect(url_for('index'))
-
-        except Exception as err:
-            print('Other error occurred: {0}'.format(err))  # Python 3.6
-            return redirect(url_for('index'))
+        if not validate_access_token():
+            print("redirect to login if it doesn't work")
+            return redirect(
+                'https://id.twitch.tv/oauth2/authorize?response_type=code&client_id={0}&redirect_uri={1}&scope={2}'
+                .format(CLIENT_ID, REDIRECT_URI, SCOPE))
         else:
-            data = response.json()
-            print("logging in")
-            print(data)
-            session['access_token'] = data["access_token"]
-            session['refresh_token'] = data["refresh_token"]
-
-            if not validateaccesstoken():
-                print("redirect to login if it doesn't work")
-                return redirect(
-                    'https://id.twitch.tv/oauth2/authorize?response_type=code&client_id={0}&redirect_uri={1}&scope={2}'
-                    .format(CLIENT_ID, REDIRECT_URI, SCOPE))
-            else:
-                print("redirect to index")
-                return redirect(url_for('index'))
+            print("redirect to index")
+            return redirect(url_for('index'))
     else:
         print("redirect to index due to no code or scope")
         return redirect(url_for('index'))
-
-def insertfollows2(user_id):
-    '''
-    inserts follows of deepness 2
-    '''
-    print("inserting followdata")
-    #delete and add followers of this user_id
-    db.session.execute(
-        text('DELETE FROM Followcache WHERE from_id = :user_id '),
-        {"user_id":int(user_id)})
-    followdata2 = insertfollows(user_id)
-    
-    #get all id that I don't have followdata of yet
-    rs = db.session.execute(
-            text('''SELECT t1.to_id 
-            FROM Followcache t1 
-            LEFT JOIN Followcache t2 ON t2.from_id = t1.to_id 
-            WHERE t1.from_id = :user_id  AND t2.from_id IS NULL '''),
-            {"user_id":int(user_id)})
-
-    #insert all new user_id
-    for row in rs:
-        insertfollows(row.to_id)
-    db.session.commit()
-
-    #insert history
-    timenow = datetime.datetime.utcnow()
-    if "user_id" in session:
-        from_id = session["user_id"]
-        to_id = user_id
-        dbdata = Callhistory(from_id, to_id, timenow)
-        db.session.add(dbdata)
-        db.session.commit()
-    return followdata2
 
 @app.route('/graph', methods=['POST'])
 def graph():
@@ -374,28 +303,21 @@ def graph():
     post from submission, sets the page for /submit and gets graph
     Returns: /submit template page
     '''
+    jobs = q.jobs  # Get a list of jobs in the queue
+    message = None
     if request.method == 'POST':
-        if validateaccesstoken():
-            login = request.form['login']
-            print("login"+login)
+        if validate_access_token():
+            login = html.escape(request.form['login'])
             if str(login) == '':
                 print("empty user")
-                return jsonify({'data': "empty user input"})
+                return jsonify({'data': "empty user"})
             login = str(login)
             userdata = getuser(login)
             if len(userdata) == 0:
                 return jsonify({'data': "user doesn't exist."})
-            #print("entering graphdata")
-            graphdata = datatograph(userdata[0]["id"])
-            graphdata["users"].append(userdata[0])
-            firstfollow = datetime.datetime.strptime(graphdata["follows"][len(graphdata["follows"]) - 1]["followed_at"], '%Y-%m-%dT%H:%M:%SZ')
-            graphdata = json.dumps(graphdata)
-            now = datetime.datetime.utcnow()
-            return jsonify({'data': render_template('graph.html',
-                graphdata = graphdata,
-                total = (now - firstfollow).total_seconds(),
-                login = login
-            )})
+            #remember followdata is already sorted by most recent follow date
+            return_task = insertfollows2(userdata)
+            return return_task
         else:
             return redirect(
                 'https://id.twitch.tv/oauth2/authorize?response_type=code&client_id={0}&redirect_uri={1}&scope={2}'
@@ -411,7 +333,7 @@ def history():
     Returns: /submit template page
     '''
     if request.method == 'POST':
-        if validateaccesstoken():
+        if validate_access_token():
             login = html.escape(request.form['login'])
             if str(login) == '':
                 print("empty user")
@@ -420,42 +342,72 @@ def history():
             userdata = getuser(login)
             if len(userdata) == 0:
                 return jsonify({'data': "user doesn't exist."})
-            print("entering followdata")
-            date_time_obj = datetime.datetime.strptime((userdata[0]["created_at"]), '%Y-%m-%dT%H:%M:%S.%fZ')
-            print(date_time_obj)
-            #remember followdata is already sorted by most recent follow date
-            timenow = datetime.datetime.utcnow() - timedelta(days=7)
-            userid = userdata[0]["id"]
-            followdata2 = getfollowdata(userid)
-            userlist = []
-            for follower in followdata2["data"]:
-                userlist.append(('id',follower["to_id"]))
-                follower["followed_at"] = datetime.datetime.strptime(follower["followed_at"], '%Y-%m-%dT%H:%M:%SZ')
-        
-            followcomparison = addvideoinfo(followdata2)
-            print("entering getmultiuserinfo function")
-            multiuserinfo = getMultiUserInfo(userlist)
-            print("leaving getmultiuserinfo function")
-            #sorts multiuserinfo by follow date
-            object_map = {o['id']: o for o in multiuserinfo}
-            multiuserinfo = []
-            for id in followdata2["data"]:
-                if id["to_id"] in object_map:
-                    multiuserinfo.append(object_map[id["to_id"]])
-            totalfollows = followdata2["total"]
-            print("leaving follow")
-            return jsonify({'data': render_template('follow.html',
-                data = multiuserinfo,
-                followdata = followcomparison,
-                followlen = totalfollows,
-                userdata=userdata)
-            })
+            return_task = insertfollows2(userdata)
+            return return_task
+            
         else:
             return redirect(
                 'https://id.twitch.tv/oauth2/authorize?response_type=code&client_id={0}&redirect_uri={1}&scope={2}'
             .format(CLIENT_ID, REDIRECT_URI, SCOPE))
     else:
         return'Bad Request', 400
+
+@app.route("/results/<job_key>/<output>", methods=['GET'])
+def get_results(job_key, output):
+
+    job = Job.fetch(job_key, connection=conn)
+    print("testing "+job.get_status())
+    if job.is_finished:
+        print("inserting allfollows")
+        insertallfollows(job.result[0], job.result[3])
+        userdata = job.result[1]
+        print("getting followdata")
+        followdata2 = getfollowdata(userdata[0]["id"], job.result[2])
+        userlist = []
+        for follower in followdata2["data"]:
+            userlist.append(('id',follower["to_id"]))
+            follower["followed_at"] = datetime.datetime.strptime(
+                follower["followed_at"], '%Y-%m-%dT%H:%M:%SZ')
+
+        print("entering getmultiuserinfo function")
+        multiuserinfo = getMultiUserInfo(userlist)
+        print("leaving getmultiuserinfo function")
+        #sorts multiuserinfo by follow date
+        object_map = {o['id']: o for o in multiuserinfo}
+        multiuserinfo = []
+        for id in followdata2["data"]:
+            if id["to_id"] in object_map:
+                multiuserinfo.append(object_map[id["to_id"]])
+        print("leaving follow")
+
+        firstfollow = followdata2["data"][len(followdata2["data"]) - 1]["followed_at"]
+        print(firstfollow)
+        now = datetime.datetime.utcnow()
+        print(now)
+        #setting up which html file to direct to
+        htmlfile = "index.html"
+        if output == "graph":
+            htmlfile = "graph.html"
+        elif output == "history":
+            followdata2 = addvideoinfo(followdata2)
+            htmlfile = "follow.html"
+        print("finished making output")
+        firstfollow = (now - firstfollow).total_seconds()
+        return jsonify({'data': render_template(htmlfile,
+            data = multiuserinfo,
+            followdata = followdata2["data"],
+            firstfollow = firstfollow,
+            followlen = followdata2["total"],
+            userdata=job.result[1]),
+            'status':200
+        })
+    else:
+        print("polling" + job.get_status())
+        return jsonify({'data':job.description,
+            'status':202,
+            'job_status':job.get_status()
+
+        })
 
 @app.route('/adduser', methods=['POST'])
 def adduser():
@@ -542,32 +494,7 @@ def deleteuser():
         return 'Failure'
     else:
         print('Failed deletion')
-        return 'Failure'
-
-@app.route('/gettriads', methods=['POST'])
-def gettriads():
-    '''
-    from submission, sets the page for /submit and calls to make recommendations
-    Returns: /submit template page
-    '''
-    if request.method == 'POST':
-        
-        if 'login' not in request.form:
-            return render_template('index.html', message='Input is wrong')
-        login = html.escape(request.form['login'])
-        if login == '':
-            #print("empty user")
-            return render_template('index.html', message='Please enter required fields')
-        userdata = getuser(login)
-        print(login)
-        print(userdata)
-        if len(userdata) == 0:
-            return render_template('index.html', message='User doesnt exist.')
-        getfollows(userdata[0]["id"])
-        
-        return render_template('index.html')
-    else:
-        return'Bad Request', 400 
+        return 'Failure' 
 
 def insertfollows(user_id):
     '''
@@ -578,6 +505,9 @@ def insertfollows(user_id):
     print(user_id)
     followdata = getfollowers(user_id)
     timenow = datetime.datetime.utcnow()
+    dbdata2 = SavedFollows(user_id, timenow)
+    db.session.add(dbdata2)
+    db.session.commit()
     for follower in followdata["data"]:
         from_id = follower["from_id"]
         from_login = str(follower["from_login"])
@@ -586,7 +516,7 @@ def insertfollows(user_id):
         followed_at = datetime.datetime.strptime(follower["followed_at"], '%Y-%m-%dT%H:%M:%SZ')
         dbdata = Followcache(from_id, from_login, to_id, to_login, followed_at, timenow)
         db.session.add(dbdata)
-        db.session.commit()
+    db.session.commit()
     return followdata
 
 def getfollowtotal(user_id):
@@ -610,12 +540,11 @@ def getfollowtotal(user_id):
             followtotal[follow_id] = row.total
     return followtotal
 
-def getfollowdata(user_id):
+def getfollowdata(user_id, followdata):
     '''
     calls to get follows of a twitch user_id with common follows and triadic closures
     returns followdata json with additional info on each follow
     '''
-    followdata = insertfollows2(user_id)
     commonfollowsession = {}
     familiarfollowers = {}
     triad = {}
@@ -625,7 +554,6 @@ def getfollowdata(user_id):
 
     if "user_id" in session and session["user_id"] != user_id :
         userselect = session["user_id"]
-        insertfollows2(session["user_id"])
         #get common follows
         rows = db.session.execute(
                 text('''SELECT A.to_login AS from_login, B.to_login AS to_login,
@@ -718,137 +646,6 @@ def getfollowdata(user_id):
             datetime.datetime.strptime(followdata["data"][index]["followed_at"], '%Y-%m-%dT%H:%M:%SZ') - firstfollow).total_seconds()
     return followdata
 
-def datatograph(user_id):
-    '''
-    parameter: user_id
-
-    returns graphout = {"users":multiuserinfo , "follows":followdata}
-    '''
-    graphoutput = {}
-    followerslist = getfollowdata(user_id)["data"]
-    userlist = []
-    for follow in followerslist:
-        userlist.append(('id',follow["to_id"]))
-    multiuserinfo = getMultiUserInfo(userlist)
-
-    ##print("entering getmultiuserinfo function")
-    graphoutput["users"] = multiuserinfo
-    graphoutput["follows"] = followerslist
-    return graphoutput
-
-def addvideoinfo(followdata):
-    '''
-    calls getvideo_id and adds video_id, video_timestamp, video_info to followdata
-    '''
-    
-    expiredate = datetime.datetime.utcnow() - datetime.timedelta(60)
-    for index,twitchuser in enumerate(followdata["data"]):
-        if twitchuser["followed_at"] > expiredate:
-            videoinfo = getvideoID(twitchuser["to_id"], twitchuser["followed_at"])
-            if videoinfo is not None:
-                followdata["data"][index]["video_id"] = videoinfo[0]
-                followdata["data"][index]["video_timestamp"] = videoinfo[1]
-                followdata["data"][index]["video_info"] = videoinfo[2]
-    return followdata["data"]
-
-def getuser(username):
-    '''
-    Calls twitch api to get information of a specific username:
-    Returns: A json list of structure
-    {
-        "data":[{
-            "id":"int",
-            "login":"string",
-            "display_name":"string",
-            "type":"",
-            "broadcaster_type": null or "partner",
-            "description":"string","profile_image_url":"url",
-            "offline_image_url":"url",
-            "view_count":int,
-            "created_at":"datetime of '%Y-%m-%dT%H:%M:%SZ"}
-        ]
-    }
-    '''
-    headers = {
-        'client-id': CLIENT_ID,
-        'Authorization': 'Bearer {0}'.format(session['access_token']),
-    }
-    params = (
-        ('login',username),
-    )
-    url = 'https://api.twitch.tv/helix/users?'
-    data = getrequest(url, headers, params)["data"]
-    return data
-
-def getMultiUserInfo(userlist):
-    '''
-    Calls twitch api to get information of multiple userid:
-    Parameters:  list of user id
-    Returns: a list of user data
-    {
-        "data":[{
-            "id":"int",
-            "login":"string",
-            "display_name":"string",
-            "type":"",
-            "broadcaster_type": null or "partner",
-            "description":"string","profile_image_url":"url",
-            "offline_image_url":"url",
-            "view_count":int,
-            "created_at":"datetime of '%Y-%m-%dT%H:%M:%SZ"},
-            ...
-        ]
-    }
-    '''
-    #print(str(userlist))
-    headers = {
-        'client-id': CLIENT_ID,
-        'Authorization': 'Bearer {0}'.format(session['access_token']),
-    }
-    url = 'https://api.twitch.tv/helix/users?'
-    count = 0
-    userinfolist = []
-    #print("entering getmultiuserinfo while loop")
-    while len(userlist) > count:
-        if count < len(userlist):
-            params = tuple(userlist[count:count+100])
-
-        else:
-            params = tuple(userlist)
-        count += 100
-        userinfolist += getrequest(url, headers, params)["data"]
-    return userinfolist
-
-def getfollowers(userID):
-    '''
-    Calls twitch api to get followers of a specific userid:
-    Parameters: a user id
-    Returns: A json list of structure
-    {
-        "total":int,
-        "data":[{
-            "from_id":"int",
-            "from_name":"string",
-            "to_id":"int",
-            "to_name":"string",
-            "followed_at":"datetime of '%Y-%m-%dT%H:%M:%SZ'"}
-            , ...
-        ],
-        "pagination":{empty or int}
-    }
-    '''
-    params = (
-        ('from_id',userID),
-        ('first', 100),
-    )
-    headers = {
-        'client-id': CLIENT_ID,
-        'Authorization': 'Bearer {0}'.format(session['access_token']),
-    }
-    url = 'https://api.twitch.tv/helix/users/follows?'
-    data = getrequest(url, headers, params)
-    return data
-
 def getspecificfollows(fromuserID, touserID):
     '''
     Calls twitch api to get followers of a specific userid:
@@ -880,240 +677,74 @@ def getspecificfollows(fromuserID, touserID):
     data = getrequest(url, headers, params)
     return data["data"]
 
-def getfollows(userID):
+def insertfollows2(userdata):
     '''
-    Calls twitch api to get followers of a specific userid:
-    Parameters: a user id
-    Returns: A json list of structure
-    {
-        "total":int,
-        "data":[{
-            "from_id":"int",
-            "from_name":"string",
-            "to_id":"int",
-            "to_name":"string",
-            "followed_at":"datetime of '%Y-%m-%dT%H:%M:%SZ'"}
-            , ...
-        ],
-        "pagination":{empty or int}
-    }
+    inserts follows of deepness 2
     '''
-    params = (
-        ('to_id',userID),
-        ('first', 100),
-    )
-    headers = {
-        'client-id': CLIENT_ID,
-        'Authorization': 'Bearer {0}'.format(session['access_token']),
-    }
-    url = 'https://api.twitch.tv/helix/users/follows?'
-    totaldata = getrequest(url, headers, params)["data"]
-
-    csv_columns = ['from_id', 'from_login', 'from_name',
-        'to_id', 'to_login','to_name','followed_at']
-    csv_file = "Names.csv"
-    try:
-        with open(csv_file, 'w', newline='', encoding='utf-8') as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
-            writer.writeheader()
-            for data in totaldata:
-                writer.writerow(data)
-    except IOError:
-        print("I/O error")
-    streamerfollowdata = getfollowers(userID)["data"]
-    streamerfollowset = {}
-    for streameruser in streamerfollowdata:
-        date_time_streameruser = datetime.datetime.strptime(
-            streameruser["followed_at"], '%Y-%m-%dT%H:%M:%SZ')
-        streamerfollowset.setdefault(streameruser["to_name"] , date_time_streameruser)
-    csv_columns2 = ['from_id', 'from_login', 'from_name', 'to_id', 'to_login',
-    'to_name','followed_at','closure','follow_total','triad_set', 'k-connected','total-connected']
-    csv_file2 = "Names2.csv"
-    try:
-        openfile = open(csv_file2, 'w', newline='', encoding='utf-8')
-        writer = csv.DictWriter(openfile, fieldnames=csv_columns2)
-        writer.writeheader()
-        openfile.close()
-    except IOError:
-        print("I/O error")
-
-    print("entering getting follows for each follower")
-    for index, twitchuser in enumerate(totaldata):
-        print(getspecificfollows(twitchuser["from_id"],twitchuser["to_id"]))
-        print(index)
-        twitchuserfollows = getfollowers(twitchuser["from_id"])["data"]
-        print(str(index) + "getting triadic closure")
-        eachfollowdata = gettriadicclosure(twitchuser, twitchuserfollows)
-        print(str(index) + "completed getting triadic closure")
-        twitchuserfollowset = {}
-        for streameruser in twitchuserfollows:
-            date_time_streameruser = datetime.datetime.strptime(
-                streameruser["followed_at"], '%Y-%m-%dT%H:%M:%SZ')
-            twitchuserfollowset.setdefault(streameruser["to_name"] , date_time_streameruser)
-        eachfollowdata["k-connected"] = list(set(streamerfollowset.keys()) 
-        & set(twitchuserfollowset.keys()))
-        eachfollowdata["total-connected"] = len(eachfollowdata["k-connected"])
-        print(eachfollowdata)
-        try:
-            with open(csv_file2, 'a', newline='', encoding='utf-8') as csvfile:
-                writer = csv.DictWriter(csvfile, fieldnames=csv_columns2)
-                writer.writerow(eachfollowdata)
-                csvfile.close()
-        except IOError:
-            print("I/O error")
-    return 
-
-def gettriadicclosure(userfollowdata, twitchuserfollows):
-    '''
-    Makes a comparison. followed at and follow recency to modify search values.
-    Parameters: a user id
-    Returns:  {'from_id': '49886567', 'from_login': 'kawyua', 'from_name': 'kawyua', 'to_id': '552120296', 'to_login': 'zackrawrr', 'to_name': 'zackrawrr', 
-    'followed_at': '2021-01-09T09:53:59Z', 'follow_match': [], 'follow_total': 1}
-    '''
+    print("inserting followdata")
+    user_id = userdata[0]["id"]
+    #delete and add followers of this user_id
+    db.session.execute(
+        text('DELETE FROM Followcache WHERE from_id = :user_id '),
+        {"user_id":int(user_id)})
+    followdata2 = insertfollows(user_id)
     
-    followdatalength = len(twitchuserfollows)
-    if followdatalength > 0:
-        date_time_user = datetime.datetime.strptime(userfollowdata["followed_at"], '%Y-%m-%dT%H:%M:%SZ')
-        originfollows = {userfollowdata["from_name"]:date_time_user}
-        triadset = {}
-        userfollowdata["closure"] = 0
-        userfollowdata["follow_total"] = followdatalength
-        
-        #enumerate in reverse in order to properly get triad calls
-        for twitchuser in reversed(twitchuserfollows):
-            streamerfollows = getspecificfollows(twitchuser["to_id"], userfollowdata["to_id"])
-            if streamerfollows:
-                date_time_streameruser = datetime.datetime.strptime(streamerfollows[0]["followed_at"], '%Y-%m-%dT%H:%M:%SZ')
-                triadset.setdefault(streamerfollows[0]["from_login"], date_time_streameruser)
-            #followrecency = (currDate - date_time_obj)
-            #gets matches with search origin
-            #print(triadset)
-            #print("nowusertriadset for" + twitchuser["to_name"])
-            #print(usertriadset)
-            #if 
-            if twitchuser["to_name"] == userfollowdata["to_name"]:
-                userfollowdata["triad_set"] = []
-                print(userfollowdata["from_name"] + "followed" + twitchuser["to_name"])
-                print(triadset)
-                for triad in triadset:
-                    if triadset[triad] < originfollows[userfollowdata["from_login"]]:
-                        userfollowdata["triad_set"].append(triad)
-                        userfollowdata["closure"] = 1
-                return userfollowdata
-        print("error occurred when getting follows, user has too many follows")
-        userfollowdata["triad_set"] = []
-        return userfollowdata
+    #get all id that I don't have followdata of yet
+    rs = db.session.execute(
+            text('''SELECT t1.to_id
+            FROM Followcache t1
+            LEFT JOIN SavedFollows t2 ON t2.to_id = t1.to_id
+            WHERE t1.from_id = :user_id  AND t2.to_id IS NULL '''),
+            {"user_id":int(user_id)})
 
-def getvideoID(userID, timestamp):
-    '''
-    Calls twitch api to get followers of a specific userid:
-    Parameters: a user id
-    api call Returns: A json list of structure 
-    {
-    "data": [{
-        "id": "234482848",
-        "user_id": "67955580",
-        "user_login": "chewiemelodies",
-        "user_name": "ChewieMelodies",
-        "title": "-",
-        "description": "",
-        "created_at": "2018-03-02T20:53:41Z",
-        "published_at": "2018-03-02T20:53:41Z",
-        "url": "https://www.twitch.tv/videos/234482848",
-        "thumbnail_url": "https://static-cdn.jtvnw.net/s3_vods/bebc8cba2926d1967418_chewiemelodies_27786761696_805342775/thumb/thumb0-%{width}x%{height}.jpg",
-        "viewable": "public",
-        "view_count": 142,
-        "language": "en",
-        "type": "archive",
-        "duration": "3h8m33s"
-    }],
-    "pagination":{"cursor":"eyJiIjpudWxsLCJhIjoiMTUwMzQ0MTc3NjQyNDQyMjAwMCJ9"}
-    }
-    '''
-    params = (
-        ('user_id',userID),
-        ('first', 100),
-        ('type', "archive"),
-    )
+    useridlist =[]
+    #insert all new user_id
+    for row in rs:
+        useridlist.append(row.to_id)
+    if len(useridlist) > 0:
+        listlength = len(useridlist)
+    else:
+        listlength = "zero"
+    task = q.enqueue(getallfollows, useridlist, userdata, followdata2, session["access_token"], description=listlength)  # Send a job to the task queue
+
+    jobs = q.jobs  # Get a list of jobs in the queue
+
+    q_len = len(q)  # Get the queue length
+
+    #insert history
+    timenow = datetime.datetime.utcnow()
+    if "user_id" in session:
+        from_id = session["user_id"]
+        to_id = user_id
+        dbdata = Callhistory(from_id, to_id, timenow)
+        db.session.add(dbdata)
+        db.session.commit()
+    return jsonify({'data': render_template("add_task.html",
+        userdata= userdata,
+        jobs=jobs,
+        task=task),
+        'job_id':task.id
+    })
+
+def insertallfollows(followdata, useridlist):
+    timenow = datetime.datetime.utcnow()
+    for user_id in useridlist:
+        dbdata = SavedFollows(user_id, timenow)
+        db.session.add(dbdata)
+    db.session.commit()
     
-    headers = {
-        'client-id': CLIENT_ID,
-        'Authorization': 'Bearer {0}'.format(session['access_token']),
-    }
-    url = 'https://api.twitch.tv/helix/videos?'
-    videodata = getrequest(url, headers, params)["data"]
-    returninfo = ""
-    for video in videodata:
-        if datetime.datetime.strptime(video["created_at"], '%Y-%m-%dT%H:%M:%SZ') < timestamp:
-            total = (timestamp - datetime.datetime.strptime(video["created_at"], '%Y-%m-%dT%H:%M:%SZ')).total_seconds()
-            hours = total // 3600
-            total = total - (hours * 3600)
-            minutes = total // 60
-            seconds = total - (minutes * 60)
-            returntime = '{:02d}h{:02d}m{:02d}s'.format(int(hours), int(minutes), int(seconds))
-            duration = re.split("\D", video["duration"])
-            total_duration = 0
-            if duration and len(duration) == 4:
-                total_duration = int(duration[0])*3600+int(duration[1])*60+int(duration[2])
-            elif duration and len(duration) == 3:
-                total_duration = int(duration[0])*60+int(duration[1])
-            elif duration and len(duration) == 2:
-                total_duration = int(duration[1])
-            if total > total_duration:
-                returninfo = "Followed When Not Live"
-            elif video["viewable"] != "public":
-                returninfo = "Broadcast is not public"
-            else:
-                returninfo = video["title"]
-            return [video["id"], returntime, returninfo]
+    for follower in followdata:
+        from_id = follower["from_id"]
+        from_login = str(follower["from_login"])
+        to_id = follower["to_id"]
+        to_login = follower["to_login"]
+        followed_at = datetime.datetime.strptime(follower["followed_at"], '%Y-%m-%dT%H:%M:%SZ')
+        dbdata = Followcache(from_id, from_login, to_id, to_login, followed_at, timenow)
+        db.session.add(dbdata)
+    db.session.commit()
 
-def getrequest(url, headers, params, pagination = 1000):
-    '''
-    pagination default is 1000
-    '''
-    parameter = params
-    header = headers
-    totaldata = {"data":[]}
-    print(params)
+    return "success"
 
-    i = 0
-    while i < pagination:
-        try:
-            response = http.get(url, headers=header, params=parameter)
-            # If the response was successful, no Exception will be raised
-            response.raise_for_status()
-        except HTTPError as http_err:
-            print('HTTP error occurred:{0}'.format(http_err))  # Python 3.6
-            #refresh()
-            #getrequest(url, headers, params)
-            return "unsuccessful"
-        except Exception as err:
-            print('Other error occurred: {0}'.format(err))  # Python 3.6
-            return "unsuccessful"
-        else:
-            data = response.json()
-            #print(data)
-            i = i + 100
-            #print("checking\n")
-            #print(i)
-            if len(data) != 0 and "pagination" in data:
-                if "total" in data and data["total"] < pagination:
-                    totaldata["total"] = data["total"]
-                    pagination = data["total"] 
-                elif "total" in data and data["total"] > pagination:
-                    totaldata["total"] = data["total"]
-                    print("warning over pagination limit")
-                
-                if "cursor" in data["pagination"]:
-                    paginate = data["pagination"]["cursor"]
-                    parameter = params + (('after', paginate),)
-                else:
-                    i = pagination
-                totaldata["data"] += data['data']
-            else:
-                totaldata = data
-                i = pagination
-    return totaldata
 
 if __name__ == '__main__':
     app.run()
