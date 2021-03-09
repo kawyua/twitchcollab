@@ -315,6 +315,7 @@ def graph():
             userdata = getuser(login)
             if len(userdata) == 0:
                 return jsonify({'data': "user doesn't exist."})
+            print("inserting follows2 for graph")
             #remember followdata is already sorted by most recent follow date
             return_task = insertfollows2(userdata)
             return return_task
@@ -342,6 +343,7 @@ def history():
             userdata = getuser(login)
             if len(userdata) == 0:
                 return jsonify({'data': "user doesn't exist."})
+            print("inserting follows2 for history")
             return_task = insertfollows2(userdata)
             return return_task
             
