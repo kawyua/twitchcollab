@@ -126,7 +126,7 @@ def get_app_access_token_header(refresh_token = "none"):
         'client_secret':CILENT_SECRET,
         'grant_type':'client_credentials'
         }
-    response = postrequest(url, data).json
+    response = postrequest(url, data)
     access_token = response['access_token']
     headers = {
         'client-id': CLIENT_ID,
