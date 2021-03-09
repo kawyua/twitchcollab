@@ -346,10 +346,10 @@ html, body {
 
 div#loading {
   z-index: 2999;
-  width: 550px;
-  height: 35px;
+  width: 100%;
+  height: 25%;
   display: none;
-  background: url(/static/loadingimage.gif) no-repeat;
+  opacity: 80%;
   cursor: wait;
   }
 
@@ -368,6 +368,11 @@ div#loading {
   margin-top:30px;
   top: 30px;
   left: 0px;
+  z-index: -1;
+}
+
+div#switcher{
+  display:none
 }
 
 .flex-container {
