@@ -51,8 +51,8 @@ app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 
 db = SQLAlchemy(app)
 
-r = redis.Redis()
-q = Queue(connection=r)
+q = Queue(connection=conn)
+print(conn)
 
 class Users(db.Model):
     """
