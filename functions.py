@@ -8,12 +8,30 @@ from requests.exceptions import HTTPError
 from requests.adapters import HTTPAdapter
 from urllib3.util import Retry
 from flask import session
+from sqlalchemy import create_engine, Column, Integer, Unicode, ForeignKey, DateTime
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.sql import text
+from rq import get_current_job
+from sqlalchemy.orm import relationship
 
+Base = declarative_base()
 http = requests.Session()
 load_dotenv()
+SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI")
+POSTGRESQL_DATABASE_URI = os.getenv("POSTGRESQL_DATABASE_URI")
 CLIENT_ID = os.getenv("CLIENT_ID")
 CILENT_SECRET = os.getenv("CILENT_SECRET")
 
+ENV = os.getenv("ENV")
+if ENV == 'dev':
+    engine = create_engine(POSTGRESQL_DATABASE_URI)
+
+else:
+    engine = create_engine(SQLALCHEMY_DATABASE_URI)
+
+
+dbsession = sessionmaker(engine, future=True)
 
 DEFAULT_TIMEOUT = 5 # seconds
 
@@ -48,6 +66,138 @@ retries = Retry(total=TOTAL,
     status_forcelist=STATUS_FORCELIST,
     method_whitelist = METHOD_WHITELIST)
 http.mount("https://", TimeoutHTTPAdapter(max_retries=retries))
+
+class Users(Base):
+    """
+    Stores user login history
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer)
+    login = Column(String(32))
+    updated_at = Column(DateTime)
+    """
+    __tablename__ = 'users'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer)
+    login = Column(Unicode(100))
+    updated_at = Column(DateTime)
+    def __init__(self, user_id, login, updated_at):
+        self.user_id = user_id
+        self.login = login
+        self.updated_at = updated_at
+
+class Callhistory(Base):
+    '''
+    stores the calls a user calls, anon has user_id = 0 and login = ""
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer)
+    login = Column(String(32))
+    to_id = Column(Integer)
+    to_login = Column(String(32))
+    updated_at = Column(DateTime)
+    "id":"int",
+    "login":"string",
+    "display_name":"string",
+    "type":"",
+    "broadcaster_type": null or "partner",
+    "description":"string","profile_image_url":"url",
+    "offline_image_url":"url",
+    "view_count":int,
+    "created_at":"datetime of '%Y-%m-%dT%H:%M:%SZ"}
+    '''
+    __tablename__ = 'callhistory'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer)
+    to_id = Column(Integer)
+    updated_at = Column(DateTime)
+    def __init__(self, user_id, to_id, updated_at):
+        self.user_id = user_id
+        self.to_id = to_id
+        self.updated_at = updated_at
+
+class Callsaved(Base):
+    '''
+    Save calls from a user 
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer)
+    login = Column(String(32))
+    to_login = Column(String(32))
+    updated_at = Column(DateTime)
+    '''
+    __tablename__ = 'callsaved'
+    id = Column(Integer, primary_key=True)
+    from_id = Column(Integer)
+    from_login = Column(Unicode(100))
+    to_id = Column(Integer)
+    to_login = Column(Unicode(100))
+    updated_at = Column(DateTime)
+    def __init__(self, from_id, from_login, to_id, to_login, updated_at):
+        self.from_id = from_id
+        self.from_login = from_login
+        self.to_id = to_id
+        self.to_login = to_login
+        self.updated_at = updated_at
+
+class Followcache(Base):
+    '''
+    id = Column(Integer, primary_key=True)
+    from_id = Column(Integer)
+    from_login = Column(String(200), unique=True)
+    to_id = Column(Integer)
+    to_login = Column(String(200), unique=True)
+    followed_at = Column(DateTime)
+    updated_at = Column(DateTime)
+    '''
+    __tablename__ = 'followcache'
+    id = Column(Integer, primary_key=True)
+    from_id = Column(Integer)
+    from_login = Column(Unicode(100))
+    to_id = Column(Integer)
+    to_login = Column(Unicode(100))
+    followed_at = Column(DateTime)
+    updated_at = Column(DateTime)
+    def __init__(self, from_id, from_login, to_id, to_login, followed_at, updated_at):
+        self.from_id = from_id
+        self.from_login = from_login
+        self.to_id = to_id
+        self.to_login = to_login
+        self.followed_at = followed_at
+        self.updated_at = updated_at
+
+class SavedFollows(Base):
+    '''
+    id = Column(Integer, primary_key=True)
+    to_id = Column(Integer)
+    to_login = Column(String(200), unique=True)
+    updated_at = Column(DateTime)
+    '''
+    __tablename__ = 'savedfollows'
+    id = Column(Integer, primary_key=True)
+    to_id = Column(Integer)
+    updated_at = Column(DateTime)
+    def __init__(self, to_id, updated_at):
+        self.to_id = to_id
+        self.updated_at = updated_at
+
+class SavedVideos(Base):
+    '''
+    id = db.Column(db.Integer, primary_key=True)
+    to_id = db.Column(db.Integer)
+    to_login = db.Column(db.String(200), unique=True)
+    updated_at = db.Column(db.DateTime)
+    '''
+    __tablename__ = 'savedvideos'
+    id = Column(Integer, primary_key=True)
+    follow_id = Column(Integer, ForeignKey('savedfollows.id'), nullable = False)
+    video_id = Column(Integer)
+    watchtime = Column(Unicode(100))
+    returninfo = Column(Unicode(100))
+    updated_at = Column(DateTime)
+    def __init__(self, follow_id, video_id, watchtime, returninfo, updated_at):
+        self.follow_id = follow_id
+        self.video_id = video_id
+        self.watchtime = watchtime
+        self.returninfo = returninfo
+        self.updated_at = updated_at
 
 def postrequest(url, data):
     '''
@@ -133,6 +283,32 @@ def get_app_access_token_header(refresh_token = "none"):
         'Authorization': 'Bearer {0}'.format(session['access_token']),
     }
     return headers
+
+def insertfollows(user_id):
+    '''
+    parameter: user_id (Integer)
+    inserts followdata for a user
+    '''
+    print("inserting new followers")
+    print(user_id)
+    followdata = getfollowers(user_id)
+    timenow = datetime.datetime.utcnow()
+    dbdata2 = SavedFollows(user_id, timenow)
+    with dbsession.begin() as session:
+        print("entering follower save")
+        session.add(dbdata2)
+        
+    with dbsession.begin() as session:
+        print("entering followers")
+        for follower in followdata["data"]:
+            from_id = follower["from_id"]
+            from_login = str(follower["from_login"])
+            to_id = follower["to_id"]
+            to_login = follower["to_login"]
+            followed_at = datetime.datetime.strptime(follower["followed_at"], '%Y-%m-%dT%H:%M:%SZ')
+            dbdata = Followcache(from_id, from_login, to_id, to_login, followed_at, timenow)
+            session.add(dbdata)
+    return followdata
 
 def getvideoID(userID, timestamp):
     '''
@@ -229,12 +405,50 @@ def getfollowers(userID, access_token=""):
     data = getrequest(url, headers, params)
     return data
 
-def getallfollows(useridlist, userdata, followdata2, access_token):
+def getallfollows(userdata, access_token):
+    job = get_current_job()
+    useridlist =[]
+    with engine.connect() as con:
+        #get all id that I don't have followdata of yet
+        rs = con.execute(
+                text('''SELECT t1.to_id
+                FROM Followcache t1
+                LEFT JOIN SavedFollows t2 ON t2.to_id = t1.to_id
+                WHERE t1.from_id = :user_id  AND t2.to_id IS NULL '''),
+                {"user_id":int(userdata[0]["id"])})
+        #insert all new user_id
+        for row in rs:
+            useridlist.append(row.to_id)
+    
+    listlength = len(useridlist)
     followdata = []
-    for user_id in useridlist:
+    print(useridlist)
+    
+    #get each user's follow list
+    for index, user_id in enumerate(useridlist):
         follows = getfollowers(user_id, access_token)
+        job.meta['requestload'] = user_id
+        job.meta['requestdone'] = index
+        job.meta['requesttotal'] = listlength
+        job.save_meta()
         followdata += follows["data"]
-    return (followdata, userdata, followdata2, useridlist)
+    timenow = datetime.datetime.utcnow()
+    #log user_id call
+    with dbsession.begin() as session:
+        for user_id in useridlist:
+            dbdata = SavedFollows(user_id, timenow)
+            session.add(dbdata)
+    #add follows to database
+        for follower in followdata:
+            from_id = follower["from_id"]
+            from_login = str(follower["from_login"])
+            to_id = follower["to_id"]
+            to_login = follower["to_login"]
+            followed_at = datetime.datetime.strptime(follower["followed_at"], '%Y-%m-%dT%H:%M:%SZ')
+            dbdata = Followcache(from_id, from_login, to_id, to_login, followed_at, timenow)
+            session.add(dbdata)
+    addvideoinfo(userdata[0]["id"])
+    return userdata
 
 def getMultiUserInfo(userlist):
     '''
@@ -264,7 +478,7 @@ def getMultiUserInfo(userlist):
     url = 'https://api.twitch.tv/helix/users?'
     count = 0
     userinfolist = []
-    #print("entering getmultiuserinfo while loop")
+    print("entering getmultiuserinfo while loop")
     while len(userlist) > count:
         if count < len(userlist):
             params = tuple(userlist[count:count+100])
@@ -304,22 +518,43 @@ def getuser(username):
     data = getrequest(url, headers, params)["data"]
     return data
 
-def addvideoinfo(followdata):
+def addvideoinfo(user_id):
     '''
     calls getvideo_id and adds video_id, video_timestamp, video_info to followdata
     '''
-    
-    #sets limit to the first 20 calls because of timeout
-    maximum_calls = 20
+    print("inserting videoinfo")
+    followdata = {"data":[],"total":0}
+    with engine.connect() as con:
+        rows = con.execute(
+            text('''SELECT t1.id as id, t1.to_id as to_id
+            FROM Followcache t1
+            LEFT JOIN SavedVideos t2 ON t2.follow_id = t1.id
+            WHERE t1.from_id = :user_id  AND t2.id IS NULL 
+            ORDER BY t1.followed_at DESC'''),
+            {"user_id":int(userdata[0]["id"])})
+        for row in rows:
+            followinfo = {}
+            followinfo["id"] = row.id
+            followinfo["to_id"] = row.to_id
+            followdata["data"].append(followinfo)
+    #sets limit to the first 30 calls because of timeout
+    maximum_calls = 30
     #sets limit to past 60 days
-    expiredate = datetime.datetime.utcnow() - datetime.timedelta(60)
-    for index,twitchuser in enumerate(followdata["data"]):
-        if twitchuser["followed_at"] > expiredate and maximum_calls > 0:
-            videoinfo = getvideoID(twitchuser["to_id"], twitchuser["followed_at"])
-            if videoinfo is not None:
-                followdata["data"][index]["video_id"] = videoinfo[0]
-                followdata["data"][index]["video_timestamp"] = videoinfo[1]
-                followdata["data"][index]["video_info"] = videoinfo[2]
-            maximum_calls -= 1
-    return followdata
+    now = datetime.datetime.utcnow()
+    expiredate = now - datetime.timedelta(60)
+    
+    with dbsession.begin() as session:
+        for index,twitchuser in enumerate(followdata["data"]):
+            if twitchuser["followed_at"] > expiredate and maximum_calls > 0:
+                videoinfo = getvideoID(twitchuser["to_id"], twitchuser["followed_at"])
+                if videoinfo is not None:
+                    follow_id = twitchuser["id"]
+                    video_id = videoinfo[0]
+                    video_timestamp = videoinfo[1]
+                    video_info = videoinfo[2]
+                    updated_at = now
+                    dbdata = SavedVideos(follow_id, video_id, video_timestamp, video_info, updated_at)
+                    session.add(dbdata)
+                maximum_calls -= 1
+    return "success"
 
