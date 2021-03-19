@@ -187,7 +187,7 @@ class SavedVideos(Base):
     '''
     __tablename__ = 'savedvideos'
     id = Column(Integer, primary_key=True)
-    follow_id = Column(Integer, ForeignKey('savedfollows.id'), nullable = False)
+    follow_id = Column(Integer, ForeignKey('followcache.id'), nullable = False)
     video_id = Column(Integer)
     watchtime = Column(Unicode(100))
     returninfo = Column(Unicode(100))
@@ -297,20 +297,45 @@ def insertfollows(user_id):
     with dbsession.begin() as session:
         print("entering follower save")
         session.add(dbdata2)
-        
+    
+    followdata2 = {"data":[]}
+    with engine.connect() as con:
+        #get all id that I don't have followdata of yet
+        rows = con.execute(
+            text('''SELECT t1.from_id as from_id,
+            t1.from_login as from_login, 
+            t1.to_id as to_id,
+            t1.to_login as to_login,
+            t1.followed_at as followed_at,
+            t1.updated_at as updated_at
+            FROM Followcache t1
+            WHERE t1.from_id = :user_id
+            ORDER BY t1.followed_at DESC; '''),
+            {"user_id":int(user_id)})
+        for row in rows:
+            followinfo = {}
+            followinfo["from_id"] = row.from_id
+            followinfo["from_login"] = row.from_login
+            followinfo["to_id"] = row.to_id
+            followinfo["to_login"] = row.to_login
+            followinfo["followed_at"] = row.followed_at
+            followinfo["updated_at"] = row.updated_at
+            followdata2["data"].append(followinfo)
     with dbsession.begin() as session:
+        followdata = {"data":[]}
         print("entering followers")
-        for follower in followdata["data"]:
-            from_id = follower["from_id"]
-            from_login = str(follower["from_login"])
-            to_id = follower["to_id"]
-            to_login = follower["to_login"]
-            followed_at = datetime.datetime.strptime(follower["followed_at"], '%Y-%m-%dT%H:%M:%SZ')
-            dbdata = Followcache(from_id, from_login, to_id, to_login, followed_at, timenow)
-            session.add(dbdata)
+        for index, follower in enumerate(followdata["data"]):
+            if len(followdata2) > 0 and follower["followed_at"] > followdata2[0]:
+                from_id = follower["from_id"]
+                from_login = str(follower["from_login"])
+                to_id = follower["to_id"]
+                to_login = follower["to_login"]
+                followed_at = datetime.datetime.strptime(follower["followed_at"], '%Y-%m-%dT%H:%M:%SZ')
+                dbdata = Followcache(from_id, from_login, to_id, to_login, followed_at, timenow)
+                session.add(dbdata)
     return followdata
 
-def getvideoID(userID, timestamp):
+def getvideoID(userID, timestamp, access_token=""):
     '''
     Calls twitch api to get followers of a specific userid:
     Parameters: a user id
@@ -342,9 +367,11 @@ def getvideoID(userID, timestamp):
         ('type', "archive"),
     )
     
+    if access_token == "":
+        access_token = session['access_token']
     headers = {
         'client-id': CLIENT_ID,
-        'Authorization': 'Bearer {0}'.format(session['access_token']),
+        'Authorization': 'Bearer {0}'.format(access_token),
     }
     url = 'https://api.twitch.tv/helix/videos?'
     videodata = getrequest(url, headers, params)["data"]
@@ -422,14 +449,13 @@ def getallfollows(userdata, access_token):
     
     listlength = len(useridlist)
     followdata = []
-    print(useridlist)
     
     #get each user's follow list
     for index, user_id in enumerate(useridlist):
         follows = getfollowers(user_id, access_token)
         job.meta['requestload'] = user_id
         job.meta['requestdone'] = index
-        job.meta['requesttotal'] = listlength
+        job.meta['requesttotal'] = listlength - 1
         job.save_meta()
         followdata += follows["data"]
     timenow = datetime.datetime.utcnow()
@@ -447,7 +473,8 @@ def getallfollows(userdata, access_token):
             followed_at = datetime.datetime.strptime(follower["followed_at"], '%Y-%m-%dT%H:%M:%SZ')
             dbdata = Followcache(from_id, from_login, to_id, to_login, followed_at, timenow)
             session.add(dbdata)
-    addvideoinfo(userdata[0]["id"])
+    print("entering videoinfo")
+    addvideoinfo(userdata[0]["id"], access_token)
     return userdata
 
 def getMultiUserInfo(userlist):
@@ -518,35 +545,41 @@ def getuser(username):
     data = getrequest(url, headers, params)["data"]
     return data
 
-def addvideoinfo(user_id):
+def addvideoinfo(user_id, access_token):
     '''
     calls getvideo_id and adds video_id, video_timestamp, video_info to followdata
     '''
+    
+    job = get_current_job()
     print("inserting videoinfo")
     followdata = {"data":[],"total":0}
     with engine.connect() as con:
         rows = con.execute(
-            text('''SELECT t1.id as id, t1.to_id as to_id
+            text('''SELECT t1.id as id, t1.to_id as to_id, t1.followed_at as followed_at
             FROM Followcache t1
             LEFT JOIN SavedVideos t2 ON t2.follow_id = t1.id
             WHERE t1.from_id = :user_id  AND t2.id IS NULL 
-            ORDER BY t1.followed_at DESC'''),
-            {"user_id":int(userdata[0]["id"])})
+            ORDER BY t1.followed_at ASC'''),
+            {"user_id":int(user_id)})
         for row in rows:
             followinfo = {}
             followinfo["id"] = row.id
             followinfo["to_id"] = row.to_id
+            followinfo["followed_at"] = row.followed_at
             followdata["data"].append(followinfo)
-    #sets limit to the first 30 calls because of timeout
-    maximum_calls = 30
     #sets limit to past 60 days
     now = datetime.datetime.utcnow()
     expiredate = now - datetime.timedelta(60)
     
     with dbsession.begin() as session:
         for index,twitchuser in enumerate(followdata["data"]):
-            if twitchuser["followed_at"] > expiredate and maximum_calls > 0:
-                videoinfo = getvideoID(twitchuser["to_id"], twitchuser["followed_at"])
+            
+            job.meta['requestload'] = " video of "+ str(twitchuser["to_id"])
+            job.meta['requestdone'] = index
+            job.meta['requesttotal'] = len(followdata["data"]) - 1
+            job.save_meta()
+            if twitchuser["followed_at"] > expiredate:
+                videoinfo = getvideoID(twitchuser["to_id"], twitchuser["followed_at"], access_token)
                 if videoinfo is not None:
                     follow_id = twitchuser["id"]
                     video_id = videoinfo[0]
@@ -555,6 +588,21 @@ def addvideoinfo(user_id):
                     updated_at = now
                     dbdata = SavedVideos(follow_id, video_id, video_timestamp, video_info, updated_at)
                     session.add(dbdata)
-                maximum_calls -= 1
+                else:
+                    follow_id = twitchuser["id"]
+                    video_id = 0
+                    video_timestamp = twitchuser["followed_at"]
+                    video_info = "expired"
+                    updated_at = now
+                    dbdata = SavedVideos(follow_id, video_id, video_timestamp, video_info, updated_at)
+                    session.add(dbdata)
+            else:
+                follow_id = twitchuser["id"]
+                video_id = 0
+                video_timestamp = twitchuser["followed_at"]
+                video_info = "expired"
+                updated_at = now
+                dbdata = SavedVideos(follow_id, video_id, video_timestamp, video_info, updated_at)
+                session.add(dbdata)
     return "success"
 

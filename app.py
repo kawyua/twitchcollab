@@ -174,7 +174,7 @@ class SavedVideos(db.Model):
     '''
     __tablename__ = 'savedvideos'
     id = db.Column(db.Integer, primary_key=True)
-    follow_id = db.Column(db.Integer, db.ForeignKey('savedfollows.id'), nullable = False)
+    follow_id = db.Column(db.Integer, db.ForeignKey('followcache.id'), nullable = False)
     video_id = db.Column(db.Integer)
     watchtime = db.Column(db.Unicode(100))
     returninfo = db.Column(db.Unicode(100))
@@ -440,6 +440,7 @@ def get_results(job_key, output):
         elif output == "history":
             htmlfile = "follow.html"
         print("finished making output")
+        print(followdata["data"][0]["video_id"])
         return jsonify({'data': render_template(htmlfile,
             data = multiuserinfonew,
             followdata = followdata["data"],
@@ -612,7 +613,6 @@ def getfollowdata(user_id):
             ORDER BY t1.followed_at DESC; '''),
             {"user_id":int(user_id)})
         for row in rows:
-            print(row)
             followinfo = {}
             followinfo["from_id"] = row.from_id
             followinfo["from_login"] = row.from_login
@@ -620,13 +620,11 @@ def getfollowdata(user_id):
             followinfo["to_login"] = row.to_login
             followinfo["followed_at"] = row.followed_at
             followinfo["updated_at"] = row.updated_at
-            if row.to_id is not None:
-                followinfo["video_id"] = row.to_id
-                followinfo["watchtime"] = row.watchtime
-                followinfo["returninfo"] = row.returninfo
+            followinfo["video_id"] = str(row.video_id)
+            followinfo["watchtime"] = str(row.watchtime)
+            followinfo["video_info"] = str(row.returninfo)
             followdata["data"].append(followinfo)
             
-        print(followdata)
         firstfollow = followdata["data"][len(followdata["data"]) - 1]["followed_at"]
 
         if "user_id" in session and session["user_id"] != user_id :
@@ -762,10 +760,7 @@ def insertfollows2(userdata):
     user_id = userdata[0]["id"]
     #delete and add followers of this user_id
     db.session.execute(
-        text('DELETE FROM Followcache WHERE from_id = :user_id '),
-        {"user_id":int(user_id)})
-    db.session.execute(
-        text('DELETE FROM Followcache WHERE from_id = :user_id '),
+        text('DELETE FROM savedfollows WHERE from_id = :user_id '),
         {"user_id":int(user_id)})
     insertfollows(user_id)
     
