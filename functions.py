@@ -333,6 +333,15 @@ def insertfollows(user_id):
                 followed_at = datetime.datetime.strptime(follower["followed_at"], '%Y-%m-%dT%H:%M:%SZ')
                 dbdata = Followcache(from_id, from_login, to_id, to_login, followed_at, timenow)
                 session.add(dbdata)
+            elif len(followdata2) == 0:
+                from_id = follower["from_id"]
+                from_login = str(follower["from_login"])
+                to_id = follower["to_id"]
+                to_login = follower["to_login"]
+                followed_at = datetime.datetime.strptime(follower["followed_at"], '%Y-%m-%dT%H:%M:%SZ')
+                dbdata = Followcache(from_id, from_login, to_id, to_login, followed_at, timenow)
+                session.add(dbdata)
+
     return followdata
 
 def getvideoID(userID, timestamp, access_token=""):
