@@ -17,8 +17,7 @@ from rq import Queue
 from rq.job import Job
 from worker import conn
 import urllib.request
-
-from functions import (postrequest, getrequest, getvideoID,
+from functions import (postrequest, getrequest, getvideoID, insertfollows,
 getfollowers, getMultiUserInfo, getuser, addvideoinfo, getallfollows, get_app_access_token_header)
 
 # load dotenv in the base root
@@ -65,7 +64,7 @@ class Users(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer)
-    login = db.Column(db.String(32))
+    login = db.Column(db.Unicode(100))
     updated_at = db.Column(db.DateTime)
     def __init__(self, user_id, login, updated_at):
         self.user_id = user_id
@@ -113,9 +112,9 @@ class Callsaved(db.Model):
     __tablename__ = 'callsaved'
     id = db.Column(db.Integer, primary_key=True)
     from_id = db.Column(db.Integer)
-    from_login = db.Column(db.String(32))
+    from_login = db.Column(db.Unicode(100))
     to_id = db.Column(db.Integer)
-    to_login = db.Column(db.String(32))
+    to_login = db.Column(db.Unicode(100))
     updated_at = db.Column(db.DateTime)
     def __init__(self, from_id, from_login, to_id, to_login, updated_at):
         self.from_id = from_id
@@ -159,10 +158,32 @@ class SavedFollows(db.Model):
     '''
     __tablename__ = 'savedfollows'
     id = db.Column(db.Integer, primary_key=True)
+    from_id = db.Column(db.Integer)
     to_id = db.Column(db.Integer)
     updated_at = db.Column(db.DateTime)
     def __init__(self, to_id, updated_at):
         self.to_id = to_id
+        self.updated_at = updated_at
+
+class SavedVideos(db.Model):
+    '''
+    id = db.Column(db.Integer, primary_key=True)
+    video_id = db.Column(db.Integer)
+    to_login = db.Column(db.String(200), unique=True)
+    updated_at = db.Column(db.DateTime)
+    '''
+    __tablename__ = 'savedvideos'
+    id = db.Column(db.Integer, primary_key=True)
+    follow_id = db.Column(db.Integer, db.ForeignKey('followcache.id'), nullable = False)
+    video_id = db.Column(db.Integer)
+    watchtime = db.Column(db.Unicode(100))
+    returninfo = db.Column(db.Unicode(100))
+    updated_at = db.Column(db.DateTime)
+    def __init__(self, follow_id, video_id, watchtime, returninfo, updated_at):
+        self.follow_id = follow_id
+        self.video_id = video_id
+        self.watchtime = watchtime
+        self.returninfo = returninfo
         self.updated_at = updated_at
 
 @app.route('/')
@@ -358,56 +379,85 @@ def history():
 def get_results(job_key, output):
 
     job = Job.fetch(job_key, connection=conn)
+    if not job.meta:
+        job.meta['requestload'] = 0
+        job.meta['requestdone'] = 0
+        job.meta['requesttotal'] = 0
+        job.save_meta()
     print("testing "+job.get_status())
     if job.is_finished:
-        print("inserting allfollows")
-        insertallfollows(job.result[0], job.result[3])
-        userdata = job.result[1]
+        userdata = job.result
         print("getting followdata")
-        followdata2 = getfollowdata(userdata[0]["id"], job.result[2])
+        followdata = getfollowdata(userdata[0]["id"])
         userlist = []
-        for follower in followdata2["data"]:
+        for follower in followdata["data"]:
             userlist.append(('id',follower["to_id"]))
-            follower["followed_at"] = datetime.datetime.strptime(
-                follower["followed_at"], '%Y-%m-%dT%H:%M:%SZ')
-
         print("entering getmultiuserinfo function")
         multiuserinfo = getMultiUserInfo(userlist)
         print("leaving getmultiuserinfo function")
         #sorts multiuserinfo by follow date
-        object_map = {o['id']: o for o in multiuserinfo}
-        multiuserinfo = []
-        for id in followdata2["data"]:
+        object_map = {int(o['id']): o for o in multiuserinfo}
+        multiuserinfonew = []
+        for id in followdata["data"]:
             if id["to_id"] in object_map:
-                multiuserinfo.append(object_map[id["to_id"]])
-        print("leaving follow")
-
-        firstfollow = followdata2["data"][len(followdata2["data"]) - 1]["followed_at"]
-        print(firstfollow)
-        now = datetime.datetime.utcnow()
-        print(now)
+                multiuserinfonew.append(object_map[id["to_id"]])
+        deleteduser = {
+        'id': '0',
+        'login': 'Deleted',
+        'display_name': 'Deleted',
+        'type': '',
+        'broadcaster_type': '',
+        'description': 'This user is deleted',
+        'profile_image_url': '',
+        'offline_image_url': '',
+        'view_count': 0,
+        'created_at': '2020-01-01T00:00:00.000001Z'}
+        for index, follow in enumerate(followdata["data"]):
+            if index < len(multiuserinfonew) and int(multiuserinfonew[index]["id"]) != int(follow["to_id"]):
+                print("inserting deleted user")
+                print(index)
+                print(follow["to_id"])
+                deleteduser["id"] = str(follow["to_id"])
+                multiuserinfonew.insert(index, deleteduser)
+            elif index >= len(multiuserinfonew):
+                print("inserting deleted user")
+                print(index)
+                print(follow["to_id"])
+                deleteduser["id"] = str(follow["to_id"])
+                multiuserinfonew.insert(index, deleteduser)
+        print("finished sorting and inserting multiuserinfo")
+        firstfollow = 0
+        if len(followdata["data"]) > 0:
+            firstfollow = followdata["data"][len(followdata["data"]) - 1]["followed_at"]
+            print(firstfollow)
+            now = datetime.datetime.utcnow()
+            print(now)
+            firstfollow = (now - firstfollow).total_seconds()
         #setting up which html file to direct to
         htmlfile = "index.html"
         if output == "graph":
             htmlfile = "graph.html"
         elif output == "history":
-            followdata2 = addvideoinfo(followdata2)
             htmlfile = "follow.html"
         print("finished making output")
-        firstfollow = (now - firstfollow).total_seconds()
+        print(followdata["data"][0]["video_id"])
         return jsonify({'data': render_template(htmlfile,
-            data = multiuserinfo,
-            followdata = followdata2["data"],
+            data = multiuserinfonew,
+            followdata = followdata["data"],
             firstfollow = firstfollow,
-            followlen = followdata2["total"],
-            userdata=job.result[1]),
+            followlen = followdata["total"],
+            userdata=job.result),
             'status':200
         })
     else:
         print("polling" + job.get_status())
+        print(job.meta)
         return jsonify({'data':job.description,
             'status':202,
-            'job_status':job.get_status()
+            'job_status':job.get_status(),
+            'user_id':job.meta['requestload'],
+            'index':job.meta['requestdone'],
+            'listlength':job.meta['requesttotal']
 
         })
 
@@ -498,29 +548,6 @@ def deleteuser():
         print('Failed deletion')
         return 'Failure' 
 
-def insertfollows(user_id):
-    '''
-    parameter: user_id (Integer)
-    inserts followdata for a user
-    '''
-    print("inserting new followers")
-    print(user_id)
-    followdata = getfollowers(user_id)
-    timenow = datetime.datetime.utcnow()
-    dbdata2 = SavedFollows(user_id, timenow)
-    db.session.add(dbdata2)
-    db.session.commit()
-    for follower in followdata["data"]:
-        from_id = follower["from_id"]
-        from_login = str(follower["from_login"])
-        to_id = follower["to_id"]
-        to_login = follower["to_login"]
-        followed_at = datetime.datetime.strptime(follower["followed_at"], '%Y-%m-%dT%H:%M:%SZ')
-        dbdata = Followcache(from_id, from_login, to_id, to_login, followed_at, timenow)
-        db.session.add(dbdata)
-    db.session.commit()
-    return followdata
-
 def getfollowtotal(user_id):
     '''
     calls database to get the number of followers each streamer has
@@ -540,9 +567,23 @@ def getfollowtotal(user_id):
             followtotal[follow_id].append(row.total)
         else:
             followtotal[follow_id] = row.total
+    
+    rows = db.session.execute(
+            text('''SELECT COUNT(*) AS total
+            FROM Followcache
+            WHERE from_id = :user_id; ''' ),
+            {"user_id":int(user_id)})
+
+    
+    for row in rows:
+        follow_id = user_id
+        if follow_id in followtotal:
+            followtotal[follow_id].append(row.total)
+        else:
+            followtotal[follow_id] = row.total
     return followtotal
 
-def getfollowdata(user_id, followdata):
+def getfollowdata(user_id):
     '''
     calls to get follows of a twitch user_id with common follows and triadic closures
     returns followdata json with additional info on each follow
@@ -551,101 +592,133 @@ def getfollowdata(user_id, followdata):
     familiarfollowers = {}
     triad = {}
     followtotal = getfollowtotal(user_id)
-
-    firstfollow = datetime.datetime.strptime(followdata["data"][len(followdata["data"]) - 1]["followed_at"], '%Y-%m-%dT%H:%M:%SZ')
-
-    if "user_id" in session and session["user_id"] != user_id :
-        userselect = session["user_id"]
-        #get common follows
+    followdata = {"data":[],"total":0}
+    print("followtotal is:")
+    print(followtotal)
+    if user_id in followtotal and followtotal[user_id] > 0:
+        print("followtotalsuccess")
+        followdata["total"] = followtotal[user_id]
         rows = db.session.execute(
-                text('''SELECT A.to_login AS from_login, B.to_login AS to_login,
-                A.to_id AS from_id, B.to_id AS to_id, A.followed_at AS followed_at_origin,
-                B.followed_at AS followed_at_source 
-                FROM Followcache A, Followcache B, Followcache C 
-                WHERE A.from_id = :user_id AND C.from_id = :userselect 
-                AND A.to_id  = B.from_id AND B.to_id = C.to_id ORDER BY A.followed_at DESC; '''),
-                {"user_id":int(user_id) , "userselect":int(userselect)})
-        
-        print("checkcommonfollows")
+            text('''SELECT t1.from_id as from_id,
+            t1.from_login as from_login, 
+            t1.to_id as to_id,
+            t1.to_login as to_login,
+            t1.followed_at as followed_at,
+            t1.updated_at as updated_at,
+            t2.video_id as video_id,
+            t2.watchtime as watchtime,
+            t2.returninfo as returninfo
+            FROM Followcache t1 LEFT JOIN savedvideos t2 ON t1.id = t2.follow_id
+            WHERE t1.from_id = :user_id
+            ORDER BY t1.followed_at DESC; '''),
+            {"user_id":int(user_id)})
         for row in rows:
-            follow_id = str(row.from_id)
-            if follow_id in commonfollowsession:
-                commonfollowsession[follow_id].append((row.to_login,row.to_id))
-            else:
-                commonfollowsession[follow_id] = [(row.to_login,row.to_id)]
-        #get common follows
+            followinfo = {}
+            followinfo["from_id"] = row.from_id
+            followinfo["from_login"] = row.from_login
+            followinfo["to_id"] = row.to_id
+            followinfo["to_login"] = row.to_login
+            followinfo["followed_at"] = row.followed_at
+            followinfo["updated_at"] = row.updated_at
+            followinfo["video_id"] = str(row.video_id)
+            followinfo["watchtime"] = str(row.watchtime)
+            followinfo["video_info"] = str(row.returninfo)
+            followdata["data"].append(followinfo)
+            
+        firstfollow = followdata["data"][len(followdata["data"]) - 1]["followed_at"]
+
+        if "user_id" in session and session["user_id"] != user_id :
+            userselect = session["user_id"]
+            #get common follows
+            rows = db.session.execute(
+                    text('''SELECT A.to_login AS from_login, B.to_login AS to_login,
+                    A.to_id AS from_id, B.to_id AS to_id, A.followed_at AS followed_at_origin,
+                    B.followed_at AS followed_at_source 
+                    FROM Followcache A, Followcache B, Followcache C 
+                    WHERE A.from_id = :user_id AND C.from_id = :userselect 
+                    AND A.to_id  = B.from_id AND B.to_id = C.to_id ORDER BY A.followed_at DESC; '''),
+                    {"user_id":int(user_id) , "userselect":int(userselect)})
+            
+            print("checkcommonfollows")
+            for row in rows:
+                follow_id = str(row.from_id)
+                if follow_id in commonfollowsession:
+                    commonfollowsession[follow_id].append((row.to_login,row.to_id))
+                else:
+                    commonfollowsession[follow_id] = [(row.to_login,row.to_id)]
+            #get common follows
+            rows = db.session.execute(
+                    text('''SELECT A.to_login AS from_login, B.to_login AS to_login,
+                    A.to_id AS from_id, B.to_id AS to_id, A.followed_at AS followed_at_origin,
+                    B.followed_at AS followed_at_source 
+                    FROM Followcache A, Followcache B, Followcache C 
+                    WHERE A.from_id = :userselect AND C.from_id = :user_id 
+                    AND A.to_id  = B.from_id AND B.to_id = C.to_id ORDER BY A.followed_at DESC; '''),
+                    {"userselect":int(userselect) , "user_id":int(user_id)})
+            print("checkcommonfollows2")
+            for row in rows:
+                follow_id = str(row.to_id)
+                if follow_id in familiarfollowers:
+                    familiarfollowers[follow_id].append((row.from_login,row.to_id))
+                else:
+                    familiarfollowers[follow_id] = [(row.from_login,row.to_id)]
+        else:
+            #get common follows for anon
+            print("getting common follows anon")
+            rows = db.session.execute(
+                    text('''SELECT A.to_login AS from_login, B.to_login AS to_login,
+                    A.to_id AS from_id, B.to_id AS to_id, A.followed_at AS followed_at_origin,
+                    B.followed_at AS followed_at_source 
+                    FROM Followcache A, Followcache B, Followcache C 
+                    WHERE A.from_id = :user_id AND C.from_id = :user_id AND A.to_id  = B.from_id 
+                    AND B.to_id = C.to_id ORDER BY A.followed_at DESC; '''),
+                    {"user_id":int(user_id)})
+            for row in rows:
+                follow_id = str(row.from_id)
+                if follow_id in commonfollowsession:
+                    commonfollowsession[follow_id].append((row.to_login,row.to_id))
+                else:
+                    commonfollowsession[follow_id]=[(row.to_login,row.to_id)]
+        #get triads
         rows = db.session.execute(
                 text('''SELECT A.to_login AS from_login, B.to_login AS to_login,
-                A.to_id AS from_id, B.to_id AS to_id, A.followed_at AS followed_at_origin,
-                B.followed_at AS followed_at_source 
+                A.to_id AS from_id, B.to_id AS to_id, C.to_id AS origin_id,
+                A.followed_at AS followed_at_origin, B.followed_at AS followed_at_source 
                 FROM Followcache A, Followcache B, Followcache C 
-                WHERE A.from_id = :userselect AND C.from_id = :user_id 
-                AND A.to_id  = B.from_id AND B.to_id = C.to_id ORDER BY A.followed_at DESC; '''),
-                {"userselect":int(userselect) , "user_id":int(user_id)})
-        print("checkcommonfollows2")
+                WHERE A.from_id = :user_id AND C.from_id = :user_id  
+                AND A.to_id  = B.from_id AND B.to_id = C.to_id 
+                AND A.followed_at < C.followed_at AND B.followed_at < C.followed_at ; ''' ),
+                {"user_id":int(user_id)})
+        print("getting triad")
         for row in rows:
             follow_id = str(row.to_id)
-            if follow_id in familiarfollowers:
-                familiarfollowers[follow_id].append((row.from_login,row.to_id))
-            else:
-                familiarfollowers[follow_id] = [(row.from_login,row.to_id)]
-    else:
-        #get common follows for anon
-        print("getting common follows anon")
-        rows = db.session.execute(
-                text('''SELECT A.to_login AS from_login, B.to_login AS to_login,
-                A.to_id AS from_id, B.to_id AS to_id, A.followed_at AS followed_at_origin,
-                B.followed_at AS followed_at_source 
-                FROM Followcache A, Followcache B, Followcache C 
-                WHERE A.from_id = :user_id AND C.from_id = :user_id AND A.to_id  = B.from_id 
-                AND B.to_id = C.to_id ORDER BY A.followed_at DESC; '''),
-                {"user_id":int(user_id)})
-        for row in rows:
-            follow_id = str(row.from_id)
-            if follow_id in commonfollowsession:
-                commonfollowsession[follow_id].append((row.to_login,row.to_id))
-            else:
-                commonfollowsession[follow_id]=[(row.to_login,row.to_id)]
-    #get triads
-    rows = db.session.execute(
-            text('''SELECT A.to_login AS from_login, B.to_login AS to_login,
-            A.to_id AS from_id, B.to_id AS to_id, C.to_id AS origin_id,
-            A.followed_at AS followed_at_origin, B.followed_at AS followed_at_source 
-            FROM Followcache A, Followcache B, Followcache C 
-            WHERE A.from_id = :user_id AND C.from_id = :user_id  
-            AND A.to_id  = B.from_id AND B.to_id = C.to_id 
-            AND A.followed_at < C.followed_at AND B.followed_at < C.followed_at ; ''' ),
-            {"user_id":int(user_id)})
-    print("getting triad")
-    for row in rows:
-        follow_id = str(row.to_id)
-        followtime = 0
-        if (row.followed_at_source - firstfollow).total_seconds() > 0:
-            #gets follow time compared to first follow
-            followtime = (row.followed_at_source - firstfollow).total_seconds()
-        else: #default to user followdate for the time compared to first follow
             followtime = 0
-        if follow_id in triad:
-            triad[follow_id].append((row.from_login, row.from_id, followtime))
-        else:
-            triad[follow_id]=[(row.from_login, row.from_id, followtime)]
+            if (row.followed_at_source - firstfollow).total_seconds() > 0:
+                #gets follow time compared to first follow
+                followtime = (row.followed_at_source - firstfollow).total_seconds()
+            else: #default to user followdate for the time compared to first follow
+                followtime = 0
+            if follow_id in triad:
+                triad[follow_id].append((row.from_login, row.from_id, followtime))
+            else:
+                triad[follow_id]=[(row.from_login, row.from_id, followtime)]
 
-    for index, follow in enumerate(followdata["data"]):
-        followdata["data"][index]["commonfollowsession"] = []
-        followdata["data"][index]["familiarfollowers"] = []
-        followdata["data"][index]["triad"] = []
-        followdata["data"][index]["followtotal"] = []
-        follow_id = str(follow["to_id"])
-        if follow_id in commonfollowsession:
-            followdata["data"][index]["commonfollowsession"] += commonfollowsession[follow_id]
-        if follow_id in triad:
-            followdata["data"][index]["triad"] += triad[follow_id]
-        if follow_id in familiarfollowers:
-            followdata["data"][index]["familiarfollowers"] += familiarfollowers[follow_id]
-        if follow_id in followtotal:
-            followdata["data"][index]["followtotal"] = followtotal[follow_id]
-        followdata["data"][index]["followtime"] = (
-            datetime.datetime.strptime(followdata["data"][index]["followed_at"], '%Y-%m-%dT%H:%M:%SZ') - firstfollow).total_seconds()
+        for index, follow in enumerate(followdata["data"]):
+            followdata["data"][index]["commonfollowsession"] = []
+            followdata["data"][index]["familiarfollowers"] = []
+            followdata["data"][index]["triad"] = []
+            followdata["data"][index]["followtotal"] = []
+            follow_id = str(follow["to_id"])
+            if follow_id in commonfollowsession:
+                followdata["data"][index]["commonfollowsession"] += commonfollowsession[follow_id]
+            if follow_id in triad:
+                followdata["data"][index]["triad"] += triad[follow_id]
+            if follow_id in familiarfollowers:
+                followdata["data"][index]["familiarfollowers"] += familiarfollowers[follow_id]
+            if follow_id in followtotal:
+                followdata["data"][index]["followtotal"] = followtotal[follow_id]
+            followdata["data"][index]["followtime"] = (
+                followdata["data"][index]["followed_at"] - firstfollow).total_seconds()
     return followdata
 
 def getspecificfollows(fromuserID, touserID):
@@ -687,9 +760,9 @@ def insertfollows2(userdata):
     user_id = userdata[0]["id"]
     #delete and add followers of this user_id
     db.session.execute(
-        text('DELETE FROM Followcache WHERE from_id = :user_id '),
+        text('DELETE FROM savedfollows WHERE from_id = :user_id '),
         {"user_id":int(user_id)})
-    followdata2 = insertfollows(user_id)
+    insertfollows(user_id)
     
     #get all id that I don't have followdata of yet
     rs = db.session.execute(
@@ -706,8 +779,9 @@ def insertfollows2(userdata):
     if len(useridlist) > 0:
         listlength = len(useridlist)
     else:
-        listlength = "zero"
-    task = q.enqueue(getallfollows, useridlist, userdata, followdata2, session["access_token"], description=listlength)  # Send a job to the task queue
+        listlength = "0"
+    task = q.enqueue(getallfollows, userdata, session["access_token"], description=listlength)  
+    # Send a job to the task queue
 
     jobs = q.jobs  # Get a list of jobs in the queue
 
@@ -728,24 +802,6 @@ def insertfollows2(userdata):
         'job_id':task.id
     })
 
-def insertallfollows(followdata, useridlist):
-    timenow = datetime.datetime.utcnow()
-    for user_id in useridlist:
-        dbdata = SavedFollows(user_id, timenow)
-        db.session.add(dbdata)
-    db.session.commit()
-    
-    for follower in followdata:
-        from_id = follower["from_id"]
-        from_login = str(follower["from_login"])
-        to_id = follower["to_id"]
-        to_login = follower["to_login"]
-        followed_at = datetime.datetime.strptime(follower["followed_at"], '%Y-%m-%dT%H:%M:%SZ')
-        dbdata = Followcache(from_id, from_login, to_id, to_login, followed_at, timenow)
-        db.session.add(dbdata)
-    db.session.commit()
-
-    return "success"
 
 
 if __name__ == '__main__':

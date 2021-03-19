@@ -62,8 +62,8 @@
       <button class="btn btn-success3 btn-circle btn-circle-sm m-1" onclick='adduser("{{ userinfo["login"]}}", {{ userinfo["id"] }})'>+</button></h2>
       <div class="coords">
         <h3>Followed: {{followdata[loop.index-1]["followed_at"].strftime('%Y-%m-%d')}}</h3>
-        {% if followdata[loop.index-1]['video_id'] is defined %}   
-          <h3><a href="https://twitch.tv/videos/{{ followdata[loop.index-1]['video_id'] }}?t={{ followdata[loop.index-1]['video_timestamp'] }}"  target="_blank" rel="noopener noreferrer">
+        {% if followdata[loop.index-1]['video_id'] and followdata[loop.index-1]['video_id'] != '0' %}   
+          <h3><a href="https://twitch.tv/videos/{{ followdata[loop.index-1]['video_id'] }}?t={{ followdata[loop.index-1]['watchtime'] }}"  target="_blank" rel="noopener noreferrer">
             {{followdata[loop.index-1]['video_info']}}</a></h3>
         {% else %}
           <h3><a href="https://twitch.tv/{{ userinfo['login'] }}/videos" target="_blank" rel="noopener noreferrer">Video at Date is Not Found</a></h3>

@@ -126,11 +126,12 @@
                   if(firstloop == 0){
                     var delay = resp.data;
                     console.log("waiting for queries to finish.");
+                    $("#time").hide();
                     
                     var delaymessage = 
                     '<div class="container"><div class="row"><div class="col"><p> Querying '
                         + resp.data +' from the database. Getting results approximately in an average '
-                        + (delay/4+ 3) 
+                        + (delay/2+ 14) 
                         + ' seconds</p></div></div><div class="row" id="delaymessage" ></div></div>';
                     $('div#jobqueue').append(delaymessage);
                     setTimeout(poller, Math.max(Math.min(delay*250,20000), timeoutmax)); 
@@ -149,7 +150,8 @@
                     console.log("polling for results");
                     var delaymessage = 
                     '<div class="row"><div class="col"><p> Polling results. Job is currently '
-                      + resp.job_status+'. Requesting again in '+ Math.max(Math.min(timeout,20000), timeoutmax)/1000
+                      + resp.job_status+'. '+ '<br> Job is getting id: ' + resp.user_id + ' Currently ' + resp.index + ' / ' + resp.listlength
+                      +'<br> Requesting again in '+ Math.max(Math.min(timeout,20000), timeoutmax)/1000
                       +' seconds ('+firstloop+')</p></div></div>';
                     
                     document.getElementById('delaymessage').innerHTML = "";
@@ -159,6 +161,7 @@
               } 
               else if (resp.status == 200){
                 console.log("Successfully called");
+                $("#time").show();
                 document.getElementById('jobqueue').innerHTML = "";
                 document.getElementById('dataresponsefield').innerHTML = "";
                 $('div#dataresponsefield').append(resp.data);
