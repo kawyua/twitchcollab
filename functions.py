@@ -324,7 +324,7 @@ def insertfollows(user_id):
     with dbsession.begin() as session:
         print("entering followers")
         for index, follower in enumerate(followdata["data"]):
-            if len(followdata2["data"]) > 0 and follower["followed_at"] > followdata2["data"][0]["followed_at"]:
+            if len(followdata2["data"]) > 0 and datetime.datetime.strptime(follower["followed_at"], '%Y-%m-%dT%H:%M:%SZ') > followdata2["data"][0]["followed_at"]:
                 from_id = follower["from_id"]
                 from_login = str(follower["from_login"])
                 to_id = follower["to_id"]
