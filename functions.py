@@ -322,10 +322,9 @@ def insertfollows(user_id):
             followinfo["updated_at"] = row.updated_at
             followdata2["data"].append(followinfo)
     with dbsession.begin() as session:
-        followdata = {"data":[]}
         print("entering followers")
         for index, follower in enumerate(followdata["data"]):
-            if len(followdata2) > 0 and follower["followed_at"] > followdata2[0]:
+            if len(followdata2["data"]) > 0 and follower["followed_at"] > followdata2[0]:
                 from_id = follower["from_id"]
                 from_login = str(follower["from_login"])
                 to_id = follower["to_id"]
@@ -333,7 +332,7 @@ def insertfollows(user_id):
                 followed_at = datetime.datetime.strptime(follower["followed_at"], '%Y-%m-%dT%H:%M:%SZ')
                 dbdata = Followcache(from_id, from_login, to_id, to_login, followed_at, timenow)
                 session.add(dbdata)
-            elif len(followdata2) == 0:
+            elif len(followdata2["data"]) == 0:
                 from_id = follower["from_id"]
                 from_login = str(follower["from_login"])
                 to_id = follower["to_id"]
