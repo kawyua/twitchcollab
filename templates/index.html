@@ -150,7 +150,7 @@
                     console.log("polling for results");
                     var delaymessage = 
                     '<div class="row"><div class="col"><p> Polling results. Job is currently '
-                      + resp.job_status+'. '+ '<br> Job is getting user_id: ' + resp.user_id + ' Currently' + resp.index + ' / ' + resp.listlength
+                      + resp.job_status+'. '+ '<br> Job is getting id: ' + resp.user_id + ' Currently ' + resp.index + ' / ' + resp.listlength
                       +'<br> Requesting again in '+ Math.max(Math.min(timeout,20000), timeoutmax)/1000
                       +' seconds ('+firstloop+')</p></div></div>';
                     
@@ -161,6 +161,7 @@
               } 
               else if (resp.status == 200){
                 console.log("Successfully called");
+                $("#time").show();
                 document.getElementById('jobqueue').innerHTML = "";
                 document.getElementById('dataresponsefield').innerHTML = "";
                 $('div#dataresponsefield').append(resp.data);
