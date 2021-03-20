@@ -4,6 +4,7 @@ __pycache__
 *$py.class
 Names.csv
 Names2.csv
+simulation.csv
 
 # C extensions
 *.so
