@@ -289,6 +289,11 @@ def insertfollows(user_id):
     parameter: user_id (Integer)
     inserts followdata for a user
     '''
+    
+    with engine.connect() as con:
+        con.execute(
+        text('DELETE FROM savedfollows WHERE from_id = :user_id '),
+        {"user_id":int(user_id)})
     print("inserting new followers")
     print(user_id)
     followdata = getfollowers(user_id)
@@ -405,7 +410,7 @@ def getvideoID(userID, timestamp, access_token=""):
             elif video["viewable"] != "public":
                 returninfo = "Broadcast is not public"
             else:
-                returninfo = video["title"]
+                returninfo = video["title"][:75] + (video["title"][75:] and '..')
             return [video["id"], returntime, returninfo]
 
 def getfollowers(userID, access_token=""):

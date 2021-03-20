@@ -47,12 +47,12 @@
           </li>
           {% endif %}
           
-          <form>
+          <form method = "POST">
           <li>
           <input type="text" name="login" class="form-control" id ="login" placeholder="Enter a twitch user" ></li>
           <li><input type="button" value="Get Follow History" class="btn btn-outline-secondary btn-block"  onclick="loadinput(this, '/history')"></li>
           <li><input type="button" value= "Get Graph" class="btn btn-outline-secondary btn-block"  onclick="loadinput(this, '/graph')"></li>
-          <!--<input type="submit" name = "Get triads" value= "Get triads" class="btn btn-primary" formaction="/gettriads"/>-->
+          <li> <input type="submit" class="btn btn-primary"  formaction="/gettriads"/></li>
           </form>
           
           <input type="checkbox" checked id="deleteorlink" data-toggle="toggle" data-on="Link Saves" data-off="Delete Saves" data-onstyle="outline-light" data-offstyle="outline-dark" data-height="100%">
