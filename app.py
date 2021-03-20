@@ -759,9 +759,6 @@ def insertfollows2(userdata):
     print("inserting followdata")
     user_id = userdata[0]["id"]
     #delete and add followers of this user_id
-    db.session.execute(
-        text('DELETE FROM savedfollows WHERE from_id = :user_id '),
-        {"user_id":int(user_id)})
     insertfollows(user_id)
     
     #get all id that I don't have followdata of yet
@@ -802,7 +799,122 @@ def insertfollows2(userdata):
         'job_id':task.id
     })
 
+def getfollows(user_id):
+    '''
+    Calls twitch api to get followers of a specific userid:
+    Parameters: a user id
+    Returns: A json list of structure
+    {
+        "total":int,
+        "data":[{
+            "from_id":"int",
+            "from_name":"string",
+            "to_id":"int",
+            "to_name":"string",
+            "followed_at":"datetime of '%Y-%m-%dT%H:%M:%SZ'"}
+            , ...
+        ],
+        "pagination":{empty or int}
+    }
+    '''
+    
+    params = (
+        ('to_id',user_id),
+        ('first', 100),
+    )
+    headers = {
+        'client-id': CLIENT_ID,
+        'Authorization': 'Bearer {0}'.format(session['access_token']),
+    }
 
+    url = 'https://api.twitch.tv/helix/users/follows?'
+    totaldata = getrequest(url, headers, params, pagination=100000)
+    print(totaldata["total"])
+    keyed_data = {}
+    for user in totaldata["data"]:
+        keyed_data[user["from_id"]] = user
+    csv_columns = ['from_id', 'from_login', 'from_name',
+        'to_id', 'to_login','to_name','followed_at']
+    csv_file = "Names.csv"
+    try:
+        with open(csv_file, 'w', newline='', encoding='utf-8') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
+            writer.writeheader()
+            for key in keyed_data:
+                writer.writerow(keyed_data[key])
+    except IOError:
+        print("I/O error")
+    print("getting triad")
+    streamerfollowdata = insertfollows(user_id)
+    csv_columns2 = ['from_id', 'from_login', 'from_name', 'to_id', 'to_login',
+    'to_name','followed_at','closure','triad', 'k-connected', 'total_connected']
+    csv_file2 = "Names2.csv"
+    try:
+        openfile = open(csv_file2, 'w', newline='', encoding='utf-8')
+        writer = csv.DictWriter(openfile, fieldnames=csv_columns2)
+        writer.writeheader()
+        openfile.close()
+    except IOError:
+        print("I/O error")
+    for i in range(0, totaldata["total"]):
+        followdata = insertfollows(totaldata["data"][i]["from_id"])
+        eachfollowdata = totaldata["data"][i]
+        rows = db.session.execute(
+            text('''SELECT A.to_login AS from_login, B.to_login AS to_login,
+            A.to_id AS from_id, B.to_id AS to_id, C.to_id AS origin_id,
+            A.followed_at AS followed_at_origin, B.followed_at AS followed_at_source 
+            FROM Followcache A, Followcache B, Followcache C 
+            WHERE A.from_id = :user_id AND C.from_id = :user_id  
+            AND A.to_id  = B.from_id AND B.to_id = C.to_id AND C.to_id = :streamer_id
+            AND A.followed_at < C.followed_at AND B.followed_at < C.followed_at; ''' ),
+            {"user_id":int(totaldata["data"][i]["from_id"]), "streamer_id":int(user_id)})
+        triad = []
+        for row in rows:
+            triad.append(str(row.from_id))
+        if len(triad) > 0:
+            eachfollowdata["closure"] = 1
+        else:
+            eachfollowdata["closure"] = 0
+        eachfollowdata["triad"] = str(triad)
+        konnect = {}
+        for streameruser in followdata["data"]:
+            konnect.setdefault(streameruser["to_id"], streameruser)
+        eachfollowdata["k-connected"] = list(set(keyed_data.keys()) 
+        & set(konnect.keys()))
+        eachfollowdata["total_connected"] = len(eachfollowdata["k-connected"])
+        try:
+            with open(csv_file2, 'a', newline='', encoding='utf-8') as csvfile:
+                writer = csv.DictWriter(csvfile, fieldnames=csv_columns2)
+                writer.writerow(eachfollowdata)
+                csvfile.close()
+        except IOError:
+            print("I/O error")
+    return
+
+@app.route('/gettriads', methods=['POST'])
+def gettriads():
+    '''
+    from submission, sets the page for /submit and calls to make recommendations
+    Returns: /submit template page
+    '''
+    if request.method == 'POST' and ENV == 'dev':
+        
+        if 'login' not in request.form:
+            return render_template('index.html', message='Input is wrong')
+        login = request.form['login']
+        if login == '':
+            #print("empty user")
+            return render_template('index.html', message='Please enter required fields')
+        userdata = getuser(login)
+        print(login)
+        print(userdata)
+        if len(userdata) == 0:
+            return render_template('index.html', message='User doesnt exist.')
+        getfollows(userdata[0]["id"])
+        
+        return render_template('index.html')
+    else:
+        return'Bad Request', 400
 
 if __name__ == '__main__':
     app.run()
