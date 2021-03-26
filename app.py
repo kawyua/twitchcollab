@@ -17,6 +17,7 @@ from rq import Queue
 from rq.job import Job
 from worker import conn
 import urllib.request
+import random
 from functions import (postrequest, getrequest, getvideoID, insertfollows,
 getfollowers, getMultiUserInfo, getuser, addvideoinfo, getallfollows, get_app_access_token_header)
 
@@ -193,6 +194,7 @@ def index():
     '''
     print("scope print")
     print(SCOPE)
+    session["env"] = ENV
     if not validate_access_token():
         return redirect(
             'https://id.twitch.tv/oauth2/authorize?response_type=code&client_id={0}&redirect_uri={1}&scope={2}'
@@ -593,6 +595,7 @@ def getfollowdata(user_id):
     triad = {}
     followtotal = getfollowtotal(user_id)
     followdata = {"data":[],"total":0}
+    triadcount = {}
     print("followtotal is:")
     print(followtotal)
     if user_id in followtotal and followtotal[user_id] > 0:
@@ -692,6 +695,7 @@ def getfollowdata(user_id):
         print("getting triad")
         for row in rows:
             follow_id = str(row.to_id)
+            from_id = str(row.from_id)
             followtime = 0
             if (row.followed_at_source - firstfollow).total_seconds() > 0:
                 #gets follow time compared to first follow
@@ -702,6 +706,10 @@ def getfollowdata(user_id):
                 triad[follow_id].append((row.from_login, row.from_id, followtime))
             else:
                 triad[follow_id]=[(row.from_login, row.from_id, followtime)]
+            if from_id in triadcount:
+                triadcount[from_id].append((row.to_login, row.to_id, followtime))
+            else:
+                triadcount[from_id]=[(row.to_login, row.to_id, followtime)]
 
         for index, follow in enumerate(followdata["data"]):
             followdata["data"][index]["commonfollowsession"] = []
@@ -717,14 +725,16 @@ def getfollowdata(user_id):
                 followdata["data"][index]["familiarfollowers"] += familiarfollowers[follow_id]
             if follow_id in followtotal:
                 followdata["data"][index]["followtotal"] = followtotal[follow_id]
+            if follow_id in triadcount:
+                followdata["data"][index]["triadcount"] = triadcount[follow_id]
             followdata["data"][index]["followtime"] = (
                 followdata["data"][index]["followed_at"] - firstfollow).total_seconds()
     return followdata
 
-def getspecificfollows(fromuserID, touserID):
+def getfollowamount(user_id):
     '''
     Calls twitch api to get followers of a specific userid:
-    Parameters: fromuserID, touserID
+    Parameters: user_id
     Returns: A json list of structure
     {
         "total":int,
@@ -740,8 +750,7 @@ def getspecificfollows(fromuserID, touserID):
     }
     '''
     params = (
-        ('from_id',fromuserID),
-        ('to_id', touserID),
+        ('to_id', user_id),
         ('first', 1),
     )
     headers = {
@@ -749,8 +758,13 @@ def getspecificfollows(fromuserID, touserID):
         'Authorization': 'Bearer {0}'.format(session['access_token']),
     }
     url = 'https://api.twitch.tv/helix/users/follows?'
-    data = getrequest(url, headers, params)
-    return data["data"]
+    data = getrequest(url, headers, params, 1)
+    if "total" in data:
+        print(data["total"])
+    else:
+        print("0")
+        data["total"] = 0
+    return data
 
 def insertfollows2(userdata):
     '''
@@ -777,7 +791,7 @@ def insertfollows2(userdata):
         listlength = len(useridlist)
     else:
         listlength = "0"
-    task = q.enqueue(getallfollows, userdata, session["access_token"], description=listlength,ttl=max(2000, len(useridlist)))  
+    task = q.enqueue(getallfollows, userdata, session["access_token"], description=listlength)  
     # Send a job to the task queue
 
     jobs = q.jobs  # Get a list of jobs in the queue
@@ -799,7 +813,12 @@ def insertfollows2(userdata):
         'job_id':task.id
     })
 
-def getfollows(user_id):
+def getfollows(user_id, stopped_at, second):
+    '''
+    analysis of twitch data must call twice in order to work
+    stopped_at is if the call interrupted
+    second == finished will do the analysis
+    '''
     '''
     Calls twitch api to get followers of a specific userid:
     Parameters: a user id
@@ -828,68 +847,299 @@ def getfollows(user_id):
     }
 
     url = 'https://api.twitch.tv/helix/users/follows?'
-    totaldata = getrequest(url, headers, params, pagination=100000)
-    print(totaldata["total"])
-    keyed_data = {}
-    for user in totaldata["data"]:
-        keyed_data[user["from_id"]] = user
-    csv_columns = ['from_id', 'from_login', 'from_name',
-        'to_id', 'to_login','to_name','followed_at']
-    csv_file = "Names.csv"
+    totaldata = {"data":[]}
+    totaldatalen = 0
+    k_connect = {}
+    triad = {}
+    popularity = {}
+    lookup = {}
+    print(second)
+    if second == "finished":
+        print("entering finished and getting followers of userid")
+        rows = db.session.execute(
+            text('''SELECT t1.from_id as from_id,
+            t1.from_login as from_login, 
+            t1.to_id as to_id,
+            t1.to_login as to_login,
+            t1.followed_at as followed_at
+            FROM Followcache t1
+            WHERE t1.to_id = :user_id
+            ORDER BY t1.followed_at DESC; '''),
+            {"user_id":int(user_id)})
+        for row in rows:
+            followinfo = {}
+            followinfo["from_id"] = row.from_id
+            followinfo["from_login"] = row.from_login
+            followinfo["to_id"] = row.to_id
+            followinfo["to_login"] = row.to_login
+            followinfo["followed_at"] = (row.followed_at).strftime("%m/%d/%Y, %H:%M:%S")
+            totaldata["data"].append(followinfo)
+            k_connect[str(row.from_id)] = []
+            triad[str(row.from_id)] = []
+            popularity[str(row.from_id)] = 0
+            lookup[str(row.from_id)] = row.from_login
+        print("getting k-connect")
+        #t1 is all followers of streamer
+        #t2 is the follows of follower
+        #t3 is again all followers of streamer
+        rows = db.session.execute(
+            text('''SELECT 
+            t1.from_id as from_id, t2.to_id as to_id
+            FROM Followcache t1, Followcache t2, Followcache t3
+            WHERE t1.to_id = :user_id 
+            AND t2.from_id = t1.from_id
+            AND t3.to_id = :user_id
+            AND t3.from_id = t2.to_id; '''),
+            {"user_id":int(user_id)})
+        for row in rows:
+            k_connect[str(row.from_id)].append(row.to_id)
+        #D gets all followers of streamer
+        #A gets all the follows of the follower
+        #B gets all the follows of the follows
+        #C gets all the follows of the follower to calculate closure
+        print("getting triads")
+        rows = db.session.execute(
+            text('''SELECT A.from_id as origin_id,
+            A.to_id AS from_id
+            FROM Followcache A, Followcache B, Followcache C, Followcache D
+            WHERE D.to_id = :user_id AND A.from_id = D.from_id AND C.from_id = D.from_id  
+            AND A.to_id  = B.from_id AND B.to_id = C.to_id AND C.to_id = :user_id
+            AND A.followed_at < C.followed_at AND B.followed_at < C.followed_at; ''' ),
+            {"user_id":int(user_id)})
+        print("finished getting triads")
+        for row in rows:
+            triad[str(row.origin_id)].append(str(row.from_id))
+        totaldatalen = len(totaldata["data"])
+        print(totaldatalen)
+    else:
+        totaldata = getrequest(url, headers, params, pagination=100000)
+        
+        totaldatalen = int(totaldata["total"])
+        print(totaldatalen)
+   
+    if second == "first":
+        csv_columns = ['from_id', 'from_login', 'from_name',
+            'to_id', 'to_login','to_name','followed_at']
+        csv_file = "Names.csv"
+        try:
+            with open(csv_file, 'w', newline='', encoding='utf-8') as csvfile:
+                writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
+                writer.writeheader()
+                for data in totaldata["data"]:
+                    writer.writerow(data)
+        except IOError:
+            print("I/O error")
+    print("inserting follows of user")
+    streamerfollowdata = insertfollows(user_id)
+    csv_columns2 = ['from_id', 'from_login', 'from_name', 'to_id', 'to_login',
+    'to_name','followed_at','closure','triad', 'k-connected', 'total_connected','in-degree']
+    csv_file2 = "Names2.csv"
+    if second == "finished":
+        try:
+            openfile = open(csv_file2, 'w', newline='', encoding='utf-8')
+            writer = csv.DictWriter(openfile, fieldnames=csv_columns2)
+            writer.writeheader()
+            openfile.close()
+        except IOError:
+            print("I/O error")
+    csv_columns3 = ['nodeamount', 'sn' ,'minimum', 'maximum', 'average', 'result']
+    csv_file3 = "simulation.csv"
+
+    try:
+        with open(csv_file3, 'w', newline='', encoding='utf-8') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=csv_columns3)
+            writer.writeheader()
+            csvfile.close()
+    except IOError:
+        print("I/O error")
+    
+    csv_columns4 = ['follower_id', 'follower_login', 'amount']
+    csv_file4 = "popularity.csv"
+
+    try:
+        with open(csv_file4, 'w', newline='', encoding='utf-8') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=csv_columns4)
+            writer.writeheader()
+            csvfile.close()
+    except IOError:
+        print("I/O error")
+    print("now printing to names 2")
+    n = {}
+    timenow = datetime.datetime.utcnow()
+    rows = db.session.execute(
+        text('''SELECT t1.from_id as from_id, t1.from_login as from_login
+        FROM Followcache t1
+        WHERE t1.to_id = :user_id;'''),
+        {"user_id":int(user_id)})
+    donotinsert = {}
+    for row in rows:
+        donotinsert[str(row.from_id)] = row.from_login
+    for i in range(stopped_at, totaldatalen):
+        if second == "finished":
+            eachfollowdata = totaldata["data"][i]
+            follow_id = str(totaldata["data"][i]["from_id"])
+
+            if len(triad[follow_id]) > 0:
+                eachfollowdata["closure"] = 1
+            else:
+                eachfollowdata["closure"] = 0
+            eachfollowdata["triad"] = triad[follow_id]
+            for tri in triad[follow_id]:
+                popularity[str(tri)] += 1
+            eachfollowdata["k-connected"]= k_connect[follow_id]
+            eachfollowdata["total_connected"] = len(eachfollowdata["k-connected"])
+            k_connect_length = str(eachfollowdata["total_connected"])
+            if k_connect_length in n:
+                n[k_connect_length][0] += 1
+                n[k_connect_length][1] += eachfollowdata["closure"]
+            else:
+                n[k_connect_length] = [1, eachfollowdata["closure"], 0]
+            eachfollowdata["in-degree"] = totaldatalen - i
+            try:
+                with open(csv_file2, 'a', newline='', encoding='utf-8') as csvfile:
+                    writer = csv.DictWriter(csvfile, fieldnames=csv_columns2)
+                    writer.writerow(eachfollowdata)
+                    csvfile.close()
+            except IOError:
+                print("I/O error")
+        else:
+            print(i)
+            if str(totaldata["data"][i]["from_id"]) not in donotinsert:
+                follower = getfollowers(totaldata["data"][i]["from_id"])
+                dbdata2 = SavedFollows(user_id, timenow)
+                db.session.add(dbdata2)
+                for follow in follower["data"]:
+                    from_id = follow["from_id"]
+                    from_login = str(follow["from_login"])
+                    to_id = follow["to_id"]
+                    to_login = str(follow["to_login"])
+                    followed_at = datetime.datetime.strptime(follow["followed_at"], '%Y-%m-%dT%H:%M:%SZ')
+                    dbdata = Followcache(from_id, from_login, to_id, to_login, followed_at, timenow)
+                    db.session.add(dbdata)
+                db.session.commit()
+    #prints popular linkers
+    for follower in popularity:
+        if popularity[follower] > 0:
+            follow = {}
+            follow["follower_id"] = follower
+            follow["follower_login"] = lookup[follower]
+            follow["amount"] = popularity[follower]
+            try:
+                with open(csv_file4, 'a', newline='', encoding='utf-8') as csvfile:
+                    writer = csv.DictWriter(csvfile, fieldnames=csv_columns4)
+                    writer.writerow(follow)
+                    csvfile.close()
+            except IOError:
+                print("I/O error")
+
+    for sn in n:
+        n[sn][2] =  float(n[sn][1])/float(n[sn][0])
+    if second == "finished":
+        getsim(n)
+        popularityanalysis()
+    return
+
+def getsim(n):
+    print("getting sim")
+    csv_columns3 = ['nodeamount', 'sn' ,'minimum', 'maximum', 'average', 'result']
+    csv_file3 = "simulation.csv"
+    for nodeamount in n:
+        if n[nodeamount][0] > 5:
+            print("doing" +nodeamount)
+            #get 100 tests
+            maximum = 0.0
+            minimum = 1.0
+            ratioarray = []
+            for test in range(99):
+                base = [0, 1]
+                edges = []
+                randomorder = []
+                totaledges = 2*int(nodeamount) + 1
+                for i in range(totaledges):
+                    edges.append(0)
+                    randomorder.append(i)
+                ratios = []
+                for i in range(n[nodeamount][0]):
+                    random.shuffle(randomorder)
+                    for k in range(len(edges)):
+                        edges[k] = 0
+                    triad = False
+                    done = False
+                    j = 0
+                    while done == False:
+                        edge = randomorder[j]
+                        j += 1
+                        #odd edges correlate to connection with base[0] and even to base[1]
+                        if edge == totaledges - 1:
+                            done = True
+                        elif (edge % 2) == 0:
+                            edges[edge] = 1
+                            if edges[edge + 1] == 1:
+                                triad = True
+                                done = True
+                        else:
+                            edges[edge] = 1
+                            if edges[edge - 1] == 1:
+                                triad = True
+                                done = True
+                    if triad:
+                        ratios.append(1.0)
+                    else:
+                        ratios.append(0.0)
+                avgratio = sum(ratios)/len(ratios)
+                if avgratio > maximum:
+                    maximum = avgratio
+                elif avgratio < minimum:
+                    minimum = avgratio
+                ratioarray.append(avgratio)
+            print(ratioarray)
+            avgratio = sum(ratioarray)/len(ratioarray)
+            stats = {"nodeamount":int(nodeamount),"sn":n[nodeamount][0], "maximum":maximum,"minimum":minimum,"average":avgratio, "result":n[nodeamount][2]}
+            try:
+                with open(csv_file3, 'a', newline='', encoding='utf-8') as csvfile:
+                    writer = csv.DictWriter(csvfile, fieldnames=csv_columns3)
+                    writer.writerow(stats)
+                    csvfile.close()
+            except IOError:
+                print("I/O error")
+    return
+
+def popularityanalysis():
+    reader = csv.reader(open('popularity.csv'))
+    csv_columns = ['follower_id', 'follower_login', 'linkclosures',
+        'followeramount']
+    csv_file = "popularityanalysis.csv"
     try:
         with open(csv_file, 'w', newline='', encoding='utf-8') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
             writer.writeheader()
-            for key in keyed_data:
-                writer.writerow(keyed_data[key])
     except IOError:
         print("I/O error")
-    print("getting triad")
-    streamerfollowdata = insertfollows(user_id)
-    csv_columns2 = ['from_id', 'from_login', 'from_name', 'to_id', 'to_login',
-    'to_name','followed_at','closure','triad', 'k-connected', 'total_connected']
-    csv_file2 = "Names2.csv"
-    try:
-        openfile = open(csv_file2, 'w', newline='', encoding='utf-8')
-        writer = csv.DictWriter(openfile, fieldnames=csv_columns2)
-        writer.writeheader()
-        openfile.close()
-    except IOError:
-        print("I/O error")
-    for i in range(0, totaldata["total"]):
-        followdata = insertfollows(totaldata["data"][i]["from_id"])
-        eachfollowdata = totaldata["data"][i]
-        rows = db.session.execute(
-            text('''SELECT A.to_login AS from_login, B.to_login AS to_login,
-            A.to_id AS from_id, B.to_id AS to_id, C.to_id AS origin_id,
-            A.followed_at AS followed_at_origin, B.followed_at AS followed_at_source 
-            FROM Followcache A, Followcache B, Followcache C 
-            WHERE A.from_id = :user_id AND C.from_id = :user_id  
-            AND A.to_id  = B.from_id AND B.to_id = C.to_id AND C.to_id = :streamer_id
-            AND A.followed_at < C.followed_at AND B.followed_at < C.followed_at; ''' ),
-            {"user_id":int(totaldata["data"][i]["from_id"]), "streamer_id":int(user_id)})
-        triad = []
-        for row in rows:
-            triad.append(str(row.from_id))
-        if len(triad) > 0:
-            eachfollowdata["closure"] = 1
-        else:
-            eachfollowdata["closure"] = 0
-        eachfollowdata["triad"] = str(triad)
-        konnect = {}
-        for streameruser in followdata["data"]:
-            konnect.setdefault(streameruser["to_id"], streameruser)
-        eachfollowdata["k-connected"] = list(set(keyed_data.keys()) 
-        & set(konnect.keys()))
-        eachfollowdata["total_connected"] = len(eachfollowdata["k-connected"])
+    result = {}
+    for row in reader:
+        key = row[0]
+        if key in result:
+            # implement your duplicate row handling here
+            pass
+        result[key] = row[1:]
+    print(result)
+    print("entering triad")
+    for user_id in result:
+        response = getfollowamount(int(user_id))
+        follow = {}
+        follow["follower_id"] = user_id
+        follow["follower_login"] = result[user_id][0]
+        follow["linkclosures"] = result[user_id][1]
+        follow["followeramount"] = response["total"]
         try:
-            with open(csv_file2, 'a', newline='', encoding='utf-8') as csvfile:
-                writer = csv.DictWriter(csvfile, fieldnames=csv_columns2)
-                writer.writerow(eachfollowdata)
+            with open(csv_file, 'a', newline='', encoding='utf-8') as csvfile:
+                writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
+                writer.writerow(follow)
                 csvfile.close()
         except IOError:
             print("I/O error")
     return
+
 
 @app.route('/gettriads', methods=['POST'])
 def gettriads():
@@ -898,19 +1148,26 @@ def gettriads():
     Returns: /submit template page
     '''
     if request.method == 'POST' and ENV == 'dev':
-        
-        if 'login' not in request.form:
+        if 'login' not in request.form or 'stopped_at' not in request.form or 'second' not in request.form :
             return render_template('index.html', message='Input is wrong')
         login = request.form['login']
-        if login == '':
+        stopped_at = int(request.form['stopped_at'])
+        second = request.form['second']
+        if login == '' or stopped_at == '' or second == '':
+            print("empty triad form")
+            print(login)
+            print(stopped_at)
+            print(second)
             #print("empty user")
             return render_template('index.html', message='Please enter required fields')
         userdata = getuser(login)
         print(login)
+        print(stopped_at)
+        print(second)
         print(userdata)
         if len(userdata) == 0:
             return render_template('index.html', message='User doesnt exist.')
-        getfollows(userdata[0]["id"])
+        getfollows(userdata[0]["id"], stopped_at, second)
         
         return render_template('index.html')
     else:

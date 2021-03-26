@@ -269,7 +269,7 @@ def getrequest(url, headers, params, pagination = 2000, donotretry=False):
 
 def get_app_access_token_header(refresh_token = "none"):
     '''
-    For people that do not login through their twitch,
+    creates new access token for failed access_token
     '''
     url ='https://id.twitch.tv/oauth2/token'
     data={'client_id':CLIENT_ID,
@@ -278,9 +278,11 @@ def get_app_access_token_header(refresh_token = "none"):
         }
     response = postrequest(url, data)
     access_token = response['access_token']
+    if "access_token" in session:
+        session["access_token"] = access_token
     headers = {
         'client-id': CLIENT_ID,
-        'Authorization': 'Bearer {0}'.format(session['access_token']),
+        'Authorization': 'Bearer {0}'.format(access_token),
     }
     return headers
 
@@ -294,17 +296,16 @@ def insertfollows(user_id):
         con.execute(
         text('DELETE FROM savedfollows WHERE from_id = :user_id '),
         {"user_id":int(user_id)})
-    print("inserting new followers")
-    print(user_id)
     followdata = getfollowers(user_id)
     timenow = datetime.datetime.utcnow()
     dbdata2 = SavedFollows(user_id, timenow)
     with dbsession.begin() as session:
-        print("entering follower save")
         session.add(dbdata2)
     
     followdata2 = {"data":[]}
     with engine.connect() as con:
+        
+        print("entering followers for "+str(user_id))
         #get all id that I don't have followdata of yet
         rows = con.execute(
             text('''SELECT t1.from_id as from_id,
@@ -326,10 +327,11 @@ def insertfollows(user_id):
             followinfo["followed_at"] = row.followed_at
             followinfo["updated_at"] = row.updated_at
             followdata2["data"].append(followinfo)
+    print(len(followdata2["data"]))
+    followdata2length = len(followdata2["data"])
     with dbsession.begin() as session:
-        print("entering followers")
         for index, follower in enumerate(followdata["data"]):
-            if len(followdata2["data"]) > 0 and datetime.datetime.strptime(follower["followed_at"], '%Y-%m-%dT%H:%M:%SZ') > followdata2["data"][0]["followed_at"]:
+            if followdata2length > 0 and datetime.datetime.strptime(follower["followed_at"], '%Y-%m-%dT%H:%M:%SZ') > followdata2["data"][0]["followed_at"]:
                 from_id = follower["from_id"]
                 from_login = str(follower["from_login"])
                 to_id = follower["to_id"]
@@ -337,7 +339,7 @@ def insertfollows(user_id):
                 followed_at = datetime.datetime.strptime(follower["followed_at"], '%Y-%m-%dT%H:%M:%SZ')
                 dbdata = Followcache(from_id, from_login, to_id, to_login, followed_at, timenow)
                 session.add(dbdata)
-            elif len(followdata2["data"]) == 0:
+            elif followdata2length == 0:
                 from_id = follower["from_id"]
                 from_login = str(follower["from_login"])
                 to_id = follower["to_id"]
