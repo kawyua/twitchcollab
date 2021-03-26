@@ -791,6 +791,10 @@ def insertfollows2(userdata):
         listlength = len(useridlist)
     else:
         listlength = "0"
+<<<<<<< HEAD
+=======
+    
+>>>>>>> 100b04f51027800391539f882ceb1e2fb9f17b7f
     task = q.enqueue(getallfollows, userdata, session["access_token"], description=listlength)  
     # Send a job to the task queue
 
