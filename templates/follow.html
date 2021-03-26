@@ -72,13 +72,14 @@
         {% if session['login'] and session['login'] != userdata[0]["login"]%}
         <h3>
           {{ userinfo['login'] }} is followed by:
-          {% if followdata[loop.index-1]["familiarfollowers"]|length > 5 %}
+          {% if followdata[loop.index-1]["familiarfollowers"]|length > 4 %}
             {% for familiar in followdata[loop.index-1]["familiarfollowers"] %}
-              {% if loop.index-1 < 5 %}
+              {% if loop.index-1 < 4 %}
                 <a>{{familiar[0]}}, </a>
-                {% elif loop.index-1 == 5 %}
-                <a data-toggle="tooltip" data-placement="top" title="{{familiar[0]}},{% else %}{{familiar[0]}},{% endif %}{% endfor %}{% if loop.index-1 >= 5 %}">and {{followdata[loop.index-1]["familiarfollowers"]|length - 5}} others</a>
-            {% endif %}
+                {% elif loop.index-1 == 4 %}
+                <a href="#" data-toggle="tooltip" data-placement="top" 
+                title="{{familiar[0]}},{% else %}{{familiar[0]}},{% endif %}{% endfor %}"
+                >and {{followdata[loop.index-1]["familiarfollowers"]|length - 4}} others</a>
           {% else %}
             {% for familiar in followdata[loop.index-1]["familiarfollowers"] %}
               <a>{{familiar[0]}}, </a>
@@ -86,17 +87,32 @@
           {% endif %}
         </h3>
         {% endif %}
+        <h3>Follow Matches: 
+          {% if followdata[loop.index-1]["commonfollowsession"]|length > 4 %}
+            {% for commonfollowsession in followdata[loop.index-1]["commonfollowsession"] %}
+              {% if loop.index-1 < 4 %}
+                <a>{{commonfollowsession[0]}}, </a>
+                {% elif loop.index-1 == 4 %}
+                <a href="#" data-toggle="tooltip" data-placement="top" 
+                title="{{commonfollowsession[0]}},{% else %}{{commonfollowsession[0]}},{% endif %}{% endfor %}"
+                >and {{followdata[loop.index-1]["commonfollowsession"]|length - 4}} others</a>
+          {% else %}
+            {% for commonfollowsession in followdata[loop.index-1]["commonfollowsession"] %}
+              <a>{{commonfollowsession[0]}}, </a>
+            {% endfor %}
+          {% endif %}
+        </h3>
         {% if followdata[loop.index-1]['triad'] is defined %}
         <h3>
-          Possibly Discovered Through:
-          {% if followdata[loop.index-1]["triad"]|length > 5 %}
+          {% if followdata[loop.index-1]["triad"]|length > 0 %}
+          Suggested Through:
             {% for triad in followdata[loop.index-1]["triad"] %}
-              {% if loop.index-1 < 5 %}
+              {% if loop.index-1 < 0 %}
                 <a>{{triad[0]}}, </a>
-                {% elif loop.index-1 == 5 %}
-                <a data-toggle="tooltip" data-placement="top" 
-                title="{{triad[0]}},{% else %}{{triad[0]}},{% endif %}{% endfor %}{% if loop.index-1 >= 5 %}"> and {{followdata[loop.index-1]["triad"]|length - 5}} others</a>
-            {% endif %}
+                {% elif loop.index-1 == 0 %}
+                <a href="#" data-toggle="tooltip" data-placement="top" 
+                title="{{triad[0]}},{% else %}{{triad[0]}},{% endif %}{% endfor %}"
+                >{{followdata[loop.index-1]["triad"]|length - 0}} people</a>
           {% else %}
             {% for triad in followdata[loop.index-1]["triad"] %}
               <a>{{triad[0]}}, </a>
@@ -104,21 +120,25 @@
           {% endif %}
         </h3>
         {% endif %}
-        <h3>Follow Matches: 
-          {% if followdata[loop.index-1]["commonfollowsession"]|length > 5 %}
-            {% for commonfollowsession in followdata[loop.index-1]["commonfollowsession"] %}
-              {% if loop.index-1 < 5 %}
-                <a>{{commonfollowsession[0]}}, </a>
-                {% elif loop.index-1 == 5 %}
-                <a data-toggle="tooltip" data-placement="top" 
-                title="{{commonfollowsession[0]}},{% else %}{{commonfollowsession[0]}},{% endif %}{% endfor %}{% if loop.index-1 >= 5 %}"> and {{followdata[loop.index-1]["commonfollowsession"]|length - 5}} others</a>
-            {% endif %}
+        {% if followdata[loop.index-1]['triadcount'] is defined %}
+        <h3>
+          {% if followdata[loop.index-1]["triadcount"]|length > 0 %}
+          Suggested:
+            {% for triadcount in followdata[loop.index-1]["triadcount"] %}
+              {% if loop.index-1 < 0 %}
+                <a>{{triadcount[0]}}, </a>
+                {% elif loop.index-1 == 0 %}
+                <a href="#" data-toggle="tooltip" data-placement="top" 
+                title="{{triadcount[0]}},{% else %}{{triadcount[0]}},{% endif %}{% endfor %}"
+                >{{followdata[loop.index-1]["triadcount"]|length - 0}} people</a>
           {% else %}
-            {% for commonfollowsession in followdata[loop.index-1]["commonfollowsession"] %}
-              <a>{{commonfollowsession[0]}}, </a>
+            {% for triadcount in followdata[loop.index-1]["triadcount"] %}
+              <a>{{triadcount[0]}}, </a>
             {% endfor %}
           {% endif %}
         </h3>
+        {% endif %}
+        
       </div>
       
       <div class="coords">
@@ -136,4 +156,9 @@
     <span class="more">Mouse over the card for more info</span>
   </div>
 </div>
+<script>
+  $(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();   
+  });
+</script>
 {% endfor %}

@@ -39,6 +39,8 @@
           <li><a href="#">Events</a></li>
           <li><a href="#">About</a></li>
           -->
+          <li><a href='https://github.com/kawyua/twitchhistory/issues' target="_blank" rel="noopener noreferrer">Issues?></a>
+          </li>
           {% if session['login'] %}
           <li><input type="button"  name='{{session["login"]}}' class="btn btn-outline-secondary btn-block" id='sessionuserhistory' value='{{session["login"]}} Follow History' onclick="loading(this,'/history')"></li>
           <li ><input type="button" name='{{session["login"]}}' class="btn btn-outline-secondary btn-block" id='sessionusergraph' value='{{session["login"]}} Graph' onclick="loading(this,'/graph')"></li>
@@ -47,12 +49,19 @@
           </li>
           {% endif %}
           
-          <form>
+          <form method = "POST">
           <li>
           <input type="text" name="login" class="form-control" id ="login" placeholder="Enter a twitch user" ></li>
           <li><input type="button" value="Get Follow History" class="btn btn-outline-secondary btn-block"  onclick="loadinput(this, '/history')"></li>
           <li><input type="button" value= "Get Graph" class="btn btn-outline-secondary btn-block"  onclick="loadinput(this, '/graph')"></li>
-          <!--<input type="submit" name = "Get triads" value= "Get triads" class="btn btn-primary" formaction="/gettriads"/>-->
+          {% if session['env'] == "dev" %}
+          <input type="text" name="stopped_at" class="form-control" id ="stopped_at" placeholder="enter where to start from" value="0" >
+          <input type="radio" id="male" name="second" value="first">
+          <label for="male">first</label><br>
+          <input type="radio" id="female" name="second" value="finished">
+          <label for="female">finished</label><br>
+          <li> <input type="submit" class="btn btn-primary"  formaction="/gettriads"/></li>
+          {% endif %}
           </form>
           
           <input type="checkbox" checked id="deleteorlink" data-toggle="toggle" data-on="Link Saves" data-off="Delete Saves" data-onstyle="outline-light" data-offstyle="outline-dark" data-height="100%">
@@ -87,8 +96,8 @@
                   <div class="col-md-12">
                     {% if session['login'] %}
                       <p class="lead">Welcome {{session['login']}}!</p>
+                      <p class="lead">Twitch History shows you your history of your follows on twitch and history of others.</p>
                     {% else %}
-                    <p class="lead">Twitch History shows you your history of your follows on twitch and history of others.</p>
                     <p class="lead">Sign in through twitch to see related information to you.</p>
                     <a href='https://id.twitch.tv/oauth2/authorize?response_type=code&client_id={{session["client_id"]}}&redirect_uri={{session["redirect_uri"]}}&scope=' >Login through twitch</a>
                     {% endif %}
@@ -104,12 +113,12 @@
         </div>
       </div>
 
-<button onclick="topFunction()" id="myBtn" title="Go to top">Top</button>
+  <button onclick="topFunction()" id="myBtn" title="Go to top">Top</button>
 
 
     <!-- Custom JavaScript for the Menu Toggle -->
-    <script>
-   function polldata(jobID, url) {
+  <script>
+    function polldata(jobID, url) {
     var timeout = 20000;
     var timeoutmax = 3000
     var firstloop = 0;
@@ -222,10 +231,7 @@
     $(function () {
       $('[data-toggle="tooltip"]').tooltip()
     })
-    </script>
-
-    
-    <script>// <![CDATA[
+// <![CDATA[
       //loading icon for time consuming function
       //stackoverflow: https://stackoverflow.com/questions/14525029/display-a-loading-message-while-a-time-consuming-function-is-executed-in-flask
       function loading(ele, url){
@@ -294,8 +300,7 @@
             }
         });      
       }
-    // ]]></script>
-  <script>
+
   //Get the button
   var mybutton = document.getElementById("myBtn");
   

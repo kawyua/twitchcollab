@@ -5,7 +5,8 @@ __pycache__
 Names.csv
 Names2.csv
 simulation.csv
-
+popularity.csv
+popularityanalysis.csv
 # C extensions
 *.so
 
