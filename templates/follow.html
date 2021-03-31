@@ -2,7 +2,8 @@
     <div class="additional">
       <div class="user-card">
         <div class="level center">
-          Views: {{ userdata[0]["view_count"] }}
+          Views: {{ userdata[0]["view_count"] }}<br/>
+          {{userdata[0]["broadcaster_type"]}}
         </div>
         <div class="points center">
           Follows: {{ followlen }}
@@ -17,8 +18,7 @@
         <h2 class= "text-center"  ><a href="https://twitch.tv/{{ userdata[0]['login'] }}"  target="_blank" rel="noopener noreferrer">{{ userdata[0]["login"] }}</a>
           <button class="btn btn-success2 btn-circle btn-circle-sm m-1" onclick='adduser("{{ userdata[0]["login"]}}", {{ userdata[0]["id"] }})'>+</button></h2>
         <div class="coords">
-          <h3>{{userdata[0]["broadcaster_type"]}}</h3>
-          <h3>Joined {{ userdata[0]["created_at"] }}</h3>
+          <h3>Joined {% if userdata[0]['created_at'] %}{% set list1 = userdata[0]['created_at'].split('T') %}{{list1[0]}} {% endif %}</h3>
           <img src={{offlineimg}} alt="Offline image" class="logo offcenter">
         </div>
         <div class="coords">
@@ -45,7 +45,7 @@
     <div class="user-card">
       <div class="level center textcenter">
         Views: {{ userinfo["view_count"] }} <br/>
-        {{userinfo['broadcaster_type']}} {{ type }}
+        {{userinfo['broadcaster_type']}}
       </div>
       <div class="points center textcenter">
         Follows: {{followdata[loop.index-1]["followtotal"]}}<br/>
@@ -77,8 +77,8 @@
               {% if loop.index-1 < 4 %}
                 <a>{{familiar[0]}}, </a>
                 {% elif loop.index-1 == 4 %}
-                <a href="#" data-toggle="tooltip" data-placement="top" 
-                title="{{familiar[0]}},{% else %}{{familiar[0]}},{% endif %}{% endfor %}"
+                <a href="javascript:void(0);" data-toggle="tooltip" data-placement="top" 
+                title="{{familiar[0]}},{% else %}{{familiar[0]}},{% endif %}{% endfor %} also follow {{ userinfo['login']}}"
                 >and {{followdata[loop.index-1]["familiarfollowers"]|length - 4}} others</a>
           {% else %}
             {% for familiar in followdata[loop.index-1]["familiarfollowers"] %}
@@ -93,8 +93,8 @@
               {% if loop.index-1 < 4 %}
                 <a>{{commonfollowsession[0]}}, </a>
                 {% elif loop.index-1 == 4 %}
-                <a href="#" data-toggle="tooltip" data-placement="top" 
-                title="{{commonfollowsession[0]}},{% else %}{{commonfollowsession[0]}},{% endif %}{% endfor %}"
+                <a href="javascript:void(0);" data-toggle="tooltip" data-placement="top" 
+                title="{{commonfollowsession[0]}},{% else %}{{commonfollowsession[0]}},{% endif %}{% endfor %} is followed by {{ userinfo['login']}}"
                 >and {{followdata[loop.index-1]["commonfollowsession"]|length - 4}} others</a>
           {% else %}
             {% for commonfollowsession in followdata[loop.index-1]["commonfollowsession"] %}
@@ -110,8 +110,8 @@
               {% if loop.index-1 < 0 %}
                 <a>{{triad[0]}}, </a>
                 {% elif loop.index-1 == 0 %}
-                <a href="#" data-toggle="tooltip" data-placement="top" 
-                title="{{triad[0]}},{% else %}{{triad[0]}},{% endif %}{% endfor %}"
+                <a href="javascript:void(0);" data-toggle="tooltip" data-placement="top" 
+                title="{{triad[0]}},{% else %}{{triad[0]}},{% endif %}{% endfor %} followed {{ userinfo['login']}} before {{userdata[0]['login']}}"
                 >{{followdata[loop.index-1]["triad"]|length - 0}} people</a>
           {% else %}
             {% for triad in followdata[loop.index-1]["triad"] %}
@@ -128,8 +128,8 @@
               {% if loop.index-1 < 0 %}
                 <a>{{triadcount[0]}}, </a>
                 {% elif loop.index-1 == 0 %}
-                <a href="#" data-toggle="tooltip" data-placement="top" 
-                title="{{triadcount[0]}},{% else %}{{triadcount[0]}},{% endif %}{% endfor %}"
+                <a href="javascript:void(0);" data-toggle="tooltip" data-placement="top" 
+                title="{{triadcount[0]}},{% else %}{{triadcount[0]}},{% endif %}{% endfor %} was followed by {{ userinfo['login']}} before {{ userdata[0]['login'] }} followed them"
                 >{{followdata[loop.index-1]["triadcount"]|length - 0}} people</a>
           {% else %}
             {% for triadcount in followdata[loop.index-1]["triadcount"] %}

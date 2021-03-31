@@ -39,14 +39,19 @@
           <li><a href="#">Events</a></li>
           <li><a href="#">About</a></li>
           -->
-          <li><a href='https://github.com/kawyua/twitchhistory/issues' target="_blank" rel="noopener noreferrer">Issues?></a>
-          </li>
+          <li ></li><a href='https://github.com/kawyua/twitchhistory/issues'  
+          target="_blank" rel="noopener noreferrer"><input type="button" 
+          class="btn btn-outline-secondary btn-block" value='Issues'></a></li>
           {% if session['login'] %}
-          <li><input type="button"  name='{{session["login"]}}' class="btn btn-outline-secondary btn-block" id='sessionuserhistory' value='{{session["login"]}} Follow History' onclick="loading(this,'/history')"></li>
-          <li ><input type="button" name='{{session["login"]}}' class="btn btn-outline-secondary btn-block" id='sessionusergraph' value='{{session["login"]}} Graph' onclick="loading(this,'/graph')"></li>
-          {% else %}"
-          <li><a href='https://id.twitch.tv/oauth2/authorize?response_type=code&client_id={{session["client_id"]}}&redirect_uri={{session["redirect_uri"]}}&scope=' >Login through twitch</a>
-          </li>
+          <li><input type="button"  name='{{session["login"]}}' 
+            class="btn btn-outline-secondary btn-block" id='sessionuserhistory' 
+            value='{{session["login"]}} Follow History' onclick="loading(this,'/history')"></li>
+          <li ><input type="button" name='{{session["login"]}}' 
+            class="btn btn-outline-secondary btn-block" id='sessionusergraph' 
+            value='{{session["login"]}} Graph' onclick="loading(this,'/graph')"></li>
+          {% else %}
+          <li><a href='https://id.twitch.tv/oauth2/authorize?response_type=code&client_id={{session["client_id"]}}&redirect_uri={{session["redirect_uri"]}}&scope=' >
+            <input type="button" class="btn btn-outline-secondary btn-block"value='Login through twitch'></a></li>
           {% endif %}
           
           <form method = "POST">
@@ -54,24 +59,25 @@
           <input type="text" name="login" class="form-control" id ="login" placeholder="Enter a twitch user" ></li>
           <li><input type="button" value="Get Follow History" class="btn btn-outline-secondary btn-block"  onclick="loadinput(this, '/history')"></li>
           <li><input type="button" value= "Get Graph" class="btn btn-outline-secondary btn-block"  onclick="loadinput(this, '/graph')"></li>
-<<<<<<< HEAD
-          {% if session['env'] == "dev" %}
+          {% if session['env'] == "dev" or session['login'] == 'kawyua' %}
           <input type="text" name="stopped_at" class="form-control" id ="stopped_at" placeholder="enter where to start from" value="0" >
           <input type="radio" id="male" name="second" value="first">
           <label for="male">first</label><br>
           <input type="radio" id="female" name="second" value="finished">
           <label for="female">finished</label><br>
+          <input type="radio" id="commentradio" name="second" value="deleteusercomment">
+          <label for="commentradio">deleteusercomment</label><br>
           <li> <input type="submit" class="btn btn-primary"  formaction="/gettriads"/></li>
           {% endif %}
-=======
-          <li> <input type="submit" class="btn btn-primary"  formaction="/gettriads"/></li>
->>>>>>> master
           </form>
           
-          <input type="checkbox" checked id="deleteorlink" data-toggle="toggle" data-on="Link Saves" data-off="Delete Saves" data-onstyle="outline-light" data-offstyle="outline-dark" data-height="100%">
           {% if session['login'] and session["saved_users"] %}
+          <input type="checkbox" checked id="deleteorlink" data-toggle="toggle" 
+          data-on="Link Saves" data-off="Delete Saves"  data-onstyle="outline-success" 
+          data-offstyle="outline-danger" data-height="100%">
             {% for user in session["saved_users"]%}
-            <input id="usersave{{user[1]}}" class="btn btn-outline-secondary btn-block" name="{{user[0]}}" value="{{user[0]}} Follow History" onclick='deleteorredirect(this,"/history","{{user[0]}}",{{user[1]}})'>
+            <input id="usersave{{user[1]}}" class="btn btn-outline-secondary btn-block" name="{{user[0]}}" 
+            value="{{user[0]}} Follow History" onclick='deleteorredirect(this,"/history","{{user[0]}}",{{user[1]}})'>
             {% endfor %}
           {% endif %}
         </ul>
@@ -107,11 +113,35 @@
                     {% endif %}
                   </div>
                   <div class="col-md-12">
-                      <a href="https://twitter.com/intent/tweet?button_hashtag=TwitchCollab&ref_src=twsrc%5Etfw" class="twitter-hashtag-button" data-show-count="false">Tweet #TwitchCollab</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                      <a href="https://twitter.com/intent/tweet?button_hashtag=TwitchCollab&ref_src=twsrc%5Etfw" 
+                      class="twitter-hashtag-button" data-show-count="false">Tweet #TwitchCollab</a>
+                      <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
                   </div>
                 {% endif %}
               </div>
               <div id="dataresponsefield" class="row">
+                <div class="container justify-content-center mt-5 border-left border-right">
+                  {% if session['login'] %}
+                  
+                  <div class="d-flex justify-content-center pt-3 pb-2"> <input 
+                    type="text" name="text" id="commentinput" placeholder="+ Add a comment" 
+                    class="form-control addtxt"> </div>
+                  <li><input id="commentbutton" type="button" value="addcomment" 
+                    class="btn btn-outline-secondary btn-block" onclick="addcomment(this, '/addcomment')"></li>
+                  {% endif %}
+                  <div id="commentfield"></div>
+                  {% for comment in saved_comments %}
+                  <div class="d-flex justify-content-center py-2 pb-3">
+                      <div class="second py-2 px-2"> <span class="text1">{{comment[1]}}</span>
+                          <div class="d-flex justify-content-between py-1 pt-2">
+                              <div><span class="text2"><a href='https://twitch.tv/{{comment[1]}}/profile' 
+                                target="_blank" rel="noopener noreferrer">- {{comment[0]}}</a></span></div>
+                                <div><span class="text3">{{comment[2].strftime('Date: %Y-%m-%d Time: %H:%M:%S')}}</span></div>
+                          </div>
+                      </div>
+                  </div>
+                  {% endfor %}
+              </div>
               </div>
           </div>
         </div>
@@ -122,74 +152,78 @@
 
     <!-- Custom JavaScript for the Menu Toggle -->
   <script>
-    function polldata(jobID, url) {
+    jobID = 0;
+    function polldata(job_id, url) {
     var timeout = 20000;
-    var timeoutmax = 3000
+    var timeoutmax = 3000;
+    jobID = job_id
+    $("#time").hide();
     var firstloop = 0;
     var poller = function() {
       // fire another request
       $.ajax({
-            data : {
-            },
-            url: '/results/'+jobID+url,
-            type: 'GET',
-            success: function(resp){
-              if(resp.status == 202) {
-                  console.log(resp.data)
-                  if(firstloop == 0){
-                    var delay = resp.data;
-                    console.log("waiting for queries to finish.");
-                    $("#time").hide();
-                    
-                    var delaymessage = 
-                    '<div class="container"><div class="row"><div class="col"><p> Querying '
-                        + resp.data +' from the database. Getting results approximately in an average '
-                        + (delay/2+ 14) 
-                        + ' seconds</p></div></div><div class="row" id="delaymessage" ></div></div>';
-                    $('div#jobqueue').append(delaymessage);
-                    setTimeout(poller, Math.max(Math.min(delay*250,20000), timeoutmax)); 
-                    if(delay*250 > 20000){
-                      timeout = delay*250 - 20000;
-                    }
-                    else{
-                      timeout = delay*250;
-                    }
-                    firstloop++;
-                    
-                  } 
-                  else{
-                    firstloop++;
-                    timeout -= 20000;
-                    console.log("polling for results");
-                    var delaymessage = 
-                    '<div class="row"><div class="col"><p> Polling results. Job is currently '
-                      + resp.job_status+'. '+ '<br> Job is getting id: ' + resp.user_id + ' Currently ' + resp.index + ' / ' + resp.listlength
-                      +'<br> Requesting again in '+ Math.max(Math.min(timeout,20000), timeoutmax)/1000
-                      +' seconds ('+firstloop+')</p></div></div>';
-                    
-                    document.getElementById('delaymessage').innerHTML = "";
-                    $('div#delaymessage').append(delaymessage);
-                    setTimeout(poller, Math.max(Math.min(timeout,20000), timeoutmax));
-                  }
+        data : {
+        },
+        url: '/results/'+jobID+url,
+        type: 'GET',
+        success: function(resp){
+          if(resp.status == 202) {
+              console.log(resp.data)
+              if(firstloop == 0){
+                var delay = resp.data;
+                console.log("waiting for queries to finish.");
+                
+                var delaymessage = 
+                '<div class="container"><div class="row"><div class="col"><p> Querying '
+                    + resp.data +' from the database. Starting from queue position '
+                    + resp.job_position
+                    + ' </p></div></div><div class="row" id="delaymessage" ></div></div>';
+                $('div#jobqueue').append(delaymessage);
+                setTimeout(poller, Math.max(Math.min(delay*250,20000), timeoutmax)); 
+                if(delay*250 > 20000){
+                  timeout = delay*250 - 20000;
+                }
+                else{
+                  timeout = delay*250;
+                }
+                firstloop++;
+                
               } 
-              else if (resp.status == 200){
-                console.log("Successfully called");
-                $("#time").show();
-                document.getElementById('jobqueue').innerHTML = "";
-                document.getElementById('dataresponsefield').innerHTML = "";
-                $('div#dataresponsefield').append(resp.data);
-              }
               else{
-                console.log("entering failed due to unknown error")
-                console.log(resp)
-                console.log(status)
-                console.log("request failed")
+                firstloop++;
+                timeout -= 20000;
+                console.log("polling for results");
+                var delaymessage = 
+                '<div class="row"><div class="col"><p> Polling results. Job is currently '
+                  + resp.job_status+'. '+ '<br> Job is getting id: ' + resp.user_id + ' Currently ' + resp.index + ' / ' + resp.listlength
+                  +'<br> Requesting again in '+ Math.max(Math.min(timeout,20000), timeoutmax)/1000
+                  +' seconds ('+firstloop+')</p></div></div>';
+                
+                document.getElementById('delaymessage').innerHTML = "";
+                $('div#delaymessage').append(delaymessage);
+                setTimeout(poller, Math.max(Math.min(timeout,20000), timeoutmax));
               }
-            },
-            failed: function(){
-              console.log("failed to connect");
+          } 
+          else if (resp.status == 200){
+            console.log("Successfully called");
+            if (url == '/graph'){
+              $("#time").show();
             }
-        });
+            document.getElementById('jobqueue').innerHTML = "";
+            document.getElementById('dataresponsefield').innerHTML = "";
+            $('div#dataresponsefield').append(resp.data);
+          }
+          else{
+            console.log("entering failed due to unknown error")
+            console.log(resp)
+            console.log(status)
+            console.log("request failed")
+          }
+        },
+        failed: function(){
+          console.log("failed to connect");
+        }
+      });
     };
     poller();
   }
@@ -243,30 +277,24 @@
         console.log(login)
         $("input").attr("disabled", "disable")
         console.log("loading content")
-          $("#loading").show();
-          $("#content").hide();
-          $("#time").hide();
-          $.ajax({
-            data : {
-            login : login,
-            },
-            url: url,
-            type: 'POST',
-            success: function(resp){
-              console.log("Successfully queued")
-              document.getElementById('jobqueue').innerHTML = "";
-              $('div#jobqueue').append(resp.data);
-              $("#loading").hide();
-              $("input").removeAttr("disabled");
-              
-              if(url == '/graph'){
-                $("#time").show();
-              }
-              else{
-                $("#time").hide();
-              }
-              polldata(resp.job_id, url)
-            }
+        $("#loading").show();
+        $("#content").hide();
+        $("#time").hide();
+        $.ajax({
+          data : {
+          login : login,
+          },
+          url: url,
+          type: 'POST',
+          success: function(resp){
+            console.log("Successfully queued")
+            document.getElementById('jobqueue').innerHTML = "";
+            $('div#jobqueue').append(resp.data);
+            $("#loading").hide();
+            $("input").removeAttr("disabled");
+            
+            polldata(resp.job_id, url)
+          }
         });      
       }
       var logininput;
@@ -278,30 +306,24 @@
         console.log("login");
         console.log(login);
         $("input").attr("disabled", "disable")
-          $("#loading").show();
-          $("#content").hide();
-          $("#time").hide();
-          $.ajax({
-            data : {
-            login : login,
-            },
-            url: url,
-            type: 'POST',
-            success: function(resp){
-              console.log("Successfully queued")
-              document.getElementById('jobqueue').innerHTML = "";
-              $('div#jobqueue').append(resp.data);
-              $("#loading").hide();
-              $("input").removeAttr("disabled");
-              
-              if(url == '/graph'){
-                $("#time").show();
-              }
-              else{
-                $("#time").hide();
-              }
-              polldata(resp.job_id, url)
-            }
+        $("#loading").show();
+        $("#content").hide();
+        $("#time").hide();
+        $.ajax({
+          data : {
+          login : login,
+          },
+          url: url,
+          type: 'POST',
+          success: function(resp){
+            console.log("Successfully queued")
+            document.getElementById('jobqueue').innerHTML = "";
+            $('div#jobqueue').append(resp.data);
+            $("#loading").hide();
+            $("input").removeAttr("disabled");
+            
+            polldata(resp.job_id, url)
+          }
         });      
       }
 
@@ -324,11 +346,43 @@
     document.body.scrollTop = 0;
     document.documentElement.scrollTop = 0;
   }
+  function addcomment(){
+    commentinput = document.getElementById('commentinput').value;
+    if(commentinput){  
+      console.log(commentinput);
+      var txt1 = '<div class="d-flex justify-content-center py-2 pb-3">'
+        +'<div class="second py-2 px-2"> <span class="text1">'
+        +commentinput
+        +'</span><div class="d-flex justify-content-between py-1'
+        +' pt-2"><div><span class="text2"><a '
+        +'href="https://twitch.tv/{{session["login"]}}/profile" '
+        +' target="_blank" rel="noopener noreferrer"> '
+        +'-{{session["login"]}}</a></span></div> <div><span class="text3">Just now</span></div></div></div></div>'
+      console.log(txt1);
+      $.ajax({
+        data : {
+          comment : commentinput
+          },
+        type : 'POST',
+        url : '/addcomment'
+      }).done(function(data) {
+        console.log(data);
+        if (data.toString(10) == 'Success'){
+          $("#commentbutton").attr("disabled", "disable")
+          $("#commentfield").append(txt1);
+        }
+      });
+    console.log("adding to comments")
+    }
+  }
   function adduser(login, user_id){
       console.log(login);
       console.log(user_id);
       var stringlogin = login.toString(10)
-      var txt1 = '<input id="usersave'+user_id+'" class="btn btn-outline-secondary btn-block" name="'+login+'" value="'+login+' Follow History" onclick='+"'deleteorredirect(this,"+'"/history","'+login+'",'+user_id+")'>";
+      var txt1 = '<input id="usersave'+user_id
+      +'" class="btn btn-outline-secondary btn-block" name="'
+      +login+'" value="'+login+' Follow History" onclick='+"'deleteorredirect(this,"+'"/history","'
+      +login+'",'+user_id+")'>";
       console.log(txt1);
       $.ajax({
         data : {

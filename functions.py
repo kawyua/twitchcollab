@@ -459,7 +459,9 @@ def getallfollows(userdata, access_token):
                 WHERE t1.from_id = :user_id  AND t2.to_id IS NULL '''),
                 {"user_id":int(userdata[0]["id"])})
         #insert all new user_id
-        for row in rs:
+        for index, row in enumerate(rs):
+            if index >= 100:
+                continue
             useridlist.append(row.to_id)
     
     listlength = len(useridlist)

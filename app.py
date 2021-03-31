@@ -187,6 +187,27 @@ class SavedVideos(db.Model):
         self.returninfo = returninfo
         self.updated_at = updated_at
 
+class Comments(db.Model):
+    '''
+    id = db.Column(db.Integer, primary_key=True)
+    video_id = db.Column(db.Integer)
+    to_login = db.Column(db.String(200), unique=True)
+    updated_at = db.Column(db.DateTime)
+    '''
+    __tablename__ = 'comments'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer)
+    user_login = db.Column(db.Unicode(255))
+    comment = db.Column(db.Unicode(100))
+    updated_at = db.Column(db.DateTime)
+    def __init__(self, user_id, user_login, comment, updated_at):
+        self.user_id = user_id
+        self.user_login = user_login
+        self.comment = comment
+        self.updated_at = updated_at
+
+
+
 @app.route('/')
 def index():
     '''
@@ -201,7 +222,16 @@ def index():
         .format(CLIENT_ID, REDIRECT_URI, SCOPE))
     else:
         isindex = True
-        return render_template('index.html', isIndex = isindex)
+        
+        rows = db.session.execute(
+                text('''SELECT user_login, comment, updated_at
+                FROM Comments
+                ORDER BY updated_at DESC; ''' )
+        )
+        saved_comments = []
+        for row in rows:
+            saved_comments.append((row.user_login, row.comment, row.updated_at))
+        return render_template('index.html', isIndex = isindex, saved_comments= saved_comments)
 
 def getanon():
     '''
@@ -242,6 +272,8 @@ def validate_access_token():
     print(CLIENT_ID)
     session["client_id"] = CLIENT_ID
     session["redirect_uri"] = REDIRECT_URI
+
+    # checks if user entered in session
     if 'access_token' in session:
         headers = {
             'client-id': CLIENT_ID,
@@ -253,6 +285,7 @@ def validate_access_token():
         url = 'https://id.twitch.tv/oauth2/validate?'
         data = getrequest(url,headers, params)
         print(data)
+        #check if user is logged in as a twitch user and not timedout
         if "login" in data and "user_id" in data:
             if len(data) > 0:
                 session["login"] =  data['login']
@@ -275,11 +308,15 @@ def validate_access_token():
                     saved_users.append((row.to_login,row.to_id))
                 session["saved_users"] = saved_users
                 print(saved_users)
+        #timed out twitch user
         elif "refresh_token" in session:
+            print("redirecting to login")
             noredirect = False
         else:
+            print("was originally anon, refresh token not in session and login, user_id not in post data")
             getanon()
     else:
+        print("access_token not in session")
         getanon()
     return noredirect
 
@@ -329,24 +366,19 @@ def graph():
     jobs = q.jobs  # Get a list of jobs in the queue
     message = None
     if request.method == 'POST':
-        if validate_access_token():
-            login = html.escape(request.form['login'])
-            if str(login) == '':
-                print("empty user")
-                return jsonify({'data': "empty user"})
-            login = str(login)
-            userdata = getuser(login)
-            if len(userdata) == 0:
-                return jsonify({'data': "user doesn't exist."})
-            print("inserting follows2 for graph")
-            #remember followdata is already sorted by most recent follow date
-            return_task = insertfollows2(userdata)
-            return return_task
-        else:
-            return redirect(
-                'https://id.twitch.tv/oauth2/authorize?response_type=code&client_id={0}&redirect_uri={1}&scope={2}'
-            .format(CLIENT_ID, REDIRECT_URI, SCOPE))
-
+        print("access token status: " + str(validate_access_token()))
+        login = html.escape(request.form['login'])
+        if str(login) == '':
+            print("empty user")
+            return jsonify({'data': "empty user"})
+        login = str(login)
+        userdata = getuser(login)
+        if len(userdata) == 0:
+            return jsonify({'data': "user doesn't exist."})
+        print("inserting follows2 for graph")
+        #remember followdata is already sorted by most recent follow date
+        return_task = insertfollows2(userdata)
+        return return_task
     else:
         return'Bad Request', 400
 
@@ -357,23 +389,18 @@ def history():
     Returns: /submit template page
     '''
     if request.method == 'POST':
-        if validate_access_token():
-            login = html.escape(request.form['login'])
-            if str(login) == '':
-                print("empty user")
-                return jsonify({'data': "empty user"})
-            login = str(login)
-            userdata = getuser(login)
-            if len(userdata) == 0:
-                return jsonify({'data': "user doesn't exist."})
-            print("inserting follows2 for history")
-            return_task = insertfollows2(userdata)
-            return return_task
-            
-        else:
-            return redirect(
-                'https://id.twitch.tv/oauth2/authorize?response_type=code&client_id={0}&redirect_uri={1}&scope={2}'
-            .format(CLIENT_ID, REDIRECT_URI, SCOPE))
+        print("access token status: " + str(validate_access_token()))
+        login = html.escape(request.form['login'])
+        if str(login) == '':
+            print("empty user")
+            return jsonify({'data': "empty user"})
+        login = str(login)
+        userdata = getuser(login)
+        if len(userdata) == 0:
+            return jsonify({'data': "user doesn't exist."})
+        print("inserting follows2 for history")
+        return_task = insertfollows2(userdata)
+        return return_task
     else:
         return'Bad Request', 400
 
@@ -410,8 +437,8 @@ def get_results(job_key, output):
         'type': '',
         'broadcaster_type': '',
         'description': 'This user is deleted',
-        'profile_image_url': '',
-        'offline_image_url': '',
+        'profile_image_url': '//:0',
+        'offline_image_url': '//:0',
         'view_count': 0,
         'created_at': '2020-01-01T00:00:00.000001Z'}
         for index, follow in enumerate(followdata["data"]):
@@ -453,15 +480,37 @@ def get_results(job_key, output):
         })
     else:
         print("polling" + job.get_status())
+        print("job position " + str(job.get_position()))
         print(job.meta)
         return jsonify({'data':job.description,
             'status':202,
             'job_status':job.get_status(),
             'user_id':job.meta['requestload'],
             'index':job.meta['requestdone'],
-            'listlength':job.meta['requesttotal']
+            'listlength':job.meta['requesttotal'],
+            'job_position': str(job.get_position())
 
         })
+
+@app.route('/addcomment', methods=['POST'])
+def addcomment():
+    '''
+    from submission, adds a comment
+    '''
+    print("entering comment")
+    if request.method == 'POST' and "user_id" in session:
+        comment = html.escape(request.form['comment'])
+        #insert comment
+        timenow = datetime.datetime.utcnow()
+        from_id = session["user_id"]
+        from_login = session["login"]
+        dbdata = Comments(from_id, from_login, comment, timenow)
+        db.session.add(dbdata)
+        db.session.commit()
+        print('saved')
+        return 'Success'
+    else:
+        return 'Failure'
 
 @app.route('/adduser', methods=['POST'])
 def adduser():
@@ -596,8 +645,6 @@ def getfollowdata(user_id):
     followtotal = getfollowtotal(user_id)
     followdata = {"data":[],"total":0}
     triadcount = {}
-    print("followtotal is:")
-    print(followtotal)
     if user_id in followtotal and followtotal[user_id] > 0:
         print("followtotalsuccess")
         followdata["total"] = followtotal[user_id]
@@ -787,12 +834,13 @@ def insertfollows2(userdata):
     #insert all new user_id
     for row in rs:
         useridlist.append(row.to_id)
-    if len(useridlist) > 0:
-        listlength = len(useridlist)
-    else:
-        listlength = "0"
-    
-    task = q.enqueue(getallfollows, userdata, session["access_token"], description=listlength)  
+    listlength = len(useridlist)
+    print("useridlist")
+    while listlength > 100:
+        task = q.enqueue(getallfollows, userdata, session["access_token"], description='Inserting 100 for '+userdata[0]["login"])
+        listlength -= 100
+    listlengthstr = str(listlength)
+    task = q.enqueue(getallfollows, userdata, session["access_token"], description=listlengthstr)  
     # Send a job to the task queue
 
     jobs = q.jobs  # Get a list of jobs in the queue
@@ -1126,6 +1174,8 @@ def popularityanalysis():
     print(result)
     print("entering triad")
     for user_id in result:
+        if user_id == 'follower_id':
+            continue
         response = getfollowamount(int(user_id))
         follow = {}
         follow["follower_id"] = user_id
@@ -1148,7 +1198,7 @@ def gettriads():
     from submission, sets the page for /submit and calls to make recommendations
     Returns: /submit template page
     '''
-    if request.method == 'POST' and ENV == 'dev':
+    if request.method == 'POST' and (ENV == 'dev' or session["login"] == 'kawyua'):
         if 'login' not in request.form or 'stopped_at' not in request.form or 'second' not in request.form :
             return render_template('index.html', message='Input is wrong')
         login = request.form['login']
@@ -1168,7 +1218,16 @@ def gettriads():
         print(userdata)
         if len(userdata) == 0:
             return render_template('index.html', message='User doesnt exist.')
-        getfollows(userdata[0]["id"], stopped_at, second)
+        if second == "deleteusercomment":
+            db.session.execute(
+            text('''DELETE
+            FROM Comments
+            WHERE user_login = :user_login; ''' ),
+            {"user_login":str(login)}
+            )
+            db.session.commit()
+        else:
+            getfollows(userdata[0]["id"], stopped_at, second)
         
         return render_template('index.html')
     else:
