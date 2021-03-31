@@ -54,6 +54,7 @@
           <input type="text" name="login" class="form-control" id ="login" placeholder="Enter a twitch user" ></li>
           <li><input type="button" value="Get Follow History" class="btn btn-outline-secondary btn-block"  onclick="loadinput(this, '/history')"></li>
           <li><input type="button" value= "Get Graph" class="btn btn-outline-secondary btn-block"  onclick="loadinput(this, '/graph')"></li>
+<<<<<<< HEAD
           {% if session['env'] == "dev" %}
           <input type="text" name="stopped_at" class="form-control" id ="stopped_at" placeholder="enter where to start from" value="0" >
           <input type="radio" id="male" name="second" value="first">
@@ -62,6 +63,9 @@
           <label for="female">finished</label><br>
           <li> <input type="submit" class="btn btn-primary"  formaction="/gettriads"/></li>
           {% endif %}
+=======
+          <li> <input type="submit" class="btn btn-primary"  formaction="/gettriads"/></li>
+>>>>>>> master
           </form>
           
           <input type="checkbox" checked id="deleteorlink" data-toggle="toggle" data-on="Link Saves" data-off="Delete Saves" data-onstyle="outline-light" data-offstyle="outline-dark" data-height="100%">
