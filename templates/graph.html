@@ -2,6 +2,7 @@
 <meta id="my-data" data-name="graphdata" data-other="{{graphdata}}">
 <div id="cy"></div>
 <script>
+  document.getElementById('time').innerHTML = "Loading Discovery Graph... > 100 nodes will desync with timer"
   var followdata = {{ followdata|tojson|safe }};
   console.log(followdata)
   var users = {{ data|tojson|safe }};
@@ -123,8 +124,11 @@
     ],
 
     elements: data
-  });
-  var bfs = cy.elements().addClass('highlighted');
+    })
+  
+  }).then(function(){
+  setTimeout(function(){cy.elements().addClass('highlighted');
+    updateClock();}, 4000);
 });
 var now = Date.now();
 console.log(now);
@@ -155,8 +159,7 @@ function updateClock() {
   if(now > adjusted){
     setTimeout(updateClock, 1000);
   }
-}
-updateClock(); // initial call
+};
 
 
 </script>
